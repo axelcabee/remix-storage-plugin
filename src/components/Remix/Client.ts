@@ -12,28 +12,43 @@ export class WorkSpacePlugin extends PluginClient {
     super();
     createClient(this);
     toast.info("Connecting to REMIX DGIT2");
-    this.methods = ['pull']
+    this.methods = ['pull', 'track']
     this.onload().then(async () => {
       //Utils.log("workspace client loaded", this);
       toast.success("Connected to REMIX");
-      try{
+      try {
         await this.call("manager", "activatePlugin", "dGitProvider")
         this.clientLoaded.next(true);
         await this.setCallBacks();
-      }catch(e){
+      } catch (e) {
         console.log(e)
-        toast.error("Could not activate DECENTRALIZED GIT. Please activate DECENTRALIZED GIT in the plugin list and restart this plugin.", {autoClose:false})
+        toast.error("Could not activate DECENTRALIZED GIT. Please activate DECENTRALIZED GIT in the plugin list and restart this plugin.", { autoClose: false })
       }
 
+      try {
+        this.call('filePanel', 'registerContextMenuItem', {
+          id: 'dgit',
+          name: 'track',
+          label: 'Track in dGit',
+          type: ['file', 'folder'],
+          extension: [],
+          path: [],
+          pattern: [],
+          sticky: true
+        })
+      } catch (e) {
+
+      }
 
     });
 
-
-    
-
   }
 
-  async pull(cid: string){
+  async track(item: any) {
+    console.log('track')
+  }
+
+  async pull(cid: string) {
     try {
       await ipfservice.importFromCID(cid, "", false)
       //Utils.log("yes");
@@ -43,23 +58,6 @@ export class WorkSpacePlugin extends PluginClient {
   }
 
   async setCallBacks() {
-    this.on(
-      "solidity",
-      "compilationFinished",
-      async (file, source, version, result) => {
-        //Utils.log("compilationFinished");
-        //Utils.log(file,source,version,result);
-        const r = await this.call("solidity", "getCompilationResult");
-        //Utils.log("getCompilationResult");
-        //Utils.log(r.data?.contracts);
-        //Utils.log(r.data?.sources);
-        //Utils.log(r.source?.sources)
-        //Utils.log(r.source?.target) 
-        
-        //await this.call("editor","highlight",{start:{column:1,line:1},end:{column:2,line:2}},"2_Owner.sol","#32a852");
-        //await this.call("editor","addAnnotation",{row:3, column:1,type:"warning",text:"testing", name:"name",message:"message"})
-      }
-    );
 
     this.on("fileManager", "fileSaved", async (e) => {
       // Do something
@@ -79,7 +77,7 @@ export class WorkSpacePlugin extends PluginClient {
       }
     });
 
-    this.on("fileManager","fileRemoved", async (e) => {
+    this.on("fileManager", "fileRemoved", async (e) => {
       // Do something
       //Utils.log(e);
       if (this.callBackEnabled) {
@@ -92,7 +90,7 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       //Utils.log("CHANGED",e, this);
       if (this.callBackEnabled) {
-        
+
         await fileservice.syncFromBrowser();
       }
       //await this.rmFile(e)
@@ -107,20 +105,19 @@ export class WorkSpacePlugin extends PluginClient {
       }
     });
 
-
-    this.on("filePanel", "setWorkspace", async (x:any) => {
+    this.on("filePanel", "setWorkspace", async (x: any) => {
       Utils.log("ws set", x);
       await fileservice.syncFromBrowser(x.isLocalhost);
       Utils.log(x);
     });
 
-    this.on("filePanel", "deleteWorkspace", async (x:any) => {
+    this.on("filePanel", "deleteWorkspace", async (x: any) => {
       Utils.log("wS DELETE", x);
       await fileservice.syncFromBrowser(x.isLocalhost);
       Utils.log(x);
     });
 
-    this.on("filePanel", "renameWorkspace", async (x:any) => {
+    this.on("filePanel", "renameWorkspace", async (x: any) => {
       Utils.log("wS rn", x);
       await fileservice.syncFromBrowser(x.isLocalhost);
       Utils.log(x);
@@ -131,7 +128,7 @@ export class WorkSpacePlugin extends PluginClient {
   }
 
 
-  
+
   async disableCallBacks() {
     this.callBackEnabled = false;
   }
