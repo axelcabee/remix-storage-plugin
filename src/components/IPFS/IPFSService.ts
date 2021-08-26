@@ -81,7 +81,7 @@ export class IPFSService {
     if(!connect){toast.error("Unable to connect to IPFS check your settings.",{autoClose:false}); return false;}
     loaderservice.setLoading(true)
     try {
-      const result = await client.call('dGitProvider', 'push')
+      const result = await client.call('dGitProvider', 'export' as any)
       Utils.log(result)
       this.cid = result;
       this.cidBehavior.next(this.cid);
@@ -128,7 +128,7 @@ export class IPFSService {
       return false;
     }
     try {
-      await client.call('dGitProvider', 'pull', {cid:cid, local:local})
+      await client.call('dGitProvider', 'import' as any, {cid:cid, local:local})
       loaderservice.setLoading(false)
       //await fileservice.syncToBrowser();
       await fileservice.syncStart()

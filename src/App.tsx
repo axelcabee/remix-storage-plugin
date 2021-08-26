@@ -38,6 +38,7 @@ import { ImportHelp } from "./components/Import/ImportHelp";
 import { ConfigHelp } from "./components/IPFS/ConfigHelp";
 import { devutils } from "./components/Utils";
 import { PinataConfig } from "./components/IPFS/PinataConfig";
+import { GitHubImporter } from "./components/github/github";
 
 export const Utils:devutils = new devutils();
 
@@ -143,6 +144,9 @@ function App() {
             <Tab className="mt-4 ml-1" eventKey="git" title="GIT">
               <GitControls />
               <GitHelp/>
+            </Tab>
+            <Tab className="mt-4 ml-1" eventKey="github" title="GITHUB">
+                <GitHubImporter/>
             </Tab>
             <Tab className="mt-4 ml-1" eventKey="export" title="EXPORT">
               <IPFSView />

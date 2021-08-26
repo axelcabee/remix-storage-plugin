@@ -5,8 +5,10 @@ import { Accordion, Alert, Button, Card } from "react-bootstrap";
 import { useBehaviorSubject } from "../usesubscribe/index";
 import { client, ipfservice, loaderservice } from "../../App";
 import ConfirmDelete from "../ConfirmDelete";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import dateFormat from "dateformat";
+import { toast } from "react-toastify";
 
 interface PinataImportProps {}
 
@@ -288,12 +290,22 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                     import
                   </button>
                   {getViewButton(o.ipfs_pin_hash)}
+                  
                   <button
                     onClick={async () => await deleteItem(o.ipfs_pin_hash)}
                     className="btn btn-danger btn-sm delete3b-btn"
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
+                  <br></br>
+                  <CopyToClipboard
+            text={o.ipfs_pin_hash}
+            onCopy={() => {
+              toast.success("Copied to clipboard.");
+            }}
+          >
+            <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy hash to clipboard</button>
+          </CopyToClipboard>
                 </div>
               </div>
             );

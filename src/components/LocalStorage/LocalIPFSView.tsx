@@ -5,6 +5,8 @@ import { Card } from "react-bootstrap";
 import { useBehaviorSubject } from "../usesubscribe/index";
 import { ipfservice, localipfsstorage, Utils } from "../../App";
 import ConfirmDelete from "../ConfirmDelete";
+import CopyToClipboard from "react-copy-to-clipboard";
+import { toast } from "react-toastify";
 
 interface LocalIPFSViewProps {}
 
@@ -116,6 +118,15 @@ export const LocalIPFSView: React.FC<LocalIPFSViewProps> = ({}) => {
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
+                <br></br>
+                  <CopyToClipboard
+            text={o.cid || ""}
+            onCopy={() => {
+              toast.success("Copied to clipboard.");
+            }}
+          >
+            <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy hash to clipboard</button>
+          </CopyToClipboard>
               </div>
             </div>
           );

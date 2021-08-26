@@ -36,11 +36,11 @@ export class gitService {
             status.map(([filepath, , worktreeStatus]) =>
               worktreeStatus
                 ? client.call("dGitProvider", "add", {
-                    filepath: removeSlash(filepath),
-                  })
+                  filepath: removeSlash(filepath),
+                })
                 : client.call("dGitProvider", "rm", {
-                    filepath: removeSlash(filepath),
-                  })
+                  filepath: removeSlash(filepath),
+                })
             )
           )
         );
@@ -69,7 +69,7 @@ export class gitService {
             await client.call("dGitProvider", "add", {
               filepath: removeSlash(filepath),
             });
-          } catch (e) {}
+          } catch (e) { }
         }
         await fileservice.showFiles();
         toast.success(`Added ${filename}`);
@@ -124,7 +124,7 @@ export class gitService {
       }
   }
 
-  async checkout(cmd :any) {
+  async checkout(cmd: any) {
     toast.dismiss();
     await client.disableCallBacks();
     try {
@@ -226,8 +226,8 @@ export class gitService {
     // }
     const sha = await client.call("dGitProvider", "commit", {
       author: {
-        name: "Remix Workspace",
-        email: "",
+        name: localStorage.getItem('GITHUB_NAME') || 'Remix Workspace',
+        email: localStorage.getItem('GITHUB_EMAIL'),
       },
       message: message,
     });
@@ -273,6 +273,51 @@ export class gitService {
       };
     });
     return result;
+  }
+
+  async clone(url: string, branch: string, token: string) {
+    try {
+      await client.disableCallBacks()
+      await client.call("dGitProvider", "clone" as any, { url, branch, token });
+      await client.enableCallBacks()
+      await fileservice.syncFromBrowser(false)
+      toast.success("Cloned")
+    } catch (e) {
+      toast.error(e.message)
+    }
+  }
+
+  async push(url: string, branch: string, token: string, force: boolean, name: string, email: string) {
+    try {
+      const result = await client.call("dGitProvider", "push" as any, { url, branch, token, force, name, email });
+      toast.success("Pushed")
+    } catch (e) {
+      toast.error(e.message)
+    }
+  }
+
+  async pull(url: string, branch: string, token: string,name: string, email: string) {
+    try {
+      await client.disableCallBacks()
+      await client.call("dGitProvider", "pull" as any, { url, branch, token, name, email });
+      await client.enableCallBacks()
+      await fileservice.syncFromBrowser(false)
+      toast.success("Pulled")
+    } catch (e) {
+      toast.error(e.message)
+    }
+  }
+
+  async fetch(url: string, branch: string, token: string, name: string, email: string) {
+    try {
+      await client.disableCallBacks()
+      await client.call("dGitProvider", "fetch" as any, { url, branch, token, name, email });
+      await client.enableCallBacks()
+      await fileservice.syncFromBrowser(false)
+      toast.success("Fetched")
+    } catch (e) {
+      toast.error(e.message)
+    }
   }
 
   async getStatusMatrixFiles() {
@@ -335,7 +380,7 @@ export class gitService {
     this.diffResult.next(diffs);
   }
 
-  async zip(){
+  async zip() {
     await client.call(
       "dGitProvider",
       "zip"
@@ -351,7 +396,7 @@ export class gitService {
       const commitOid = await client.call(
         "dGitProvider",
         "resolveref",
-        {ref:"HEAD"}
+        { ref: "HEAD" }
       );
 
       const { blob } = await client.call("dGitProvider", "readblob", {
