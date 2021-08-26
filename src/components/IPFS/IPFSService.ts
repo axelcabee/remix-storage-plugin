@@ -135,7 +135,9 @@ export class IPFSService {
     } catch (e) {
       loaderservice.setLoading(false)
       await client.enableCallBacks()
-      toast.error("This IPFS hash is probably not correct....",{autoClose:false});
+      console.log(e.message)
+      toast.error(e.message,{autoClose:false});
+      toast.error('Sometimes the IPFS data is not yet available. Please try again later.',{autoClose:false});
     }
     
   }
