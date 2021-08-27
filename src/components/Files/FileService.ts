@@ -164,18 +164,18 @@ export class LsFileService {
     //$('#files').show()
     //$('#diff-container').hide()
     let files = await gitservice.getStatusMatrixFiles(); //await this.getDirectory("/");
-    Utils.log("start get files");
-    Utils.log("matrix files", files);
+    //Utils.log("start get files");
+    //Utils.log("matrix files", files);
     let filesinbrowser = await this.getDirectoryFromIde("/");
     //Utils.log("get matrix result", files, filesinbrowser);
 
     try {
       await this.getFileStatusMatrix();
-      Utils.log("files", files);
+      //Utils.log("files", files);
       let jsonfiles = await jsonObjectFromFileList(
         arrayUnique(filesinbrowser.concat(files))
       );
-      Utils.log("json files", jsonfiles);
+      //Utils.log("json files", jsonfiles);
       this.filetreecontent.next(jsonfiles);
     } catch (e) {
       //Utils.log(e);
@@ -185,6 +185,12 @@ export class LsFileService {
     } catch (e) {}
     try {
       await gitservice.getBranches();
+    } catch (e) {}
+    try {
+      await gitservice.getRemotes();
+    } catch (e) {}
+    try {
+      await gitservice.getStorageUsed();
     } catch (e) {}
     await gitservice.checkForFilesCommmited();
     return true;

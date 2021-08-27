@@ -1,5 +1,5 @@
 import git, { ReadCommitResult } from "isomorphic-git";
-import { client, fileservice, Utils } from "../../App";
+import { client, fileservice, loaderservice, Utils } from "../../App";
 import { toast } from "react-toastify";
 import path from "path";
 import { removeSlash } from "../Files/utils";
@@ -15,11 +15,13 @@ export interface diffObject {
 export class gitService {
   commits = new BehaviorSubject<ReadCommitResult[] | undefined>(undefined);
   branch = new BehaviorSubject<string>("");
-  branches = new BehaviorSubject<string[] | undefined>(undefined);
+  branches = new BehaviorSubject<any[] | undefined>(undefined);
+  remotes = new BehaviorSubject<any[] | undefined>(undefined);
   diffResult = new BehaviorSubject<diffObject[] | undefined>(undefined);
   reponameSubject = new BehaviorSubject<string>("");
   canCommit = new BehaviorSubject<boolean>(true);
   canExport = new BehaviorSubject<boolean>(false);
+  storageUsed = new BehaviorSubject<string>("");
   reponame = "";
 
   async init() {
@@ -237,8 +239,17 @@ export class gitService {
   }
 
   async getBranches() {
-    let branches: string[] = await client.call("dGitProvider", "branches");
+    let branches: any[] = await client.call("dGitProvider", "branches");
     this.branches.next(branches);
+  }
+  async getRemotes() {
+    let remotes: any = await client.call("dGitProvider", "remotes" as any);
+    this.remotes.next(remotes || []);
+  }
+
+  async getStorageUsed() {
+    let storage: string = await client.call("dGitProvider", "localStorageUsed" as any);
+    this.storageUsed.next(storage);
   }
 
   async getCommitFromRef(ref: string) {
@@ -275,49 +286,83 @@ export class gitService {
     return result;
   }
 
-  async clone(url: string, branch: string, token: string) {
+  async clone(url: string, branch: string, token: string, depth: number, singleBranch: boolean) {
+    loaderservice.setLoading(true)
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "clone" as any, { url, branch, token });
+      await client.call("dGitProvider", "clone" as any, { url, branch, token, depth, singleBranch });
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Cloned")
     } catch (e) {
       toast.error(e.message)
     }
+    loaderservice.setLoading(false)
   }
 
-  async push(url: string, branch: string, token: string, force: boolean, name: string, email: string) {
+
+
+  async addRemote(remote: string, url: string) {
+    loaderservice.setLoading(true)
     try {
-      const result = await client.call("dGitProvider", "push" as any, { url, branch, token, force, name, email });
+      await client.call("dGitProvider", "addremote" as any, { remote, url });
+      toast.success("Remote added")
+    } catch (e) {
+      toast.error("Please init your repo first...")
+    }
+    loaderservice.setLoading(false)
+  }
+
+  async delRemote(remote: string) {
+    loaderservice.setLoading(true)
+    try {
+      await client.call("dGitProvider", "delremote" as any, { remote });
+      toast.success("Remote removed")
+    } catch (e) {
+      toast.error(e.message)
+    }
+    loaderservice.setLoading(false)
+  }
+
+  async push(remote: string, ref: string, remoteRef: string, token: string, force: boolean, name: string, email: string) {
+    loaderservice.setLoading(true)
+    try {
+      const result = await client.call("dGitProvider", "push" as any, { remote, ref, remoteRef, token, force, name, email });
+      
       toast.success("Pushed")
     } catch (e) {
       toast.error(e.message)
     }
+    loaderservice.setLoading(false)
   }
 
-  async pull(url: string, branch: string, token: string,name: string, email: string) {
+  async pull(remote: string, ref: string, remoteRef: string, token: string,name: string, email: string) {
+    loaderservice.setLoading(true)
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "pull" as any, { url, branch, token, name, email });
+      await client.call("dGitProvider", "pull" as any, { remote, ref, remoteRef, token, name, email });
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Pulled")
     } catch (e) {
+      await client.enableCallBacks()
       toast.error(e.message)
     }
+    loaderservice.setLoading(false)
   }
 
-  async fetch(url: string, branch: string, token: string, name: string, email: string) {
+  async fetch(remote: string, ref: string, remoteRef: string, token: string, name: string, email: string) {
+    loaderservice.setLoading(true)
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "fetch" as any, { url, branch, token, name, email });
+      await client.call("dGitProvider", "fetch" as any, { remote, ref, remoteRef, token, name, email });
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Fetched")
     } catch (e) {
       toast.error(e.message)
     }
+    loaderservice.setLoading(false)
   }
 
   async getStatusMatrixFiles() {

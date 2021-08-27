@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import "./App.css";
-import { Container, Tabs, Tab } from "react-bootstrap";
+import { Container, Tabs, Tab, ProgressBar } from "react-bootstrap";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -84,9 +84,12 @@ function App() {
   );
   const [canLoad, setCanLoad] = useState<boolean>(false);
   const repoName = useBehaviorSubject(gitservice.reponameSubject);
+  const storageUsed = useBehaviorSubject(gitservice.storageUsed);
   const canCommit = useBehaviorSubject(gitservice.canCommit);
   const canUseApp = useBehaviorSubject(fileservice.canUseApp);
   const [confirmShow, setConfirmShow] = React.useState(false);
+
+  const maxStorage:number = 10000;
 
   gitservice.reponameSubject.subscribe((x) => {}).unsubscribe();
   gitservice.canCommit.subscribe((x) => {}).unsubscribe();
@@ -101,6 +104,14 @@ function App() {
       //loaderservice.setLoading(false);
     }
   };
+
+  const storageVariant = () =>{
+    const percentageUsed = parseFloat(storageUsed || '0')/maxStorage * 100
+    let variant = 'success'
+    if(percentageUsed > 50) variant ='warning'
+    if(percentageUsed > 80) variant ='danger'
+    return variant
+  }
 
   useEffect(() => {
       resetFileSystem(false).then((x) => setCanLoad(x));
@@ -118,8 +129,8 @@ function App() {
             <></>
           )}
           <FontAwesomeIcon icon={faExclamationTriangle}></FontAwesomeIcon><a className='small pl-2' href='https://github.com/bunsenstraat/remix-storage-plugin/issues' target='_blank'>Submit issues</a>
-          <div className="nav navbar bg-light p-3"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName}</div></div>
-          
+          <div className="nav navbar bg-light p-3"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName} | storage: {storageUsed}KB / 10000KB</div></div>
+          <ProgressBar variant={storageVariant()} label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000}  />
           <GitStatus></GitStatus>
           <br></br>
           {canCommit ? (

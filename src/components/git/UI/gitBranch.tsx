@@ -31,10 +31,11 @@ export const GitBranch: React.FC<gitBranchProps> = ({}) => {
       //Utils.log(branch);
     })
     .unsubscribe();
-  const checkout = async (oid: string) => {
+  const checkout = async (oid: string, remote: string | 'origin') => {
     try {
       await ModalRef.current?.show();
-      gitservice.checkout({ref:oid});
+      let cmd = {ref:oid, remote:remote}
+      gitservice.checkout(cmd);
       //Utils.log("yes");
     } catch (e) {
       //Utils.log("no");
@@ -58,14 +59,14 @@ export const GitBranch: React.FC<gitBranchProps> = ({}) => {
         <Alert className="w-50" variant="success">
           {branch}
         </Alert>
-        {branches?.map((branch) => {
+        {branches?.map((branch, index) => {
           return (
-            <div key={branch} className="row p-1">
-              <div className="col-2">{branch}</div>
+            <div key={index} className="row p-1">
+              <div className="col-2">{branch.name} on {branch.remote || 'local'}</div>
               <div className="col">
                 <span className="float-right">
                   <div
-                    onClick={async () => await checkout(branch)}
+                    onClick={async () => await checkout(branch.name, branch.remote)}
                     className="btn btn-primary btn-sm checkout-btn"
                   >
                     checkout
