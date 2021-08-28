@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
-import { Container, Tabs, Tab, ProgressBar, Accordion, useAccordionButton } from "react-bootstrap";
+import { Container, Tabs, Tab, ProgressBar, Accordion, Card, AccordionContext, Button } from "react-bootstrap";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -29,7 +29,7 @@ import { IPFSConfig } from "./components/IPFS/IPFSConfig";
 import { GitStatus } from "./components/git/UI/gitStatus";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle, faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { FileHelp } from "./components/Files/FileHelp";
 import { GitHelp } from "./components/git/UI/GitHelp";
 import { ExportHelp } from "./components/IPFS/ExportHelp";
@@ -39,6 +39,9 @@ import { devutils } from "./components/Utils";
 import { PinataConfig } from "./components/IPFS/PinataConfig";
 import { GitHubImporter } from "./components/github/github";
 import { CompactExplorer } from "./components/Files/CompactExplorer";
+import { GitBranch } from "./components/git/UI/gitBranch";
+import { GitLog } from "./components/git/UI/gitLog";
+
 
 export const Utils: devutils = new devutils();
 
@@ -88,6 +91,7 @@ function App() {
   const canCommit = useBehaviorSubject(gitservice.canCommit);
   const canUseApp = useBehaviorSubject(fileservice.canUseApp);
   const [confirmShow, setConfirmShow] = React.useState(false);
+  const [compact, setCompact] = useState<boolean>(false)
 
   const maxStorage: number = 10000;
 
@@ -114,27 +118,40 @@ function App() {
   }
 
   useEffect(() => {
+    console.log(window.location.href)
+    if (window.location.href.includes('compact')) {
+      setCompact(true)
+    }
     resetFileSystem(false).then((x) => setCanLoad(x));
   }, []);
 
-  function CustomToggle(ob:any) {
-    const decoratedOnClick = useAccordionButton(ob.eventKey, () =>
-      console.log('totally custom!'),
-    );
-  
+  function CustomToggle(ob: any) {
+
+    const currentEventKey = useContext(AccordionContext);
+    const isCurrentEventKey = currentEventKey === ob.eventKey
+    const decoratedOnClick = () => {
+      
+    };
+
+
     return (
       <>
-      <button
-        type="button"
-        className='btn btn-sm'
-        onClick={decoratedOnClick}
-      >
-        {ob.children}
-      </button><hr></hr>
+        <div onClick={decoratedOnClick} className='w-100 list-group-item pointer'>
+          <Accordion.Toggle eventKey={ob.eventKey}
+            as={Button}
+            variant="link"
+          >
+            {ob.children}
+          </Accordion.Toggle>
+          {
+            isCurrentEventKey ? <FontAwesomeIcon className='ml-2' icon={faCaretUp}></FontAwesomeIcon> : <FontAwesomeIcon className='ml-2' icon={faCaretDown}></FontAwesomeIcon>
+          }
+        </div>
+        <hr></hr>
       </>
     );
   }
-  
+
 
   return (
     <div className="App">
@@ -160,53 +177,73 @@ function App() {
             </div>
           )}
           <ToastContainer position="top-right" />
-          <Accordion defaultActiveKey="0">
-              <CustomToggle eventKey="0">FILES</CustomToggle>
-              <Accordion.Collapse eventKey="0">
-                <CompactExplorer/>
-              </Accordion.Collapse>
-              <CustomToggle eventKey="1">GITHUB</CustomToggle>
-              <Accordion.Collapse eventKey="1">
-                <GitHubImporter/>
-              </Accordion.Collapse>
-          </Accordion>
+          {compact ?
 
-          {/*           <Tabs
-            activeKey={activeKey}
-            onSelect={async (k) => await setTab(k || "files")}
-          >
-            <Tab className="mt-4 ml-1" eventKey="files" title="FILES">
-              <FileExplorer setTab={setTab} />
-              <FileTools/>
-              <FileHelp/>
-            </Tab>
-            <Tab className="mt-4 ml-1" eventKey="git" title="GIT">
-              <GitControls />
-              <GitHelp/>
-            </Tab>
-            <Tab className="mt-4 ml-1" eventKey="github" title="GITHUB">
-                <GitHubImporter/>
-            </Tab>
-            <Tab className="mt-4 ml-1" eventKey="export" title="EXPORT">
-              <IPFSView />
-              <ExportHelp/>
-            </Tab>
-            <Tab className="mt-4 ml-1" eventKey="import" title="IMPORT">
-              <Importer />
-              <ImportHelp></ImportHelp>
-            </Tab>
-            <Tab className="mt-4 ml-1" eventKey="diff" title="DIFF">
-              <DiffView />
-            </Tab>
-            <Tab className="mt-4 ml-1" eventKey="config" title="SETTINGS">
-              <PinataConfig></PinataConfig>
-              <IPFSConfig />
-              <ConfigHelp/>
-            </Tab>
-            <Tab className="mt-4 ml-1" eventKey="help" title="HELP">
-              <Help />
-            </Tab>
-          </Tabs> */}
+            <Accordion defaultActiveKey="0">
+              <CustomToggle eventKey="0">Files</CustomToggle>
+              <Accordion.Collapse eventKey="0">
+                <>
+                  <GitControls compact={true} />
+                  <CompactExplorer />
+                  <hr></hr>
+                </>
+              </Accordion.Collapse>
+              <CustomToggle eventKey="1">GitHub</CustomToggle>
+              <Accordion.Collapse eventKey="1">
+                <GitHubImporter />
+              </Accordion.Collapse>
+              <CustomToggle eventKey="3">Log</CustomToggle>
+              <Accordion.Collapse eventKey="3">
+                <>
+                  <GitLog /><hr></hr>
+                </>
+              </Accordion.Collapse>
+              <CustomToggle eventKey="2">Branch</CustomToggle>
+              <Accordion.Collapse eventKey="2">
+                <GitBranch />
+              </Accordion.Collapse>
+            </Accordion> :
+
+            <Tabs
+              activeKey={activeKey}
+              onSelect={async (k) => await setTab(k || "files")}
+            >
+              <Tab className="mt-4 ml-1" eventKey="files" title="FILES">
+                <FileExplorer setTab={setTab} />
+                <FileTools />
+                <FileHelp />
+              </Tab>
+              <Tab className="mt-4 ml-1" eventKey="git" title="GIT">
+                <GitControls compact={false} />
+                <br /><hr />
+                <GitLog />
+                <br /><hr />
+                <GitBranch />
+                <GitHelp />
+              </Tab>
+              <Tab className="mt-4 ml-1" eventKey="github" title="GITHUB">
+                <GitHubImporter />
+              </Tab>
+              <Tab className="mt-4 ml-1" eventKey="export" title="EXPORT">
+                <IPFSView />
+                <ExportHelp />
+              </Tab>
+              <Tab className="mt-4 ml-1" eventKey="import" title="IMPORT">
+                <Importer />
+                <ImportHelp></ImportHelp>
+              </Tab>
+              <Tab className="mt-4 ml-1" eventKey="diff" title="DIFF">
+                <DiffView />
+              </Tab>
+              <Tab className="mt-4 ml-1" eventKey="config" title="SETTINGS">
+                <PinataConfig></PinataConfig>
+                <IPFSConfig />
+                <ConfigHelp />
+              </Tab>
+              <Tab className="mt-4 ml-1" eventKey="help" title="HELP">
+                <Help />
+              </Tab>
+            </Tabs>}
         </Container>
       )}
     </div>

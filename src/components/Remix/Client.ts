@@ -11,11 +11,12 @@ export class WorkSpacePlugin extends PluginClient {
   constructor() {
     super();
     createClient(this);
-    toast.info("Connecting to REMIX DGIT2");
+    toast.info("Connecting to REMIX");
     this.methods = ['pull', 'track']
     this.onload().then(async () => {
       //Utils.log("workspace client loaded", this);
       toast.success("Connected to REMIX");
+      console.log(this)
       try {
         await this.call("manager", "activatePlugin", "dGitProvider")
         this.clientLoaded.next(true);
@@ -26,7 +27,7 @@ export class WorkSpacePlugin extends PluginClient {
       }
 
       try {
-        this.call('filePanel', 'registerContextMenuItem', {
+        /* this.call('filePanel', 'registerContextMenuItem', {
           id: 'dgit',
           name: 'track',
           label: 'Track in dGit',
@@ -35,7 +36,7 @@ export class WorkSpacePlugin extends PluginClient {
           path: [],
           pattern: [],
           sticky: true
-        })
+        }) */
       } catch (e) {
 
       }

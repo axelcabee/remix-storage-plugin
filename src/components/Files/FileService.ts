@@ -137,11 +137,11 @@ export class LsFileService {
     Utils.log("file status", this.fileStatusResult);
   }
 
-  getFilesByStatus(status: string) {
+  getFilesCountByStatus(status: string) {
     let count = 0;
     ////Utils.log("STATUS?", status);
     this.fileStatusResult.map((m) => {
-      ////Utils.log("STATUS?", m);
+      Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
         if (m.statusNames?.indexOf(status) > -1) {
           count++;
@@ -150,6 +150,19 @@ export class LsFileService {
       }
     });
     return count;
+  }
+
+  getFilesByStatus(status: string) {
+    let result:any[] = []
+    this.fileStatusResult.map((m) => {
+      Utils.log("STATUS?", m);
+      if (m.statusNames !== undefined) {
+        if (m.statusNames?.indexOf(status) > -1) {
+          result.push(m)
+        }
+      }
+    });
+    return result;
   }
 
   getFileStatusForFile(filename: string) {

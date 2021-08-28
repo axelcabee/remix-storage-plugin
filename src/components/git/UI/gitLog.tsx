@@ -48,12 +48,13 @@ export const GitLog: React.FC<gitLogProps> = ({}) => {
           {commits?.map((commit) => {
             return (
               <div key={commit.oid} className="row p-1">
-                <div className="col-2">{commit.commit.message}</div>
-                <div className="col">{getDate(commit)}</div>
-                <div className="col">{commit.oid}</div>
+                <div className="col-md-2 col-12">{commit.commit.message}</div>
+                <div className="col-md-2 col-12">{commit.commit.author.name || ""}</div>
+                <div className="col-12 col-md-3">{getDate(commit)}</div>
+                <div className="col text-truncate">{commit.oid}</div>
                 <div
                   onClick={async () => await checkout(commit.oid)}
-                  className="btn btn-primary btn-sm checkout-btn"
+                  className="btn btn-primary btn-sm checkout-btn ml-3 ml-md-0"
                 >
                   git checkout
                 </div>
@@ -63,7 +64,7 @@ export const GitLog: React.FC<gitLogProps> = ({}) => {
 
           <div
             onClick={async () => await checkout("main")}
-            className="btn btn-primary btn-sm checkout-btn"
+            className="btn btn-primary btn-sm checkout-btn mt-2"
             data-oid="main"
           >
             git checkout main

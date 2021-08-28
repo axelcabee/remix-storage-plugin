@@ -190,11 +190,11 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <hr></hr>
             <h4>commands</h4>
             <div className='row'>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>LOCAL BRANCH</label>
                     <input name='localbranch' onChange={e => onBranchChange(e.target.value)} value={branch} className="form-control" type="text" id="ipfs" />
                 </div>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>REMOTE BRANCH</label>
                     <input name ='remotebranch' onChange={e => onRemoteBranchChange(e.target.value)} value={remoteBranch} className="form-control" type="text" id="ipfs" />
                 </div></div>
@@ -215,11 +215,11 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <hr></hr>
             <h4>GIT REMOTE</h4>
             <div className='row'>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>NAME</label>
                     <input name='remotename' onChange={e => onRemoteNameChange(e.target.value)} value={remoteName} className="form-control" type="text" id="ipfs" />
                 </div>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>URL</label>
                     <input name='remoteurl' onChange={e => onUrlChange(e.target.value)} value={url} className="form-control" type="text" id="ipfs" />
                 </div>
@@ -232,18 +232,18 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <hr></hr>
             <h4>CLONE</h4>
             <div className='row'>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>URL</label>
                     <input name='cloneurl' onChange={e => onCloneUrlChange(e.target.value)} value={cloneUrl} className="form-control" type="text" id="ipfs" />
                 </div>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>DEPTH **</label>
                     <input name='clonedepth' onChange={e => onDepthChange(parseInt(e.target.value))} value={cloneDepth} className="form-control" type="number" id="ipfs" />
                 </div>
 
             </div>
             <div className='row'>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>CLONE ALL BRANCHES?</label><br></br>
                     <input name='clonallbranches' onChange={e => onAllBranchChange(e)} checked={cloneAllBranches} className="" type="checkbox" id="ipfs" />
                 </div>
@@ -264,11 +264,11 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                 <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy token to clipboard</button>
             </CopyToClipboard>
             <div className='row'>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>NAME</label>
                     <input name='name' onChange={e => onNameChange(e.target.value)} value={name} className="form-control" type="text" id="ipfs" />
                 </div>
-                <div className='col'>
+                <div className='col col-md-6 col-12'>
                     <label>EMAIL</label>
                     <input name='email' onChange={e => onEmailChange(e.target.value)} value={email} className="form-control" type="text" id="ipfs" />
                 </div>
