@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-
+import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
-import { Container, Tabs, Tab, ProgressBar } from "react-bootstrap";
+import { Container, Tabs, Tab, ProgressBar, Accordion, useAccordionButton } from "react-bootstrap";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -39,8 +38,9 @@ import { ConfigHelp } from "./components/IPFS/ConfigHelp";
 import { devutils } from "./components/Utils";
 import { PinataConfig } from "./components/IPFS/PinataConfig";
 import { GitHubImporter } from "./components/github/github";
+import { CompactExplorer } from "./components/Files/CompactExplorer";
 
-export const Utils:devutils = new devutils();
+export const Utils: devutils = new devutils();
 
 export const gitservice: gitService = new gitService();
 export const client: WorkSpacePlugin = new WorkSpacePlugin();
@@ -52,7 +52,7 @@ export const localipfsstorage: LocalIPFSStorage = new LocalIPFSStorage();
 
 export const resetFileSystem = async (wipe: boolean = false) => {
   try {
-    
+
     client.clientLoaded.subscribe(async (load: boolean) => {
       await localipfsstorage.init();
       //if (load) await ipfservice.setipfsHost();
@@ -89,12 +89,12 @@ function App() {
   const canUseApp = useBehaviorSubject(fileservice.canUseApp);
   const [confirmShow, setConfirmShow] = React.useState(false);
 
-  const maxStorage:number = 10000;
+  const maxStorage: number = 10000;
 
-  gitservice.reponameSubject.subscribe((x) => {}).unsubscribe();
-  gitservice.canCommit.subscribe((x) => {}).unsubscribe();
-  loaderservice.loading.subscribe((x) => {}).unsubscribe();
-  fileservice.canUseApp.subscribe((x) => {}).unsubscribe();
+  gitservice.reponameSubject.subscribe((x) => { }).unsubscribe();
+  gitservice.canCommit.subscribe((x) => { }).unsubscribe();
+  loaderservice.loading.subscribe((x) => { }).unsubscribe();
+  fileservice.canUseApp.subscribe((x) => { }).unsubscribe();
 
   const setTab = async (key: string) => {
     setActiveKey(key);
@@ -105,21 +105,40 @@ function App() {
     }
   };
 
-  const storageVariant = () =>{
-    const percentageUsed = parseFloat(storageUsed || '0')/maxStorage * 100
+  const storageVariant = () => {
+    const percentageUsed = parseFloat(storageUsed || '0') / maxStorage * 100
     let variant = 'success'
-    if(percentageUsed > 50) variant ='warning'
-    if(percentageUsed > 80) variant ='danger'
+    if (percentageUsed > 50) variant = 'warning'
+    if (percentageUsed > 80) variant = 'danger'
     return variant
   }
 
   useEffect(() => {
-      resetFileSystem(false).then((x) => setCanLoad(x));
+    resetFileSystem(false).then((x) => setCanLoad(x));
   }, []);
+
+  function CustomToggle(ob:any) {
+    const decoratedOnClick = useAccordionButton(ob.eventKey, () =>
+      console.log('totally custom!'),
+    );
+  
+    return (
+      <>
+      <button
+        type="button"
+        className='btn btn-sm'
+        onClick={decoratedOnClick}
+      >
+        {ob.children}
+      </button><hr></hr>
+      </>
+    );
+  }
+  
 
   return (
     <div className="App">
-      { !canUseApp ? (
+      {!canUseApp ? (
         <LocalHostWarning canLoad={canUseApp} />
       ) : (
         <Container fluid>
@@ -130,7 +149,7 @@ function App() {
           )}
           <FontAwesomeIcon icon={faExclamationTriangle}></FontAwesomeIcon><a className='small pl-2' href='https://github.com/bunsenstraat/remix-storage-plugin/issues' target='_blank'>Submit issues</a>
           <div className="nav navbar bg-light p-3"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName} | storage: {storageUsed}KB / 10000KB</div></div>
-          <ProgressBar variant={storageVariant()} label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000}  />
+          <ProgressBar variant={storageVariant()} label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000} />
           <GitStatus></GitStatus>
           <br></br>
           {canCommit ? (
@@ -141,9 +160,18 @@ function App() {
             </div>
           )}
           <ToastContainer position="top-right" />
-          
-          
-          <Tabs
+          <Accordion defaultActiveKey="0">
+              <CustomToggle eventKey="0">FILES</CustomToggle>
+              <Accordion.Collapse eventKey="0">
+                <CompactExplorer/>
+              </Accordion.Collapse>
+              <CustomToggle eventKey="1">GITHUB</CustomToggle>
+              <Accordion.Collapse eventKey="1">
+                <GitHubImporter/>
+              </Accordion.Collapse>
+          </Accordion>
+
+          {/*           <Tabs
             activeKey={activeKey}
             onSelect={async (k) => await setTab(k || "files")}
           >
@@ -178,7 +206,7 @@ function App() {
             <Tab className="mt-4 ml-1" eventKey="help" title="HELP">
               <Help />
             </Tab>
-          </Tabs>
+          </Tabs> */}
         </Container>
       )}
     </div>
