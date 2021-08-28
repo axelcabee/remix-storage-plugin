@@ -172,11 +172,11 @@ function App() {
           {canCommit ? (
             <></>
           ) : (
-            <div className="alert alert-warning w-25">
+            <div className="alert alert-warning w-md-25 w-100">
               You are in a detached state.<br></br>
             </div>
           )}
-          <ToastContainer position="top-right" />
+          <ToastContainer position={compact? "bottom-right":"top-right"} />
           {compact ?
 
             <Accordion defaultActiveKey="0">

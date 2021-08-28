@@ -73,10 +73,10 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
             });
             row.hasChild = doubles.length > 0
             row.doubles = doubles
-            console.log("DOUBLES OF,,,", oid, tree, doubles)
+            //console.log("DOUBLES OF,,,", oid, tree, doubles)
           }
         }
-        console.log("ROWS", rows);
+        //console.log("ROWS", rows);
         setData(rows);
       } catch (err) {
         console.log(err);

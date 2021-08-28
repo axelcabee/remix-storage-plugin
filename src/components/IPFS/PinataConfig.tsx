@@ -33,7 +33,6 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
     toast.dismiss();
     try {
       let r = await client.call("dGitProvider" as any, "pinList", key, secret);
-      console.log(r);
       setStatus(true);
       ipfservice.pinataConnectionStatus.next(false);
       ipfservice.pinataConnectionStatus.next(true);
