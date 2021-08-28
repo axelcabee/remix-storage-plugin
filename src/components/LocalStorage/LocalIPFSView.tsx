@@ -81,7 +81,7 @@ export const LocalIPFSView: React.FC<LocalIPFSViewProps> = ({}) => {
         {(boxobjects || []).map((o, index) => {
           return (
             <div key={index} className="row p-1">
-              <Card className="w-75">
+              <Card className="w-md-75 w-100">
                 <Card.Body>
                   <h5>{o.key}</h5>
                   <div className="row">

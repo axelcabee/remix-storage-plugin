@@ -75,11 +75,11 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
         Check connection
       </button>
       {status ? (
-        <div className="alert alert-success w-25 mt-2" role="alert">
+        <div className="alert alert-success w-md-25 w-100 mt-2" role="alert">
           Your pinata settings are working correctly.
         </div>
       ) : (
-        <div className="alert alert-warning w-25 mt-2" role="alert">
+        <div className="alert alert-warning w-md-25 w-100 mt-2" role="alert">
           Your pinata settings are incorrect. Unable to connect. Check your
           settings.
         </div>

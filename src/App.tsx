@@ -130,7 +130,7 @@ function App() {
     const currentEventKey = useContext(AccordionContext);
     const isCurrentEventKey = currentEventKey === ob.eventKey
     const decoratedOnClick = () => {
-      
+
     };
 
 
@@ -200,8 +200,25 @@ function App() {
               </Accordion.Collapse>
               <CustomToggle eventKey="2">Branch</CustomToggle>
               <Accordion.Collapse eventKey="2">
-                <GitBranch />
+                <>
+                  <GitBranch /><hr></hr></>
               </Accordion.Collapse>
+              <CustomToggle eventKey="4">Export</CustomToggle>
+              <Accordion.Collapse eventKey="4">
+                <IPFSView />
+              </Accordion.Collapse>
+              <CustomToggle eventKey="5">Import</CustomToggle>
+              <Accordion.Collapse eventKey="5">
+                <Importer />
+              </Accordion.Collapse>
+              <CustomToggle eventKey="6">Settings</CustomToggle>
+              <Accordion.Collapse eventKey="6">
+                <>
+                  <PinataConfig></PinataConfig>
+                  <IPFSConfig />
+                </>
+              </Accordion.Collapse>
+
             </Accordion> :
 
             <Tabs

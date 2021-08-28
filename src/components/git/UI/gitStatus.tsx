@@ -23,8 +23,8 @@ export const GitStatus: React.FC<GitStatusProps> = ({ }) => {
       
       client.onload(() => {
         client.emit('statusChanged', {
-          key: total,
-          type: 'success',
+          key: total===0? 'none':total,
+          type: total===0? '':'success',
           title: 'Git changes'
         })
       })

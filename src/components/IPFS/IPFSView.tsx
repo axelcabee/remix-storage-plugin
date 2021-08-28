@@ -30,7 +30,7 @@ export const IPFSView: React.FC<IPFSViewProps> = () => {
       //Utils.log(ipfservice.cid);
       return (
         <>
-          IPFS Hash: {ipfservice.cid}
+          <div className='overflow-hidden w-100'>IPFS Hash: {ipfservice.cid}</div>
           <br></br>
           <CopyToClipboard
             text={ipfservice.cid}
@@ -89,7 +89,7 @@ export const IPFSView: React.FC<IPFSViewProps> = () => {
       {canExport ? (
         <></>
       ) : (
-        <div className="alert alert-danger w-25 mt-2" role="alert">
+        <div className="alert alert-danger w-md-25 w-100 mt-2" role="alert">
           Commit some files first, then you can export.
         </div>
       )}
@@ -97,14 +97,14 @@ export const IPFSView: React.FC<IPFSViewProps> = () => {
        {PinataStatus ? (
         <></>
       ) : (
-        <div className="alert alert-warning w-25 mt-2" role="alert">
+        <div className="alert alert-warning w-md-25 w-100 mt-2" role="alert">
           Your Pinata API key is incorrect or missing. Unable to connect. Check your
           settings.
         </div>
       )}
       <button
         disabled={(PinataStatus ? false : true) || (canExport ? false : true)}
-        className="btn w-25 btn-primary"
+        className="btn w-md-25 w-100 btn-primary"
         id="main-btn"
         onClick={async () => await addFilesToPinata()}
       >
@@ -115,14 +115,14 @@ export const IPFSView: React.FC<IPFSViewProps> = () => {
       {IPFSStatus ? (
         <></>
       ) : (
-        <div className="alert alert-warning w-25 mt-2" role="alert">
+        <div className="alert alert-warning w-md-25 w-100 mt-2" role="alert">
           Your IPFS settings are incorrect. Unable to connect. Check your
           settings.
         </div>
       )}
       <button
         disabled={(IPFSStatus ? false : true) || (canExport ? false : true)}
-        className="btn w-25 btn-primary"
+        className="btn w-md-25 w-100 btn-primary"
         id="main-btn"
         onClick={async () => await addFilesToIpfs()}
       >

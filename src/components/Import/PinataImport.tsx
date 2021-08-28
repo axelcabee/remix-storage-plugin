@@ -209,7 +209,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
           .map((o: any, index: any) => {
             return (
               <div key={index} className="row p-1">
-                <Card className="w-75">
+                <Card className="w-md-75 w-100">
                   <Card.Body>
                     <h5>{o.metadata.name}</h5>
                     <div className="row">
@@ -263,14 +263,15 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                             {o?.metadata?.keyvalues?.commits.map(
                               (commit: any) => {
                                 return (
+                                  <>
                                   <div className="row">
-                                    <div className="col-6">
+                                    <div className="col-md-6 col-12">
                                       {commit.commit?.message}
                                     </div>
-                                    <div className="col-6">
+                                    <div className="col-md-6 col-12">
                                     { commit.commit?.committer?.timestamp ? <>{getDate(commit.commit?.committer?.timestamp)}</>:<>no date</> }
                                     </div>
-                                  </div>
+                                  </div><hr></hr></>
                                 );
                               }
                             )}
