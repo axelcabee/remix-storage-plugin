@@ -24,6 +24,7 @@ export const fileStatuses = [
   ["deleted", 1, 1, 0], // deleted, staged
   ["unmodified", 1, 1, 3],
   ["deleted,not in git", 0, 0, 3],
+  ["unstaged,modified", 1, 2, 0]
 ];
 
 const statusmatrix: statusMatrix[] = fileStatuses.map((x: any) => {
@@ -38,6 +39,7 @@ export class LsFileService {
   canUseApp = new BehaviorSubject<boolean>(true);
   confirmDeletion = new BehaviorSubject<boolean | undefined>(undefined);
   fileStatusResult: fileStatusResult[] = [];
+
 
   // RESET FUNCTIONS
 
@@ -154,10 +156,25 @@ export class LsFileService {
 
   getFilesByStatus(status: string) {
     let result:any[] = []
+    console.log("FILE STATUS MAP", this.fileStatusResult)
     this.fileStatusResult.map((m) => {
       Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
         if (m.statusNames?.indexOf(status) > -1) {
+          result.push(m)
+        }
+      }
+    });
+    return result;
+  }
+
+  getFilesWithNotModifiedStatus(){
+    let result:any[] = []
+    console.log("FILE STATUS MAP", this.fileStatusResult)
+    this.fileStatusResult.map((m) => {
+      Utils.log("STATUS?", m);
+      if (m.statusNames !== undefined) {
+        if (m.statusNames?.indexOf("unmodified") === -1) {
           result.push(m)
         }
       }
@@ -204,6 +221,9 @@ export class LsFileService {
     } catch (e) {}
     try {
       await gitservice.getStorageUsed();
+    } catch (e) {}
+    try {
+      await gitservice.diffFiles('');
     } catch (e) {}
     await gitservice.checkForFilesCommmited();
     return true;

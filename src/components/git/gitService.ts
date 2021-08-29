@@ -23,6 +23,7 @@ export class gitService {
   canExport = new BehaviorSubject<boolean>(false);
   storageUsed = new BehaviorSubject<string>("");
   reponame = "";
+  fileToDiff:string = ''
 
   async init() {
     await client.call("dGitProvider", "init");
@@ -85,7 +86,7 @@ export class gitService {
     ////Utils.log('RM GIT', $(args[0].currentTarget).data('file'))
     const filename = args; // $(args[0].currentTarget).data('file')
 
-    await client.call("dGitProvider", "add", {
+    await client.call("dGitProvider", "rm", {
       filepath: removeSlash(filename),
     });
     await fileservice.showFiles();
@@ -411,15 +412,18 @@ export class gitService {
     }
   }
 
-  async diffFiles() {
+  async diffFiles(filename:string | undefined) {
     const statuses = fileservice.fileStatusResult;
+    if(this.fileToDiff) filename = this.fileToDiff
     //Utils.log(statuses);
     const diffs: diffObject[] = [];
     for (let i: number = 0; i < statuses.length; i++) {
       if ((statuses[i].statusNames?.indexOf("modified") || false) > -1) {
         //Utils.log(statuses[i].statusNames?.indexOf("modified"));
-        const diff: diffObject = await this.diffFile(statuses[i].filename);
-        diffs.push(diff);
+        if((filename && statuses[i].filename === filename) || !filename){
+          const diff: diffObject = await this.diffFile(statuses[i].filename);
+          diffs.push(diff);
+        }
       }
     }
     this.diffResult.next(diffs);

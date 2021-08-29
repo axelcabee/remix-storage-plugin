@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
-import { Container, Tabs, Tab, ProgressBar, Accordion, Card, AccordionContext, Button } from "react-bootstrap";
+import { Container, Tabs, Tab, ProgressBar, Accordion, Card, AccordionContext, Button, useAccordionToggle } from "react-bootstrap";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
@@ -92,6 +92,7 @@ function App() {
   const canUseApp = useBehaviorSubject(fileservice.canUseApp);
   const [confirmShow, setConfirmShow] = React.useState(false);
   const [compact, setCompact] = useState<boolean>(false)
+  const [diffViewer, setDiffViewer] = useState<boolean>(false)
 
   const maxStorage: number = 10000;
 
@@ -104,7 +105,7 @@ function App() {
     setActiveKey(key);
     if (key == "diff") {
       //loaderservice.setLoading(true);
-      await gitservice.diffFiles();
+      await gitservice.diffFiles('');
       //loaderservice.setLoading(false);
     }
   };
@@ -122,6 +123,9 @@ function App() {
     if (window.location.href.includes('compact')) {
       setCompact(true)
     }
+    if (window.location.href.includes('diff')) {
+      setDiffViewer(true)
+    }
     resetFileSystem(false).then((x) => setCanLoad(x));
   }, []);
 
@@ -129,14 +133,15 @@ function App() {
 
     const currentEventKey = useContext(AccordionContext);
     const isCurrentEventKey = currentEventKey === ob.eventKey
-    const decoratedOnClick = () => {
-
-    };
+    const decoratedOnClick = useAccordionToggle(
+      ob.eventKey,
+      () => ob.callback && ob.callback(ob.eventKey),
+    );
 
 
     return (
       <>
-        <div onClick={decoratedOnClick} className='w-100 list-group-item pointer'>
+        <div onClick={decoratedOnClick} className='w-100 list-group-item p-0 pointer'>
           <Accordion.Toggle eventKey={ob.eventKey}
             as={Button}
             variant="link"
@@ -144,7 +149,7 @@ function App() {
             {ob.children}
           </Accordion.Toggle>
           {
-            isCurrentEventKey ? <FontAwesomeIcon className='ml-2' icon={faCaretUp}></FontAwesomeIcon> : <FontAwesomeIcon className='ml-2' icon={faCaretDown}></FontAwesomeIcon>
+            isCurrentEventKey ? <FontAwesomeIcon className='ml-2 mr-2 mt-2 float-right' icon={faCaretUp}></FontAwesomeIcon> : <FontAwesomeIcon className='ml-2 mr-2 mt-2 float-right' icon={faCaretDown}></FontAwesomeIcon>
           }
         </div>
         <hr></hr>
@@ -158,7 +163,16 @@ function App() {
       {!canUseApp ? (
         <LocalHostWarning canLoad={canUseApp} />
       ) : (
-        <Container fluid>
+        diffViewer? <>
+          <Container fluid>
+            
+            <h4 className='mt-3'>dGit Diff viewer</h4>
+            <DiffView />
+          </Container>
+        
+        </>:
+
+        (<Container fluid>
           {loading ? (
             <Loading loading background="#2ecc71" loaderColor="#3498db" />
           ) : (
@@ -167,8 +181,7 @@ function App() {
           <FontAwesomeIcon icon={faExclamationTriangle}></FontAwesomeIcon><a className='small pl-2' href='https://github.com/bunsenstraat/remix-storage-plugin/issues' target='_blank'>Submit issues</a>
           <div className="nav navbar bg-light p-3"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName} | storage: {storageUsed}KB / 10000KB</div></div>
           <ProgressBar variant={storageVariant()} label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000} />
-          <GitStatus></GitStatus>
-          <br></br>
+          {compact ? <><hr></hr></>:<GitStatus></GitStatus>}
           {canCommit ? (
             <></>
           ) : (
@@ -176,7 +189,7 @@ function App() {
               You are in a detached state.<br></br>
             </div>
           )}
-          <ToastContainer position={compact? "bottom-right":"top-right"} />
+          <ToastContainer position={compact ? "bottom-right" : "top-right"} />
           {compact ?
 
             <Accordion defaultActiveKey="0">
@@ -185,6 +198,8 @@ function App() {
                 <>
                   <GitControls compact={true} />
                   <CompactExplorer />
+                  <hr></hr>
+                  <FileTools />
                   <hr></hr>
                 </>
               </Accordion.Collapse>
@@ -205,7 +220,11 @@ function App() {
               </Accordion.Collapse>
               <CustomToggle eventKey="4">Export</CustomToggle>
               <Accordion.Collapse eventKey="4">
-                <IPFSView />
+                <>
+                  <IPFSView />
+                  <hr></hr>
+                  <FileTools />
+                </>
               </Accordion.Collapse>
               <CustomToggle eventKey="5">Import</CustomToggle>
               <Accordion.Collapse eventKey="5">
@@ -261,7 +280,7 @@ function App() {
                 <Help />
               </Tab>
             </Tabs>}
-        </Container>
+        </Container>)
       )}
     </div>
   );

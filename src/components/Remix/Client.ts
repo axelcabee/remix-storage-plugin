@@ -2,7 +2,7 @@ import { PluginClient } from "@remixproject/plugin";
 import { createClient } from "@remixproject/plugin-webview";
 import { toast } from "react-toastify";
 import { BehaviorSubject } from "rxjs";
-import { fileservice, ipfservice, Utils } from "../../App";
+import { fileservice, gitservice, ipfservice, Utils } from "../../App";
 
 export class WorkSpacePlugin extends PluginClient {
   clientLoaded = new BehaviorSubject(false);
@@ -12,7 +12,7 @@ export class WorkSpacePlugin extends PluginClient {
     super();
     createClient(this);
     toast.info("Connecting to REMIX");
-    this.methods = ['pull', 'track']
+    this.methods = ['pull', 'track', 'diff']
     this.onload().then(async () => {
       //Utils.log("workspace client loaded", this);
       toast.success("Connected to REMIX");
@@ -43,6 +43,11 @@ export class WorkSpacePlugin extends PluginClient {
 
     });
 
+  }
+
+  async diff(filename:string){
+    gitservice.fileToDiff = filename
+    await gitservice.diffFiles(filename)
   }
 
   async track(item: any) {
