@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useBehaviorSubject } from "../usesubscribe/index";
-import { fileservice, gitservice, Utils } from "../../App";
+import { client, fileservice, gitservice, Utils } from "../../App";
 import path from 'path'
 import { Col, Row } from "react-bootstrap";
-import { faArrowCircleLeft, faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
+import { faUndo, faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { async } from "rxjs";
 
 interface GitStatusProps {}
 
@@ -14,6 +15,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
   let untracked:any[];
   let deleted:any[];
   let modified:any[];
+  let alltrackedFiles:any[];
   let show = false
   fileservice.filetreecontent
     .subscribe((x) => {
@@ -23,14 +25,27 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
       deleted = fileservice.getFilesByStatus("deleted");
       modified = fileservice.getFilesByStatus("modified");
       show = (deleted.length>0 || staged.length>0 ||  untracked.length>0 || modified.length>0)
-
+      alltrackedFiles = fileservice.getFilesWithNotModifiedStatus();
+      alltrackedFiles = alltrackedFiles.filter((trackedFile) => {
+        return staged.findIndex((stagedFile) => stagedFile.filename === trackedFile.filename) === -1
+      })
+      let total = alltrackedFiles.length
+      
+      client.onload(() => {
+        client.emit('statusChanged', {
+          key: total===0? 'none':total,
+          type: total===0? '':'success',
+          title: 'Git changes'
+        })
+      })
     })
     .unsubscribe();
 
   useEffect(() => {}, []);
 
   function RenderGroups(){
-      const groups = [{name:'Staged', group: staged}, {name:'Untracked',group:untracked},{name:'Modified', group:modified},{name:'Deleted', group:deleted}]
+      //const groups = [{name:'Staged', group: staged}, {name:'Untracked',group:untracked},{name:'Modified', group:modified},{name:'Deleted', group:deleted}]
+      const groups = [{name:'Staged', group: staged}, {name:'Changes', group: alltrackedFiles}]
       return (<>
         {
            groups.map((ob:any)=>{
@@ -46,6 +61,17 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
       </>)
   }
 
+  async function fileClick(file:any){
+    console.log(file)
+    let status = fileservice.getFileStatusForFile(file.filename || "");
+    if(status?.indexOf("modified")  !== -1){
+      await client.call('manager', 'activatePlugin', 'gitdiff')
+      await client.call('gitdiff' as any, 'diff', file.filename)
+    }else{
+      await client.call('fileManager', 'open', file.filename)
+    }
+  }
+
   function RenderFiles(ob:any) {
       console.log('FILES', ob)
       return (<>
@@ -54,11 +80,13 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
                 return (
                     <>
                     <Row className='mb-1'>
-                        <Col className='col-8'>
-                        <div>{path.basename(file.filename)}</div>
+                        <Col className='col-6'>
+                        <div className='pointer' onClick={async() => fileClick(file)}>{path.basename(file.filename)}</div>
                         </Col>
-                        <Col className='col'>
+                        <Col className='col p-0'>
+                          <Row>
                         <RenderButtons File={file} Type={ob.Type}></RenderButtons>
+                        </Row>
                         </Col>
                     </Row>
 
@@ -70,6 +98,19 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
       </>)
   }
 
+  function FunctionStatusIcons(ob:any){
+    let status = ob.status
+    return (<>
+    <Col className='col-2 p-0'>
+    {status?.indexOf("modified")  === -1? <></>: <button  className='btn btn-sm mr-1'>M</button> }
+    {status?.indexOf("untracked")  === -1? <></>: <button  className='btn btn-sm  mr-1'>U</button> }
+    {status?.indexOf("deleted")  === -1? <></>: <button  className='btn btn-sm  mr-1'>D</button> }
+    {status?.indexOf("added")  === -1? <></>: <button  className='btn btn-sm  mr-1'>U</button> }
+    </Col>
+    </>)
+  }
+ 
+
   function RenderButtons(ob:any){   
         let status = fileservice.getFileStatusForFile(ob.File.filename || "");
       if(ob.Type === 'Untracked'){
@@ -79,18 +120,33 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
       }
       if(ob.Type === 'Staged'){
         return <>
-            {status?.indexOf("modified")  === -1? <></>:<button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faArrowCircleLeft} className="" /></button>}
+        <Col className='col-6 p-0'>
+            {status?.indexOf("modified")  === -1? <></>:<button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faUndo} className="" /></button>}
+            </Col>
+            <FunctionStatusIcons status={status}/>
+            
         </>
       }
       if(ob.Type === 'Modified'){
         return <>
             {status?.indexOf("staged")  !== -1? <></>:<button onClick={async () => await gitservice.addToGit(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faPlus} className="" /></button>}
-            <button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faArrowCircleLeft} className="" /></button>
+            <button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faUndo} className="" /></button>
         </>
       }
       if(ob.Type === 'Deleted'){
         return <>
             {status?.indexOf("staged")  !== -1? <></>:<button onClick={async () => await gitservice.gitrm(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faPlus} className="" /></button>}
+        </>
+      }
+      if(ob.Type === 'Changes'){
+        return <>
+            <Col className='col-8 p-0'>
+            {status?.indexOf("modified")  === -1? <></>:<button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faUndo} className="" /></button>}
+            {status?.indexOf("untracked")  === -1? <></>:<button onClick={async () => await gitservice.addToGit(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faPlus} className="" /></button>}
+            {status?.indexOf("deleted")  === -1? <></>:<button onClick={async () => await gitservice.gitrm(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faPlus} className="" /></button>}
+            {status?.indexOf("unstaged")  === -1? <></>:<button onClick={async () => await gitservice.addToGit(ob.File.filename)} className='btn btn-sm btn-primary mr-1'><FontAwesomeIcon icon={faPlus} className="" /></button>}
+            </Col>
+            <FunctionStatusIcons status={status}/>
         </>
       }
       return <></>
@@ -101,7 +157,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
     {show?
     <>
     <div>
-        <button onClick={async () => await gitservice.addAllToGit()} className='btn btn-sm btn-primary'>Add all</button>
+        <button onClick={async () => await gitservice.addAllToGit()} className='btn btn-sm btn-primary'>Stage all</button>
         <hr></hr>
         <RenderGroups></RenderGroups>
     </div></>
