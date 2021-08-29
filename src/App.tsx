@@ -163,124 +163,125 @@ function App() {
       {!canUseApp ? (
         <LocalHostWarning canLoad={canUseApp} />
       ) : (
-        diffViewer? <>
+        diffViewer ? <>
           <Container fluid>
-            
+
             <h4 className='mt-3'>dGit Diff viewer</h4>
             <DiffView />
           </Container>
-        
-        </>:
 
-        (<Container fluid>
-          {loading ? (
-            <Loading loading background="#2ecc71" loaderColor="#3498db" />
-          ) : (
-            <></>
-          )}
-          <FontAwesomeIcon icon={faExclamationTriangle}></FontAwesomeIcon><a className='small pl-2' href='https://github.com/bunsenstraat/remix-storage-plugin/issues' target='_blank'>Submit issues</a>
-          <div className="nav navbar bg-light p-3"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName} | storage: {storageUsed}KB / 10000KB</div></div>
-          <ProgressBar variant={storageVariant()} label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000} />
-          {compact ? <><hr></hr></>:<GitStatus></GitStatus>}
-          {canCommit ? (
-            <></>
-          ) : (
-            <div className="alert alert-warning w-md-25 w-100">
-              You are in a detached state.<br></br>
-            </div>
-          )}
-          <ToastContainer position={compact ? "bottom-right" : "top-right"} />
-          {compact ?
+        </> :
 
-            <Accordion defaultActiveKey="0">
-              <CustomToggle eventKey="0">Files</CustomToggle>
-              <Accordion.Collapse eventKey="0">
-                <>
+          (<Container fluid>
+            {loading ? (
+              <Loading loading background="#2ecc71" loaderColor="#3498db" />
+            ) : (
+              <></>
+            )}
+            <FontAwesomeIcon icon={faExclamationTriangle}></FontAwesomeIcon><a className='small pl-2' href='https://github.com/bunsenstraat/remix-storage-plugin/issues' target='_blank'>Submit issues</a>
+            <div className="nav navbar bg-light p-3"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName} | storage: {storageUsed}KB / 10000KB</div></div>
+            <ProgressBar variant={storageVariant()} label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000} />
+            {compact ? <><hr></hr></> : <GitStatus></GitStatus>}
+            {canCommit ? (
+              <></>
+            ) : (
+              <div className="alert alert-warning w-md-25 w-100">
+                You are in a detached state.<br></br>
+              </div>
+            )}
+            <ToastContainer position={compact ? "bottom-right" : "top-right"} />
+            {compact ?
+
+              <Accordion defaultActiveKey="0">
+                <CustomToggle eventKey="0">Files</CustomToggle>
+                <Accordion.Collapse eventKey="0">
+                  <>
+                    <GitControls compact={true} />
+                    <CompactExplorer />
+                    <hr></hr>
+                    <FileTools />
+                    <hr></hr>
+                  </>
+                </Accordion.Collapse>
+                <CustomToggle eventKey="1">GitHub</CustomToggle>
+                <Accordion.Collapse eventKey="1">
+                  <GitHubImporter />
+                </Accordion.Collapse>
+                <CustomToggle eventKey="3">Log</CustomToggle>
+                <Accordion.Collapse eventKey="3">
+                  <>
+                    <GitLog /><hr></hr>
+                  </>
+                </Accordion.Collapse>
+                <CustomToggle eventKey="2">Branch</CustomToggle>
+                <Accordion.Collapse eventKey="2">
+                  <>
+                    <GitBranch /><hr></hr></>
+                </Accordion.Collapse>
+                <CustomToggle eventKey="4">Export</CustomToggle>
+                <Accordion.Collapse eventKey="4">
+                  <>
+                    <IPFSView />
+                    <hr></hr>
+                    <FileTools />
+                  </>
+                </Accordion.Collapse>
+                <CustomToggle eventKey="5">Import</CustomToggle>
+                <Accordion.Collapse eventKey="5">
+                  <Importer />
+                </Accordion.Collapse>
+                <CustomToggle eventKey="6">Settings</CustomToggle>
+                <Accordion.Collapse eventKey="6">
+                  <>
+                    <PinataConfig></PinataConfig>
+                    <IPFSConfig />
+                  </>
+                </Accordion.Collapse>
+
+              </Accordion> :
+
+              <Tabs
+                activeKey={activeKey}
+                onSelect={async (k) => await setTab(k || "files")}
+              >
+                <Tab className="mt-4 ml-1" eventKey="files" title="FILES">
                   <GitControls compact={true} />
                   <CompactExplorer />
-                  <hr></hr>
                   <FileTools />
-                  <hr></hr>
-                </>
-              </Accordion.Collapse>
-              <CustomToggle eventKey="1">GitHub</CustomToggle>
-              <Accordion.Collapse eventKey="1">
-                <GitHubImporter />
-              </Accordion.Collapse>
-              <CustomToggle eventKey="3">Log</CustomToggle>
-              <Accordion.Collapse eventKey="3">
-                <>
-                  <GitLog /><hr></hr>
-                </>
-              </Accordion.Collapse>
-              <CustomToggle eventKey="2">Branch</CustomToggle>
-              <Accordion.Collapse eventKey="2">
-                <>
-                  <GitBranch /><hr></hr></>
-              </Accordion.Collapse>
-              <CustomToggle eventKey="4">Export</CustomToggle>
-              <Accordion.Collapse eventKey="4">
-                <>
+                  <FileHelp />
+                </Tab>
+                <Tab className="mt-4 ml-1" eventKey="git" title="GIT">
+                  <GitControls compact={false} />
+                  <br /><hr />
+                  <GitLog />
+                  <br /><hr />
+                  <GitBranch />
+                  <GitHelp />
+                </Tab>
+                <Tab className="mt-4 ml-1" eventKey="github" title="GITHUB">
+                  <GitHubImporter />
+                </Tab>
+                <Tab className="mt-4 ml-1" eventKey="export" title="EXPORT">
                   <IPFSView />
-                  <hr></hr>
-                  <FileTools />
-                </>
-              </Accordion.Collapse>
-              <CustomToggle eventKey="5">Import</CustomToggle>
-              <Accordion.Collapse eventKey="5">
-                <Importer />
-              </Accordion.Collapse>
-              <CustomToggle eventKey="6">Settings</CustomToggle>
-              <Accordion.Collapse eventKey="6">
-                <>
+                  <ExportHelp />
+                </Tab>
+                <Tab className="mt-4 ml-1" eventKey="import" title="IMPORT">
+                  <Importer />
+                  <ImportHelp></ImportHelp>
+                </Tab>
+                <Tab className="mt-4 ml-1" eventKey="diff" title="DIFF">
+                  <DiffView />
+                </Tab>
+                <Tab className="mt-4 ml-1" eventKey="config" title="SETTINGS">
                   <PinataConfig></PinataConfig>
                   <IPFSConfig />
-                </>
-              </Accordion.Collapse>
-
-            </Accordion> :
-
-            <Tabs
-              activeKey={activeKey}
-              onSelect={async (k) => await setTab(k || "files")}
-            >
-              <Tab className="mt-4 ml-1" eventKey="files" title="FILES">
-                <CompactExplorer />
-                <FileTools />
-                <FileHelp />
-              </Tab>
-              <Tab className="mt-4 ml-1" eventKey="git" title="GIT">
-                <GitControls compact={false} />
-                <br /><hr />
-                <GitLog />
-                <br /><hr />
-                <GitBranch />
-                <GitHelp />
-              </Tab>
-              <Tab className="mt-4 ml-1" eventKey="github" title="GITHUB">
-                <GitHubImporter />
-              </Tab>
-              <Tab className="mt-4 ml-1" eventKey="export" title="EXPORT">
-                <IPFSView />
-                <ExportHelp />
-              </Tab>
-              <Tab className="mt-4 ml-1" eventKey="import" title="IMPORT">
-                <Importer />
-                <ImportHelp></ImportHelp>
-              </Tab>
-              <Tab className="mt-4 ml-1" eventKey="diff" title="DIFF">
-                <DiffView />
-              </Tab>
-              <Tab className="mt-4 ml-1" eventKey="config" title="SETTINGS">
-                <PinataConfig></PinataConfig>
-                <IPFSConfig />
-                <ConfigHelp />
-              </Tab>
-              <Tab className="mt-4 ml-1" eventKey="help" title="HELP">
-                <Help />
-              </Tab>
-            </Tabs>}
-        </Container>)
+                  <ConfigHelp />
+                </Tab>
+                <Tab className="mt-4 ml-1" eventKey="help" title="HELP">
+                  <Help />
+                </Tab>
+              </Tabs>}
+          </Container>)
       )}
     </div>
   );
