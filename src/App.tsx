@@ -245,7 +245,7 @@ function App() {
               onSelect={async (k) => await setTab(k || "files")}
             >
               <Tab className="mt-4 ml-1" eventKey="files" title="FILES">
-                <FileExplorer setTab={setTab} />
+                <CompactExplorer />
                 <FileTools />
                 <FileHelp />
               </Tab>
