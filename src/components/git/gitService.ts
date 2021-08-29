@@ -190,7 +190,7 @@ export class gitService {
         this.branch.next(`HEAD detached at ${currentcommitoid}`);
         this.canCommit.next(false);
       } else {
-        this.branch.next(`Branch is: ${branch} at commit ${currentcommitoid}`);
+        this.branch.next(`Current branch: ${branch}`);
         this.canCommit.next(true);
       }
     } catch (e) {

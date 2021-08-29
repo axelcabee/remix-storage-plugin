@@ -218,7 +218,7 @@ function App() {
                   <>
                     <GitBranch /><hr></hr></>
                 </Accordion.Collapse>
-                <CustomToggle eventKey="4">Export</CustomToggle>
+                <CustomToggle eventKey="4">IPFS Export</CustomToggle>
                 <Accordion.Collapse eventKey="4">
                   <>
                     <IPFSView />
@@ -226,11 +226,11 @@ function App() {
                     <FileTools />
                   </>
                 </Accordion.Collapse>
-                <CustomToggle eventKey="5">Import</CustomToggle>
+                <CustomToggle eventKey="5">IPFS Import</CustomToggle>
                 <Accordion.Collapse eventKey="5">
                   <Importer />
                 </Accordion.Collapse>
-                <CustomToggle eventKey="6">Settings</CustomToggle>
+                <CustomToggle eventKey="6">IPFS Settings</CustomToggle>
                 <Accordion.Collapse eventKey="6">
                   <>
                     <PinataConfig></PinataConfig>

@@ -185,7 +185,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
     <>
     
       <h4>Import from Pinata</h4>
-      <Button onClick={async()=> deleteOldItems()} className='mb-2 btn btn-danger'>Remove old commits <FontAwesomeIcon icon={faTrash} /></Button>
+      <Button onClick={async()=> deleteOldItems()} className='mb-2 btn btn-sm btn-danger'>Remove old commits <FontAwesomeIcon icon={faTrash} /></Button>
       <ConfirmDelete
         title={"Importing"}
         text={"This will create a new workspace! Continue?"}
@@ -212,12 +212,12 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                 <Card className="w-md-75 w-100">
                   <Card.Body>
                     <h5>{o.metadata.name}</h5>
-                    <div className="row">
+                    <div className="row d-none">
                       <div className="col">IPFS</div>
                       <div className="col">{o?.ipfs_pin_hash}</div>
                     </div>
-                    <div className="row">
-                      <div className="col">DATE EXPORTED</div>
+                    <div className="row d-none">
+                      <div className="col d-none">DATE EXPORTED</div>
                       <div className="col">
                         {dateFormat(
                           o?.date_pinned,
@@ -226,12 +226,11 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                       </div>
                     </div>
                     <div className="row">
-                      <div className="col">MESSAGE</div>
                       <div className="col">
                         {o?.metadata?.keyvalues?.message}
                       </div>
                     </div>
-                    <div className="row">
+                    <div className="row d-none">
                       <div className="col">OID</div>
                       <div className="col">{o?.metadata?.keyvalues?.ref}</div>
                     </div>
@@ -247,19 +246,20 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                     }
                     </Alert>
                     </>:<></> }
-                    <Accordion>
-                      <Card>
-                        <Card.Header>
+                    <Accordion className='p-0'>
+                      <Card className='p-0'>
+                        <Card.Header className='p-0 pb-1'>
                           <Accordion.Toggle
                             as={Button}
                             variant="link"
                             eventKey="0"
+                            className='p-0'
                           >
                             history
                           </Accordion.Toggle>
                         </Card.Header>
-                        <Accordion.Collapse eventKey="0">
-                          <Card.Body>
+                        <Accordion.Collapse className='p-0' eventKey="0">
+                          <Card.Body className='p-0'>
                             {o?.metadata?.keyvalues?.commits.map(
                               (commit: any) => {
                                 return (
