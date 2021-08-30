@@ -106,21 +106,27 @@ export class WorkSpacePlugin extends PluginClient {
     });
 
     this.on("filePanel", "setWorkspace", async (x: any) => {
-      Utils.log("ws set", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        Utils.log("ws set", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
     this.on("filePanel", "deleteWorkspace", async (x: any) => {
-      Utils.log("wS DELETE", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        Utils.log("wS DELETE", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
     this.on("filePanel", "renameWorkspace", async (x: any) => {
-      Utils.log("wS rn", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        Utils.log("wS rn", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
 
