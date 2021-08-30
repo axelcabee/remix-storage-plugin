@@ -143,7 +143,7 @@ export class LsFileService {
     let count = 0;
     ////Utils.log("STATUS?", status);
     this.fileStatusResult.map((m) => {
-      Utils.log("STATUS?", m);
+      //Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
         if (m.statusNames?.indexOf(status) > -1) {
           count++;
@@ -158,7 +158,7 @@ export class LsFileService {
     let result:any[] = []
     console.log("FILE STATUS MAP", this.fileStatusResult)
     this.fileStatusResult.map((m) => {
-      Utils.log("STATUS?", m);
+      //Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
         if (m.statusNames?.indexOf(status) > -1) {
           result.push(m)
@@ -172,7 +172,7 @@ export class LsFileService {
     let result:any[] = []
     console.log("FILE STATUS MAP", this.fileStatusResult)
     this.fileStatusResult.map((m) => {
-      Utils.log("STATUS?", m);
+      //Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
         if (m.statusNames?.indexOf("unmodified") === -1) {
           result.push(m)

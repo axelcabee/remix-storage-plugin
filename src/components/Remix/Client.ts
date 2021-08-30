@@ -2,7 +2,7 @@ import { PluginClient } from "@remixproject/plugin";
 import { createClient } from "@remixproject/plugin-webview";
 import { toast } from "react-toastify";
 import { BehaviorSubject } from "rxjs";
-import { fileservice, gitservice, ipfservice, Utils } from "../../App";
+import { client, fileservice, gitservice, ipfservice, Utils } from "../../App";
 
 export class WorkSpacePlugin extends PluginClient {
   clientLoaded = new BehaviorSubject(false);
@@ -45,7 +45,7 @@ export class WorkSpacePlugin extends PluginClient {
 
   }
 
-  async diff(filename:string){
+  async diff(filename: string) {
     gitservice.fileToDiff = filename
     await gitservice.diffFiles(filename)
   }
@@ -112,21 +112,28 @@ export class WorkSpacePlugin extends PluginClient {
     });
 
     this.on("filePanel", "setWorkspace", async (x: any) => {
-      Utils.log("ws set", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        console.log("CB EN", client.callBackEnabled)
+        Utils.log("ws set", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
     this.on("filePanel", "deleteWorkspace", async (x: any) => {
-      Utils.log("wS DELETE", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        Utils.log("wS DELETE", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
     this.on("filePanel", "renameWorkspace", async (x: any) => {
-      Utils.log("wS rn", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        Utils.log("wS rn", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
 
@@ -136,9 +143,11 @@ export class WorkSpacePlugin extends PluginClient {
 
 
   async disableCallBacks() {
+    console.log("DISABLE CALLBACK")
     this.callBackEnabled = false;
   }
   async enableCallBacks() {
+    console.log("ENABLE CALLBACK")
     this.callBackEnabled = true;
   }
 }

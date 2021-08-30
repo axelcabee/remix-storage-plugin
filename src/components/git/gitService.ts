@@ -275,6 +275,7 @@ export class gitService {
   }
 
   async statusMatrix(dir: string = "/", ref: string = "HEAD") {
+    if(!client.callBackEnabled) return []
     Utils.log("calll status");
     const matrix = await client.call("dGitProvider", "status", { ref: "HEAD" });
     Utils.log("MATRIX", matrix);

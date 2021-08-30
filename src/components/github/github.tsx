@@ -1,4 +1,4 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, createRef } from "react";
 import { useState } from "react";
@@ -155,15 +155,14 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                 text={"This will create a new workspace! Your repo might be to big and crash the browser! Continue?"}
                 ref={ModalRef}
             ></ConfirmDelete>
-            {name ? <></> :
-                <Alert variant='warning'>You will need to set name and preferrably also a GitHub email in the CONFIG below to push & pull.<br></br>
-                    You can clone now.</Alert>
-            }
+
             {token ? <></> :
-                <Alert variant='warning'>You need to set your GitHub personal token below in the CONFIG to push and pull.<br></br>
-                    Without the token you can only clone.<br></br>
+                <Alert variant='warning'>Missing GitHub personal token. Only cloning available.<br></br>
                     <a href='https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token' target='_blank'>More info on personal access tokens...</a>
                 </Alert>}
+            {name ? <></> :
+                <Alert variant='warning'>Missing GitHub name & email.</Alert>
+            }
             <h4>Available remotes</h4>
             {
                 remotes?.map((remote) => {

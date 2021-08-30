@@ -128,7 +128,9 @@ export class IPFSService {
       return false;
     }
     try {
+      console.log("IMPORT START")
       await client.call('dGitProvider', 'import' as any, {cid:cid, local:local})
+      console.log("IMPORT DONE")
       loaderservice.setLoading(false)
       //await fileservice.syncToBrowser();
       await fileservice.syncStart()
