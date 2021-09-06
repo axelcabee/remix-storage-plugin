@@ -190,7 +190,7 @@ export class gitService {
         this.branch.next(`HEAD detached at ${currentcommitoid}`);
         this.canCommit.next(false);
       } else {
-        this.branch.next(`Current branch: ${branch}`);
+        this.branch.next(branch);
         this.canCommit.next(true);
       }
     } catch (e) {
@@ -275,8 +275,7 @@ export class gitService {
   }
 
   async statusMatrix(dir: string = "/", ref: string = "HEAD") {
-    if(!client.callBackEnabled) return []
-    Utils.log("calll status");
+    Utils.log("call status");
     const matrix = await client.call("dGitProvider", "status", { ref: "HEAD" });
     Utils.log("MATRIX", matrix);
     let result = (matrix || []).map((x) => {

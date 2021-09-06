@@ -32,6 +32,9 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
   const checkconfig = async () => {
     toast.dismiss();
     try {
+      setTimeout(() => {
+        client.cancel('dGitProvider' as any, 'pinList')
+      },3000)
       let r = await client.call("dGitProvider" as any, "pinList", key, secret);
       setStatus(true);
       ipfservice.pinataConnectionStatus.next(false);

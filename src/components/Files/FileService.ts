@@ -57,14 +57,17 @@ export class LsFileService {
 
   async syncStart() {
     //await resetFileSystem();
+    console.log('sync start')
     await this.syncFromBrowser();
     await gitservice.init();
   }
 
   async syncFromBrowser(isLocalhost = false) {
+    loaderservice.setLoading(true)
     await client.disableCallBacks();
     if (isLocalhost) {
       this.canUseApp.next(false);
+      loaderservice.setLoading(false)
       return;
     }
     try {
@@ -156,7 +159,7 @@ export class LsFileService {
 
   getFilesByStatus(status: string) {
     let result:any[] = []
-    console.log("FILE STATUS MAP", this.fileStatusResult)
+    //console.log("FILE STATUS MAP", this.fileStatusResult)
     this.fileStatusResult.map((m) => {
       //Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
@@ -170,7 +173,7 @@ export class LsFileService {
 
   getFilesWithNotModifiedStatus(){
     let result:any[] = []
-    console.log("FILE STATUS MAP", this.fileStatusResult)
+    //console.log("FILE STATUS MAP", this.fileStatusResult)
     this.fileStatusResult.map((m) => {
       //Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
@@ -191,22 +194,23 @@ export class LsFileService {
   }
 
   async showFiles() {
+    loaderservice.setLoading(true)
     //$('#files').show()
     //$('#diff-container').hide()
-    let files = await gitservice.getStatusMatrixFiles(); //await this.getDirectory("/");
+    //let files = await gitservice.getStatusMatrixFiles(); //await this.getDirectory("/");
     //Utils.log("start get files");
     //Utils.log("matrix files", files);
-    let filesinbrowser = await this.getDirectoryFromIde("/");
+    //let filesinbrowser = await this.getDirectoryFromIde("/");
     //Utils.log("get matrix result", files, filesinbrowser);
 
     try {
       await this.getFileStatusMatrix();
       //Utils.log("files", files);
-      let jsonfiles = await jsonObjectFromFileList(
-        arrayUnique(filesinbrowser.concat(files))
-      );
+      //let jsonfiles = await jsonObjectFromFileList(
+      //  arrayUnique(filesinbrowser.concat(files))
+      //);
       //Utils.log("json files", jsonfiles);
-      this.filetreecontent.next(jsonfiles);
+      //this.filetreecontent.next(jsonfiles);
     } catch (e) {
       //Utils.log(e);
     }
@@ -226,6 +230,7 @@ export class LsFileService {
       await gitservice.diffFiles('');
     } catch (e) {}
     await gitservice.checkForFilesCommmited();
+    loaderservice.setLoading(false)
     return true;
   }
 

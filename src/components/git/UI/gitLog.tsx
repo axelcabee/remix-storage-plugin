@@ -23,7 +23,7 @@ export const GitLog: React.FC<gitLogProps> = ({}) => {
   const getDate = (commit: ReadCommitResult) => {
     let date = dateFormat(
       commit.commit.committer.timestamp * 1000,
-      "dddd, mmmm dS, yyyy, h:MM:ss TT"
+      "dddd, mmmm dS, yyyy h:MM:ss TT"
     );
     return date;
   };
@@ -42,29 +42,31 @@ export const GitLog: React.FC<gitLogProps> = ({}) => {
     <>
       <hr />
       <div className={show ? "" : "d-none"}>
-        <h4>Commits</h4>
+
         <ConfirmDelete title={"Checking out"} text={<div>Checking out a commit will delete the files in Remix.<br></br><strong>Check if you have uncommited work.</strong><br></br>Continue?</div>} ref={ModalRef}></ConfirmDelete>
-        <div className="container-fluid">
+        <div className="container-fluid p-0">
+        <h4>Commits</h4>
           {commits?.map((commit) => {
             return (
-              <div key={commit.oid} className="row p-1">
-                <div className="col-md-2 col-12">{commit.commit.message}</div>
-                <div className="col-md-2 col-12">{commit.commit.author.name || ""}</div>
-                <div className="col-12 col-md-3">{getDate(commit)}</div>
-                <div className="col text-truncate">{commit.oid}</div>
+              <div key={commit.oid} className="p-0">
+                <div className="font-weight-bold">{commit.commit.message}</div>
+                <div className="text-muted small">{commit.commit.author.name || ""}</div>
+                <div className="text-muted small">{getDate(commit)}</div>
+                <div className="text-truncate text-muted small">{commit.oid}</div>
                 <div
                   onClick={async () => await checkout(commit.oid)}
-                  className="btn btn-primary btn-sm checkout-btn ml-3 ml-md-0"
+                  className="btn btn-primary btn-sm checkout-btn ml-0 ml-md-0"
                 >
                   git checkout
                 </div>
+                <hr></hr>
               </div>
             );
           })}
 
           <div
             onClick={async () => await checkout("main")}
-            className="btn btn-primary btn-sm checkout-btn mt-2"
+            className="btn btn-primary btn-sm checkout-btn mt-2 d-none"
             data-oid="main"
           >
             git checkout main

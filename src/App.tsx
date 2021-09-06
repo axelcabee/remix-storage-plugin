@@ -54,12 +54,19 @@ export const loaderservice: LoaderService = new LoaderService();
 export const localipfsstorage: LocalIPFSStorage = new LocalIPFSStorage();
 
 export const resetFileSystem = async (wipe: boolean = false) => {
+  console.log("RESET FILE")
   try {
 
     client.clientLoaded.subscribe(async (load: boolean) => {
-      await localipfsstorage.init();
+      
       //if (load) await ipfservice.setipfsHost();
-      if (load) await fileservice.syncStart();
+      console.log("CLIENT LOADED", load)
+      if(load === true){
+        
+      }
+      if (load === true ) await localipfsstorage.init();
+      if (load === true ) await fileservice.syncStart();
+      
       if (load) await ipfservice.setipfsHost();
     });
     return true;
@@ -120,9 +127,7 @@ function App() {
 
   useEffect(() => {
     console.log(window.location.href)
-    if (window.location.href.includes('compact')) {
-      setCompact(true)
-    }
+    setCompact(true)
     if (window.location.href.includes('diff')) {
       setDiffViewer(true)
     }
@@ -240,47 +245,7 @@ function App() {
 
               </Accordion> :
 
-              <Tabs
-                activeKey={activeKey}
-                onSelect={async (k) => await setTab(k || "files")}
-              >
-                <Tab className="mt-4 ml-1" eventKey="files" title="FILES">
-                  <GitControls compact={true} />
-                  <CompactExplorer />
-                  <FileTools />
-                  <FileHelp />
-                </Tab>
-                <Tab className="mt-4 ml-1" eventKey="git" title="GIT">
-                  <GitControls compact={false} />
-                  <br /><hr />
-                  <GitLog />
-                  <br /><hr />
-                  <GitBranch />
-                  <GitHelp />
-                </Tab>
-                <Tab className="mt-4 ml-1" eventKey="github" title="GITHUB">
-                  <GitHubImporter />
-                </Tab>
-                <Tab className="mt-4 ml-1" eventKey="export" title="EXPORT">
-                  <IPFSView />
-                  <ExportHelp />
-                </Tab>
-                <Tab className="mt-4 ml-1" eventKey="import" title="IMPORT">
-                  <Importer />
-                  <ImportHelp></ImportHelp>
-                </Tab>
-                <Tab className="mt-4 ml-1" eventKey="diff" title="DIFF">
-                  <DiffView />
-                </Tab>
-                <Tab className="mt-4 ml-1" eventKey="config" title="SETTINGS">
-                  <PinataConfig></PinataConfig>
-                  <IPFSConfig />
-                  <ConfigHelp />
-                </Tab>
-                <Tab className="mt-4 ml-1" eventKey="help" title="HELP">
-                  <Help />
-                </Tab>
-              </Tabs>}
+              <></>}
           </Container>)
       )}
     </div>

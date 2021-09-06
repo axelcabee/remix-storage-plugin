@@ -19,6 +19,7 @@ export class WorkSpacePlugin extends PluginClient {
       console.log(this)
       try {
         await this.call("manager", "activatePlugin", "dGitProvider")
+        console.log("SET LOADED")
         this.clientLoaded.next(true);
         await this.setCallBacks();
       } catch (e) {
@@ -68,7 +69,7 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("fileManager", "fileSaved", async (e) => {
       // Do something
       if (this.callBackEnabled) {
-        //Utils.log("file save",e);
+        Utils.log("file save",e);
         await fileservice.syncFromBrowser();
 
       }
@@ -77,6 +78,7 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("fileManager", "fileAdded", async (e) => {
       // Do something
       if (this.callBackEnabled) {
+        Utils.log("file add",e);
         await fileservice.syncFromBrowser();
 
         //Utils.log(e);
@@ -87,7 +89,9 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       //Utils.log(e);
       if (this.callBackEnabled) {
+        Utils.log("file rm",e);
         await fileservice.syncFromBrowser();
+        
       }
       // await this.rmFile(e)
     });
@@ -96,7 +100,7 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       //Utils.log("CHANGED",e, this);
       if (this.callBackEnabled) {
-
+        Utils.log("file changed",e);
         await fileservice.syncFromBrowser();
       }
       //await this.rmFile(e)
@@ -105,7 +109,7 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("fileManager", "fileRenamed", async (oldfile, newfile) => {
       // Do something
       if (this.callBackEnabled) {
-        //Utils.log(oldfile, newfile);
+        Utils.log(oldfile, newfile);
         await fileservice.syncFromBrowser();
 
       }
@@ -113,7 +117,6 @@ export class WorkSpacePlugin extends PluginClient {
 
     this.on("filePanel", "setWorkspace", async (x: any) => {
       if (this.callBackEnabled) {
-        console.log("CB EN", client.callBackEnabled)
         Utils.log("ws set", x);
         await fileservice.syncFromBrowser(x.isLocalhost);
         Utils.log(x);

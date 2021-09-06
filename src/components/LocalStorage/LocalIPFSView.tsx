@@ -7,10 +7,11 @@ import { ipfservice, localipfsstorage, Utils } from "../../App";
 import ConfirmDelete from "../ConfirmDelete";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
+import dateFormat from "dateformat";
 
-interface LocalIPFSViewProps {}
+interface LocalIPFSViewProps { }
 
-export const LocalIPFSView: React.FC<LocalIPFSViewProps> = ({}) => {
+export const LocalIPFSView: React.FC<LocalIPFSViewProps> = ({ }) => {
   const boxobjects = useBehaviorSubject(localipfsstorage.boxObjects);
   let ModalRef = createRef<ConfirmDelete>();
   let EraseModalRef = createRef<ConfirmDelete>();
@@ -52,17 +53,17 @@ export const LocalIPFSView: React.FC<LocalIPFSViewProps> = ({}) => {
     return `${ipfservice.ipfsconfig.ipfsurl}${cid}`;
   };
 
-  const importFromCID = async (cid: string | undefined, name:string = "") => {
+  const importFromCID = async (cid: string | undefined, name: string = "") => {
     try {
       await ModalRef.current?.show();
-      await ipfservice.importFromCID(cid,name, true)
+      await ipfservice.importFromCID(cid, name, true)
       //Utils.log("yes");
     } catch (e) {
       //Utils.log("no");
     }
   };
 
-  const deleteItem = async(o:any) =>{
+  const deleteItem = async (o: any) => {
     try {
       await EraseModalRef.current?.show();
       await localipfsstorage.deleteFromStorage(o?.cid)
@@ -71,6 +72,14 @@ export const LocalIPFSView: React.FC<LocalIPFSViewProps> = ({}) => {
       //Utils.log("no");
     }
   }
+
+  const getDate = (str: any) => {
+    let date = dateFormat(
+      str * 1000,
+      "dd/mm/yy, h:MM:ss TT"
+    );
+    return date;
+  };
 
   return (
     <>
@@ -85,53 +94,50 @@ export const LocalIPFSView: React.FC<LocalIPFSViewProps> = ({}) => {
                 <Card.Body>
                   <h5>{o.key}</h5>
                   <div className="row">
-                    <div className="col">IPFS</div>
+                    <div className="col d-none">IPFS</div>
                     <div className="col">{o.cid}</div>
                   </div>
                   <div className="row">
-                    <div className="col">DATE EXPORTED</div>
-                    <div className="col">{o.datestored}</div>
+                    <div className="col">{getDate(o.datestored)}</div>
                   </div>
-                  <div className="row">
+                  <div className="row d-none">
                     <div className="col">DATE OF LAST COMMIT</div>
                     <div className="col">{o.datecommit}</div>
                   </div>
                   <div className="row">
-                    <div className="col">MESSAGE</div>
                     <div className="col">{o.message}</div>
                   </div>
                 </Card.Body>
               </Card>
-              <div className="col">
+              <div className="col p-0">
                 <button
                   onClick={async () => await importFromCID(o.cid, o.key)}
                   className="btn btn-primary btn-sm mr-2 import3b-btn"
                 >
                   import
                 </button>
-               {getViewButton(o.cid)}
+                {getViewButton(o.cid)}
+                <CopyToClipboard
+                  text={o.cid || ""}
+                  onCopy={() => {
+                    toast.success("Copied to clipboard.");
+                  }}
+                >
+                  <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy hash</button>
+                </CopyToClipboard>
                 <button
                   onClick={async () =>
                     await deleteItem(o)
                   }
-                  className="btn btn-danger btn-sm delete3b-btn"
+                  className="btn btn-danger btn-sm ml-2 delete3b-btn"
                 >
                   <FontAwesomeIcon icon={faTrash} />
                 </button>
-                <br></br>
-                  <CopyToClipboard
-            text={o.cid || ""}
-            onCopy={() => {
-              toast.success("Copied to clipboard.");
-            }}
-          >
-            <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy hash to clipboard</button>
-          </CopyToClipboard>
               </div>
             </div>
           );
         })}
-        {boxobjects?.length===0?<>Nothing has been stored here yet.</>:<></>}
+        {boxobjects?.length === 0 ? <>Nothing has been stored here yet.</> : <></>}
       </div>
     </>
   );

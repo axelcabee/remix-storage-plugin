@@ -2,7 +2,7 @@ import { faTrash, faExclamationTriangle } from "@fortawesome/free-solid-svg-icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { ChangeEvent, createRef } from "react";
 import { useState } from "react";
-import { Alert } from "react-bootstrap";
+import { Alert, Card } from "react-bootstrap";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
 import { async } from "rxjs";
@@ -33,10 +33,12 @@ export const GitHubImporter: React.FC<importerProps> = () => {
         ''
     );
 
-    const [branch, setBranch] = useLocalStorage(
-        "GITHUB_BRANCH",
-        'main'
-    );
+    const branch = useBehaviorSubject(gitservice.branch);
+
+    // const [branch, setBranch] = useLocalStorage(
+    //     "GITHUB_BRANCH",
+    //     'main'
+    // );
     const [remoteBranch, setRemoteBranch] = useLocalStorage(
         "GITHUB_REMOTE_BRANCH",
         'main'
@@ -85,6 +87,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
 
     const addRemote = async () => {
         await gitservice.addRemote(remoteName, url)
+        setCurrentRemote(remoteName)
         await gitservice.getRemotes()
     }
 
@@ -94,15 +97,15 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     }
 
     const push = async () => {
-        gitservice.push(currentRemote, branch, remoteBranch, token, force, name, email)
+        gitservice.push(currentRemote, branch || '', remoteBranch, token, force, name, email)
     }
 
     const pull = async () => {
-        gitservice.pull(currentRemote, branch, remoteBranch, token, name, email)
+        gitservice.pull(currentRemote, branch || '', remoteBranch, token, name, email)
     }
 
     const fetch = async () => {
-        gitservice.fetch(url, branch, remoteBranch, token, name, email)
+        gitservice.fetch(url, branch || '', remoteBranch, token, name, email)
     }
 
     const onUrlChange = (value: string) => {
@@ -112,7 +115,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
         setCloneUrl(value)
     }
     const onBranchChange = (value: string) => {
-        setBranch(value)
+        //setBranch(value)
     }
     const onRemoteBranchChange = (value: string) => {
         setRemoteBranch(value)
@@ -165,19 +168,24 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             }
             <h4>Available remotes</h4>
             {
-                remotes?.map((remote) => {
-                    return <div className='row mb-1'>
+                remotes?.map((remote, index:number) => {
+                    return <div key={index} className='row mb-1'>
                         <div className='col'>
-                            <input checked={currentRemote === remote.remote} onChange={async () => remoteChange(remote.remote)} type="radio" className='mr-2' value={remote.remote} id={remote.remote}
+                            <Card>
+                                <Card.Body className='p-1'>
+                                <input checked={currentRemote === remote.remote} onChange={async () => remoteChange(remote.remote)} type="radio" className='mr-2' value={remote.remote} id={remote.remote}
                                 name="remote" />
-                            <a className='mr-2' href={remote.url} target="_blank">{remote.remote} : {remote.url}</a>
+                            <a className='mr-2' href={remote.url} target="_blank">{remote.remote}<br></br>{remote.url}</a>
+                                </Card.Body>
+                            </Card>
+
                         </div>
                         <div className='col'>
                             <button
                                 onClick={async () =>
                                     await delRemote(remote.remote)
                                 }
-                                className="btn btn-danger btn-sm delete3b-btn"
+                                className="btn btn-danger btn-sm delete3b-btn mt-1"
                             >
                                 <FontAwesomeIcon icon={faTrash} />
                             </button>
@@ -191,7 +199,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <div className='row'>
                 <div className='col col-md-6 col-12'>
                     <label>LOCAL BRANCH</label>
-                    <input name='localbranch' onChange={e => onBranchChange(e.target.value)} value={branch} className="form-control" type="text" id="ipfs" />
+                    <input name='localbranch' readOnly value={branch} className="form-control" type="text" id="ipfs" />
                 </div>
                 <div className='col col-md-6 col-12'>
                     <label>REMOTE BRANCH</label>

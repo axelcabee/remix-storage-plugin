@@ -10,15 +10,15 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import dateFormat from "dateformat";
 import { toast } from "react-toastify";
 
-interface PinataImportProps {}
+interface PinataImportProps { }
 
-export const PinataImport: React.FC<PinataImportProps> = ({}) => {
+export const PinataImport: React.FC<PinataImportProps> = ({ }) => {
   const status = useBehaviorSubject(ipfservice.pinataConnectionStatus);
   let [data, setData] = useState<any[]>([]);
   let ModalRef = createRef<ConfirmDelete>();
   let EraseModalRef = createRef<ConfirmDelete>();
   let EraseModalOld = createRef<ConfirmDelete>();
-  ipfservice.pinataConnectionStatus.subscribe((x) => {}).unsubscribe();
+  ipfservice.pinataConnectionStatus.subscribe((x) => { }).unsubscribe();
 
   useEffect(() => {
     if (status) read();
@@ -39,6 +39,9 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
   const read = async () => {
     try {
       try {
+        setTimeout(() => {
+          client.cancel('dGitProvider' as any, 'pinList')
+        }, 3000)
         let r = await client.call(
           "dGitProvider" as any,
           "pinList",
@@ -63,11 +66,11 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
             const tree = row.metadata.keyvalues.commits[0].commit.tree;
             const oid = row.metadata.keyvalues.commits[0].oid;
             const doubles = rows.filter((subrow: any) => {
-              if(subrow.metadata.keyvalues.commits){
+              if (subrow.metadata.keyvalues.commits) {
                 return subrow.metadata.keyvalues.commits.find((commit: any) => {
                   return commit.commit.tree === tree && commit.oid === oid && subrow.metadata.keyvalues.ref !== oid
                 })
-              }else{
+              } else {
                 return false
               }
             });
@@ -83,7 +86,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
       }
       //this.objects = r? JSON.parse(r):[];
       //Utils.log("READ CONFIG",this.objects);
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const getViewButton = (cid: string | undefined) => {
@@ -131,8 +134,8 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
       await EraseModalOld.current?.show();
       try {
         loaderservice.setLoading(true)
-        for(let o of data){
-          if(o.hasChild){
+        for (let o of data) {
+          if (o.hasChild) {
             console.log("delete ", o)
             let r = await client.call(
               "dGitProvider" as any,
@@ -183,9 +186,9 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
 
   return (
     <>
-    
+
       <h4>Import from Pinata</h4>
-      <Button onClick={async()=> deleteOldItems()} className='mb-2 btn btn-sm btn-danger'>Remove old commits <FontAwesomeIcon icon={faTrash} /></Button>
+      <Button onClick={async () => deleteOldItems()} className='mb-2 btn btn-sm btn-danger'>Remove old commits <FontAwesomeIcon icon={faTrash} /></Button>
       <ConfirmDelete
         title={"Importing"}
         text={"This will create a new workspace! Continue?"}
@@ -208,7 +211,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
           })
           .map((o: any, index: any) => {
             return (
-              <div key={index} className="row p-1">
+              <div key={index} className="row p-0">
                 <Card className="w-md-75 w-100">
                   <Card.Body>
                     <h5>{o.metadata.name}</h5>
@@ -234,18 +237,18 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                       <div className="col">OID</div>
                       <div className="col">{o?.metadata?.keyvalues?.ref}</div>
                     </div>
-                    { o.hasChild? 
-                    
-                    <>
-                    <Alert className='mt-1' variant='warning'>This commit has been superseded. You can probably remove it.<br></br>
-                    Newer commits:<br></br>
-                    {
-                      o.doubles.map((double: any) => {
-                        return <div>{double.metadata?.name}</div>
-                      })
-                    }
-                    </Alert>
-                    </>:<></> }
+                    {o.hasChild ?
+
+                      <>
+                        <Alert className='mt-1' variant='warning'>This commit has been superseded. You can probably remove it.<br></br>
+                          Newer commits:<br></br>
+                          {
+                            o.doubles.map((double: any) => {
+                              return <div>{double.metadata?.name}</div>
+                            })
+                          }
+                        </Alert>
+                      </> : <></>}
                     <Accordion className='p-0'>
                       <Card className='p-0'>
                         <Card.Header className='p-0 pb-1'>
@@ -261,17 +264,17 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                         <Accordion.Collapse className='p-0' eventKey="0">
                           <Card.Body className='p-0'>
                             {o?.metadata?.keyvalues?.commits.map(
-                              (commit: any) => {
+                              (commit: any, index: number) => {
                                 return (
-                                  <>
-                                  <div className="row">
-                                    <div className="col-md-6 col-12">
-                                      {commit.commit?.message}
-                                    </div>
-                                    <div className="col-md-6 col-12">
-                                    { commit.commit?.committer?.timestamp ? <>{getDate(commit.commit?.committer?.timestamp)}</>:<>no date</> }
-                                    </div>
-                                  </div><hr></hr></>
+                                  <div key={`h${index}`}>
+                                    <div className="row">
+                                      <div className="col-md-6 col-12">
+                                        {commit.commit?.message}
+                                      </div>
+                                      <div className="col-md-6 col-12">
+                                        {commit.commit?.committer?.timestamp ? <>{getDate(commit.commit?.committer?.timestamp)}</> : <>no date</>}
+                                      </div>
+                                    </div><hr></hr></div>
                                 );
                               }
                             )}
@@ -281,7 +284,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                     </Accordion>
                   </Card.Body>
                 </Card>
-                <div className="col">
+                <div className="col p-0">
                   <button
                     onClick={async () =>
                       await importFromCID(o.ipfs_pin_hash, o.metadata.name)
@@ -291,22 +294,22 @@ export const PinataImport: React.FC<PinataImportProps> = ({}) => {
                     import
                   </button>
                   {getViewButton(o.ipfs_pin_hash)}
-                  
+
+
+                  <CopyToClipboard
+                    text={o.ipfs_pin_hash}
+                    onCopy={() => {
+                      toast.success("Copied to clipboard.");
+                    }}
+                  >
+                    <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy hash</button>
+                  </CopyToClipboard>
                   <button
                     onClick={async () => await deleteItem(o.ipfs_pin_hash)}
-                    className="btn btn-danger btn-sm delete3b-btn"
+                    className="btn btn-danger btn-sm delete3b-btn ml-2"
                   >
                     <FontAwesomeIcon icon={faTrash} />
                   </button>
-                  <br></br>
-                  <CopyToClipboard
-            text={o.ipfs_pin_hash}
-            onCopy={() => {
-              toast.success("Copied to clipboard.");
-            }}
-          >
-            <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy hash to clipboard</button>
-          </CopyToClipboard>
                 </div>
               </div>
             );

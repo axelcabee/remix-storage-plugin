@@ -42,6 +42,9 @@ export class IPFSService {
   async setipfsHost() {
     Utils.log(this.ipfsconfig)
     try {
+      setTimeout(() => {
+        client.cancel('dGitProvider' as any,'setIpfsConfig')
+      },2000)
       const c = await client.call("dGitProvider", "setIpfsConfig", this.ipfsconfig ) 
       Utils.log(c)
       this.connectionStatus.next(c)

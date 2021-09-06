@@ -25,7 +25,7 @@ export class LocalIPFSStorage {
       //Utils.log("READ CONFIG",this.objects);
       this.boxObjects.next(this.objects);
     }catch(e){
-
+      console.log(e)
     }
   }
 
