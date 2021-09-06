@@ -255,7 +255,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                     <input name='clonallbranches' onChange={e => onAllBranchChange(e)} checked={cloneAllBranches} className="" type="checkbox" id="ipfs" />
                 </div>
             </div>
-            <button className='btn btn-primary m-2' onClick={async () => {
+            <button data-id='clonebtn' className='btn btn-primary m-2' onClick={async () => {
                 clone()
             }}>clone</button>
             <hr></hr>

@@ -26,10 +26,10 @@ export const GitControls: React.FC<gitViewProps> = (props) => {
     <>
       <div className="form-group">
         <label>Message</label>
-        <input className="form-control" type="text" onChange={handleChange} value={message.value} />
+        <input data-id='commitMessage' className="form-control" type="text" onChange={handleChange} value={message.value} />
       </div>
       {canCommit?<></>:<div className='alert alert-warning'>Cannot commit in detached state! Create a new branch and check it out first or checkout main.<br></br></div>}
-      <button className="btn btn-primary" disabled={commitAllowed()} onClick={async()=>gitservice.commit(message.value)} >git commit</button>
+      <button data-id='commitButton' className="btn btn-primary" disabled={commitAllowed()} onClick={async()=>gitservice.commit(message.value)} >git commit</button>
       <hr></hr>
     </>
   );

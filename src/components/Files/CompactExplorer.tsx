@@ -125,7 +125,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
         return <>
         <Col className='col-8 p-0'>
             {status?.indexOf("modified")  === -1? <></>:<button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faUndo} className="" /></button>}
-            <button onClick={async () => await gitservice.gitrm(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faMinus} className="" /></button>
+            <button data-id={`unStage${ob.Type}${path.basename(ob.File.filename)}`} onClick={async () => await gitservice.gitrm(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faMinus} className="" /></button>
             </Col>
             <FunctionStatusIcons status={status}/>
             
@@ -159,7 +159,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
     {show?
     <>
     <div>
-        <button onClick={async () => await gitservice.addAllToGit()} className='btn btn-sm btn-primary'>Stage all</button>
+        <button data-id='stageAll' onClick={async () => await gitservice.addAllToGit()} className='btn btn-sm btn-primary'>Stage all</button>
         <button onClick={async () => await fileservice.syncFromBrowser()} className='btn btn-sm btn-primary ml-2'><FontAwesomeIcon icon={faSync} className="" /></button>
         <hr></hr>
         <RenderGroups></RenderGroups>
