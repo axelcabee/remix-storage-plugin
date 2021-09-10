@@ -27,3 +27,4 @@ backup
 hosting.*
 firebase-debug.log
 cypress/videos/stagefiles.spec.ts.mp4
+cypress/videos/dgit.spec.ts.mp4

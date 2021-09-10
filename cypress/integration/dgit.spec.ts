@@ -84,7 +84,7 @@ context('Actions', () => {
     const plugin: string = 'dgitcypress'
     describe('File operations', () => {
 
-        it.only('publishes on Remix IPFS and imports it', () => {
+        it('publishes on Remix IPFS and imports it', () => {
             openPlugin(plugin)
             stageAll()
             getIframeBody(plugin).find('*[data-id="commitMessage"]').should('be.visible').type('cypress')
@@ -101,7 +101,7 @@ context('Actions', () => {
             getIframeBody(plugin).find('#ipfshashresult').should('be.visible').invoke('data', 'hash').as('dataHash')
             clickTab('IPFS Import')
             cy.wait(1000)
-            cy.get('@dataHash')
+            return cy.get('@dataHash')
                 .then(dataId => {
                     getIframeBody(plugin).find('.localipfsimportbutton[data-hash="' + dataId + '"]').should('be.visible').click()
                     cy.wait(1000)
@@ -112,7 +112,7 @@ context('Actions', () => {
                     openPlugin('filePanel')
                     cy.get('#workspacesSelect option:selected').should('contain.text', 'workspace_')
                     cy.contains('README.txt').should('be.visible')
-                });
+                })
             
         })
         it('sees modified files and checks them out', () => {
