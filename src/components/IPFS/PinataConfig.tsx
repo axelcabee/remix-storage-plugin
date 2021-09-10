@@ -73,15 +73,15 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
         id="url"
         value={secret}
       />
-      <button className="btn btn-primary mt-5" onClick={checkconfig}>
+      <button id='btncheckpinata' className="btn btn-primary mt-5" onClick={checkconfig}>
         Check connection
       </button>
       {status ? (
-        <div className="alert alert-success w-md-25 w-100 mt-2" role="alert">
+        <div id='pinatachecksuccess' className="alert alert-success w-md-25 w-100 mt-2" role="alert">
           Your pinata settings are working correctly.
         </div>
       ) : (
-        <div className="alert alert-warning w-md-25 w-100 mt-2" role="alert">
+        <div id='pinatacheckerror' className="alert alert-warning w-md-25 w-100 mt-2" role="alert">
           Your pinata settings are incorrect. Unable to connect. Check your
           settings.
         </div>

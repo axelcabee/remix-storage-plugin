@@ -220,23 +220,22 @@ export class gitService {
   }
 
   async commit(message: string = "") {
-    //Utils.log("commit");
-    // let filescommited = await this.listFilesInstaging();
-    // //Utils.log(filescommited);
-    // if (filescommited.length === 0) {
-    //   toast.error("no files to commit");
-    //   return;
-    // }
-    const sha = await client.call("dGitProvider", "commit", {
-      author: {
-        name: localStorage.getItem('GITHUB_NAME') || 'Remix Workspace',
-        email: localStorage.getItem('GITHUB_EMAIL'),
-      },
-      message: message,
-    });
-    toast.success(`Commited: ${sha}`);
 
-    await fileservice.showFiles();
+    try {
+      const sha = await client.call("dGitProvider", "commit", {
+        author: {
+          name: localStorage.getItem('GITHUB_NAME') || 'Remix Workspace',
+          email: localStorage.getItem('GITHUB_EMAIL'),
+        },
+        message: message,
+      });
+      toast.success(`Commited: ${sha}`);
+  
+      await fileservice.showFiles();
+    } catch (err) {
+      toast.error(`${err}`)
+    }
+
   }
 
   async getBranches() {

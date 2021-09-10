@@ -26,3 +26,4 @@ backup
 .eslintcache
 hosting.*
 firebase-debug.log
+cypress/videos/stagefiles.spec.ts.mp4

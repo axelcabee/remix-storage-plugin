@@ -145,7 +145,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
       if(ob.Type === 'Changes'){
         return <>
             <Col className='col-8 p-0'>
-            {status?.indexOf("modified")  === -1? <></>:<button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faUndo} className="" /></button>}
+            {status?.indexOf("modified")  === -1? <></>:<button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} data-id={`undo${ob.Type}${path.basename(ob.File.filename)}`} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faUndo} className="" /></button>}
             {(status?.indexOf("unstaged")  !== -1 && status?.indexOf("deleted")  !== -1)? <></>:<button data-id={`addToGit${ob.Type}${path.basename(ob.File.filename)}`} onClick={async () => await gitservice.addToGit(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faPlus} className="" /></button>}
             </Col>
             <FunctionStatusIcons status={status}/>

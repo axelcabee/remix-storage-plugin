@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
-import { Container, Tabs, Tab, ProgressBar, Accordion, Card, AccordionContext, Button, useAccordionToggle } from "react-bootstrap";
+import { Container, ProgressBar, Accordion, AccordionContext, Button, useAccordionToggle } from "react-bootstrap";
 
 import WalletConnectProvider from "@walletconnect/web3-provider";
 
-import { FileExplorer } from "./components/Files/FileExplorer";
 import { GitControls } from "./components/git/UI/gitControls";
 
 import { IPFSView } from "./components/IPFS/IPFSView";
@@ -22,7 +21,7 @@ import { Importer } from "./components/Import/importer";
 import Loading from "react-fullscreen-loading";
 import { LoaderService } from "./components/loaderService";
 import { useBehaviorSubject } from "./components/usesubscribe/index";
-import { Help } from "./components/Help";
+
 import { LocalIPFSStorage } from "./components/LocalStorage/LocalStorage";
 import { LocalHostWarning } from "./components/LocalHostWarning";
 import { IPFSConfig } from "./components/IPFS/IPFSConfig";
@@ -30,11 +29,7 @@ import { GitStatus } from "./components/git/UI/gitStatus";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle, faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
-import { FileHelp } from "./components/Files/FileHelp";
-import { GitHelp } from "./components/git/UI/GitHelp";
-import { ExportHelp } from "./components/IPFS/ExportHelp";
-import { ImportHelp } from "./components/Import/ImportHelp";
-import { ConfigHelp } from "./components/IPFS/ConfigHelp";
+
 import { devutils } from "./components/Utils";
 import { PinataConfig } from "./components/IPFS/PinataConfig";
 import { GitHubImporter } from "./components/github/github";

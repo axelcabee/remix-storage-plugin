@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { Profile, LocationProfile, ExternalProfile } from '@remixproject/plugin-utils'
 
 context('Actions', () => {
     beforeEach(() => {
@@ -7,7 +8,28 @@ context('Actions', () => {
         cy.wait(2000)
         cy.get('#remixTourSkipbtn').click()
         cy.wait(2000)
+        installPlugin({
+            name: plugin,
+            displayName: 'dgit',
+            location: 'sidePanel',
+            url: 'http://localhost:3000',
+            canActivate: [
+                'dGitProvider'
+            ]
+        })
     })
+
+    const installPlugin = (profile: Profile & LocationProfile & ExternalProfile) => {
+        cy.get('*[plugin="pluginManager"]').click().wait(1000)
+        cy.get(`*[data-id="pluginManagerComponentPluginSearchButton`).click().wait(1000)
+        cy.get(`*[data-id="pluginManagerLocalPluginModalDialogModalDialogModalTitle-react`).should('be.visible')
+        cy.wait(2000)
+        cy.get(`*[data-id="localPluginName`).type(profile.name)
+        cy.get(`*[data-id="localPluginDisplayName`).type(profile.displayName)
+        cy.get(`*[data-id="localPluginUrl`).type(profile.url)
+        cy.get(`*[data-id="localPluginCanActivate`).type(profile.canActivate && profile.canActivate.join(','))
+        cy.get(`*[data-id="pluginManagerLocalPluginModalDialog-modal-footer-ok-react"`).click()
+    }
 
     const activatePlugin = (plugin:string) => {
         cy.get('*[plugin="pluginManager"]').click()
@@ -59,11 +81,48 @@ context('Actions', () => {
         getIframeBody(plugin).find('input[name="token"]').focus().wait(100).clear().type('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')
     }
 
-    const plugin: string = '11111'
+    const plugin: string = 'dgitcypress'
     describe('File operations', () => {
 
+        it('sees modified files and checks them out', () => {
+            //activatePlugin(plugin)
+            openPlugin(plugin)
+            stageAll()
+            getIframeBody(plugin).find('*[data-id="commitMessage"]').should('be.visible').type('cypress')
+            getIframeBody(plugin).find('*[data-id="commitButton"]').should('be.visible').click()
+            getIframeBody(plugin).contains('Nothing to commit').should('be.visible')
+            cy.wait(2000)
+            getIframeBody(plugin).find('.btn').contains('Log').click()
+            cy.wait(1000)
+            getIframeBody(plugin).contains('cypress').should('be.visible')
+            getIframeBody(plugin).find('.btn').contains('git checkout').should('be.visible')
+            openPlugin('filePanel')
+            cy.get('div').contains('README.txt').click()
+            cy.get('.ace_content').type('changing file')
+            openPlugin(plugin)
+            cy.wait(2000)
+            clickTab('Files')
+            getIframeBody(plugin).find('*[data-id="fileChangesREADME.txt"]').should('be.visible')
+            getIframeBody(plugin).find('*[data-id="undoChangesREADME.txt"]').should('be.visible').click()
+            cy.wait(500)
+            cy.get('.btn').contains('Accept').should('be.visible').click()
+            cy.wait(1000)
+            getIframeBody(plugin).contains('Nothing to commit').should('be.visible')
+        })
+        it('set ipfs configuration', () => {
+            openPlugin(plugin)
+            clickTab('IPFS Settings')
+            getIframeBody(plugin).find(`#hostname`).clear().type('ipfs-does-not-exist.remixproject.org')
+            getIframeBody(plugin).find('#btncheckipfs').should('be.visible').click()
+            cy.wait(4000)
+            getIframeBody(plugin).find('#ipfscheckerror').should('be.visible')
+            getIframeBody(plugin).find(`#hostname`).clear().type('ipfs.remixproject.org')
+            getIframeBody(plugin).find('#btncheckipfs').should('be.visible').click()
+            cy.wait(4000)
+            getIframeBody(plugin).find('#ipfschecksuccess').should('be.visible')
+        })
         it('clones a repo', () => {
-            activatePlugin(plugin)
+            //activatePlugin(plugin)
             openPlugin(plugin)
             clickTab('GitHub')
             setToken()
@@ -87,7 +146,7 @@ context('Actions', () => {
         })
 
         it('detects file added', () => {
-            activatePlugin(plugin)
+            //activatePlugin(plugin)
             openPlugin(plugin)
             openPlugin('filePanel')
             cy.get('*[data-id="fileExplorerNewFilecreateNewFile"]').click()
@@ -100,7 +159,7 @@ context('Actions', () => {
         })
 
         it('commits staged files', () => {
-            activatePlugin(plugin)
+            //activatePlugin(plugin)
             openPlugin(plugin)
             stageAll()
             getIframeBody(plugin).find('*[data-id="commitMessage"]').should('be.visible').type('cypress')
@@ -115,14 +174,14 @@ context('Actions', () => {
 
  
         it('opens the dgit plugin and stages a file', () => {
-            activatePlugin(plugin)
+            //activatePlugin(plugin)
             openPlugin(plugin)
             getIframeBody(plugin).find('*[data-id="fileChangesREADME.txt"]').should('be.visible')
             getIframeBody(plugin).find('*[data-id="addToGitChangesREADME.txt"]').should('be.visible').click()
         })
 
         it('opens the dgit plugin and stages a file and unstages it', () => {
-            activatePlugin(plugin)
+            //activatePlugin(plugin)
             openPlugin(plugin)
             cy.wait(2000)
             getIframeBody(plugin).find('*[data-id="fileChangesREADME.txt"]').should('be.visible')
@@ -136,7 +195,7 @@ context('Actions', () => {
         })
 
         it('opens the dgit plugin and stages all files', () => {
-            activatePlugin(plugin)
+            //activatePlugin(plugin)
             openPlugin(plugin)
             cy.wait(2000)
             getIframeBody(plugin).find('*[data-id="fileChangesREADME.txt"]').should('be.visible')
