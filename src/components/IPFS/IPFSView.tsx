@@ -30,7 +30,7 @@ export const IPFSView: React.FC<IPFSViewProps> = () => {
       //Utils.log(ipfservice.cid);
       return (
         <>
-          <div className='overflow-hidden w-100'>IPFS Hash: {ipfservice.cid}</div>
+          <div id='ipfshashresult' data-hash={ipfservice.cid} className='overflow-hidden w-100'>IPFS Hash: {ipfservice.cid}</div>
           <br></br>
           <CopyToClipboard
             text={ipfservice.cid}
@@ -123,7 +123,7 @@ export const IPFSView: React.FC<IPFSViewProps> = () => {
       <button
         disabled={(IPFSStatus ? false : true) || (canExport ? false : true)}
         className="btn w-md-25 w-100 btn-primary"
-        id="main-btn"
+        id="addtocustomipfs"
         onClick={async () => await addFilesToIpfs()}
       >
         Export to custom IPFS & store in local storage

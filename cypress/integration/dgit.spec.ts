@@ -84,6 +84,37 @@ context('Actions', () => {
     const plugin: string = 'dgitcypress'
     describe('File operations', () => {
 
+        it.only('publishes on Remix IPFS and imports it', () => {
+            openPlugin(plugin)
+            stageAll()
+            getIframeBody(plugin).find('*[data-id="commitMessage"]').should('be.visible').type('cypress')
+            getIframeBody(plugin).find('*[data-id="commitButton"]').should('be.visible').click()
+            getIframeBody(plugin).contains('Nothing to commit').should('be.visible')
+            cy.wait(2000)
+            clickTab('IPFS Settings')
+            cy.wait(1000)
+            getIframeBody(plugin).find(`#hostname`).clear().type('ipfs.remixproject.org')
+            getIframeBody(plugin).find('#btncheckipfs').should('be.visible').click()
+            clickTab('IPFS Export')
+            cy.wait(1000)
+            getIframeBody(plugin).find('#addtocustomipfs').should('be.visible').click()
+            getIframeBody(plugin).find('#ipfshashresult').should('be.visible').invoke('data', 'hash').as('dataHash')
+            clickTab('IPFS Import')
+            cy.wait(1000)
+            cy.get('@dataHash')
+                .then(dataId => {
+                    getIframeBody(plugin).find('.localipfsimportbutton[data-hash="' + dataId + '"]').should('be.visible').click()
+                    cy.wait(1000)
+                    getIframeBody(plugin).find('.btn').contains('Yes').should('be.visible').click()
+                    cy.wait(4000)
+                    cy.get('.btn').contains('Accept').should('be.visible').click()
+                    cy.wait(4000)
+                    openPlugin('filePanel')
+                    cy.get('#workspacesSelect option:selected').should('contain.text', 'workspace_')
+                    cy.contains('README.txt').should('be.visible')
+                });
+            
+        })
         it('sees modified files and checks them out', () => {
             //activatePlugin(plugin)
             openPlugin(plugin)
