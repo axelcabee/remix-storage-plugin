@@ -216,7 +216,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             }}>pull</button>
             <button className='btn btn-primary m-2 d-none' onClick={async () => {
                 fetch()
-            }}>fetch</button>
+            }}>fetch</button><br></br>
             <label>FORCE PUSH</label>
             <input name='force' className='ml-2' checked={force} onChange={e => onForceChange(e)} value={token} type="checkbox" id="ipfs" />
             <hr></hr>
