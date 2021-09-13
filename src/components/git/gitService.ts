@@ -137,7 +137,7 @@ export class gitService {
   async checkout(cmd: any) {
     toast.dismiss();
     await client.disableCallBacks();
-    await client.call('fileManager' as any, 'closeAllFiles')
+    await client.call('fileManager', 'closeAllFiles')
     try {
       await client.call("dGitProvider", "checkout", cmd);
       this.gitlog();

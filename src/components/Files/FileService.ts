@@ -21,7 +21,7 @@ export const fileStatuses = [
   ["modified,staged,with unstaged changes", 1, 2, 3], // modified, staged, with unstaged changes
   ["deleted,unstaged", 1, 0, 1], // deleted, unstaged
   ["deleted,staged", 1, 0, 0],
-  ["deleted", 1, 1, 0], // deleted, staged
+  //["deleted", 1, 1, 0], // deleted, staged
   ["unmodified", 1, 1, 3],
   ["deleted,not in git", 0, 0, 3],
   ["unstaged,modified", 1, 2, 0]
