@@ -26,8 +26,14 @@ export class gitService {
   fileToDiff:string = ''
 
   async init() {
-    await client.call("dGitProvider", "init");
-    await fileservice.showFiles();
+    try {
+      await client.call("dGitProvider", "init");
+      toast.success('Git repository initialized')
+      await fileservice.showFiles();
+    } catch (e) {
+      toast.error(`There were errors on initializing git: ${e.message}`)
+    }
+
   }
 
   async addAllToGit() {
@@ -94,6 +100,7 @@ export class gitService {
   }
 
   async checkoutfile(filename: any) {
+    //await client.call('fileManager' as any, 'closeAllFiles')
     ///const filename = ""; //$(args[0].currentTarget).data('file')
     //Utils.log("checkout", [`${filename}`], removeSlash(filename));
     let oid = await this.getLastCommmit();
@@ -112,7 +119,7 @@ export class gitService {
         await client.call(
           "fileManager",
           "setFile",
-          Utils.addSlash(filename),
+          removeSlash(filename),
           original
         );
         await client.enableCallBacks();
@@ -130,6 +137,7 @@ export class gitService {
   async checkout(cmd: any) {
     toast.dismiss();
     await client.disableCallBacks();
+    await client.call('fileManager' as any, 'closeAllFiles')
     try {
       await client.call("dGitProvider", "checkout", cmd);
       this.gitlog();

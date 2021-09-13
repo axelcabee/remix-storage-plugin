@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { createRef, useEffect, useState } from "react";
 import { Accordion, Alert, Button, Card } from "react-bootstrap";
 import { useBehaviorSubject } from "../usesubscribe/index";
-import { client, ipfservice, loaderservice } from "../../App";
+import { client, ipfservice, loaderservice, Utils } from "../../App";
 import ConfirmDelete from "../ConfirmDelete";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 
@@ -76,13 +76,13 @@ export const PinataImport: React.FC<PinataImportProps> = ({ }) => {
             });
             row.hasChild = doubles.length > 0
             row.doubles = doubles
-            //console.log("DOUBLES OF,,,", oid, tree, doubles)
+            //Utils.log("DOUBLES OF,,,", oid, tree, doubles)
           }
         }
-        //console.log("ROWS", rows);
+        //Utils.log("ROWS", rows);
         setData(rows);
       } catch (err) {
-        console.log(err);
+        Utils.log(err);
       }
       //this.objects = r? JSON.parse(r):[];
       //Utils.log("READ CONFIG",this.objects);
@@ -136,7 +136,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({ }) => {
         loaderservice.setLoading(true)
         for (let o of data) {
           if (o.hasChild) {
-            console.log("delete ", o)
+            Utils.log("delete ", o)
             let r = await client.call(
               "dGitProvider" as any,
               "unPin",
@@ -149,7 +149,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({ }) => {
 
         await read();
       } catch (err) {
-        console.log(err);
+        Utils.log(err);
       } finally {
         loaderservice.setLoading(false)
       }
@@ -173,7 +173,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({ }) => {
         );
         await read();
       } catch (err) {
-        console.log(err);
+        Utils.log(err);
       } finally {
         loaderservice.setLoading(false)
       }

@@ -131,16 +131,16 @@ export class IPFSService {
       return false;
     }
     try {
-      console.log("IMPORT START")
+      Utils.log("IMPORT START")
       await client.call('dGitProvider', 'import' as any, {cid:cid, local:local})
-      console.log("IMPORT DONE")
+      Utils.log("IMPORT DONE")
       loaderservice.setLoading(false)
       //await fileservice.syncToBrowser();
       await fileservice.syncStart()
     } catch (e) {
       loaderservice.setLoading(false)
       await client.enableCallBacks()
-      console.log(e.message)
+      Utils.log(e.message)
       toast.error(e.message,{autoClose:false});
       toast.error('Sometimes the IPFS data is not yet available. Please try again later.',{autoClose:false});
     }

@@ -16,14 +16,14 @@ export class WorkSpacePlugin extends PluginClient {
     this.onload().then(async () => {
       //Utils.log("workspace client loaded", this);
       toast.success("Connected to REMIX");
-      console.log(this)
+      Utils.log(this)
       try {
         await this.call("manager", "activatePlugin", "dGitProvider")
-        console.log("SET LOADED")
+        Utils.log("SET LOADED")
         this.clientLoaded.next(true);
         await this.setCallBacks();
       } catch (e) {
-        console.log(e)
+        Utils.log(e)
         toast.error("Could not activate DECENTRALIZED GIT. Please activate DECENTRALIZED GIT in the plugin list and restart this plugin.", { autoClose: false })
       }
 
@@ -52,7 +52,7 @@ export class WorkSpacePlugin extends PluginClient {
   }
 
   async track(item: any) {
-    console.log('track')
+    Utils.log('track')
   }
 
   async pull(cid: string) {
@@ -146,11 +146,11 @@ export class WorkSpacePlugin extends PluginClient {
 
 
   async disableCallBacks() {
-    console.log("DISABLE CALLBACK")
+    Utils.log("DISABLE CALLBACK")
     this.callBackEnabled = false;
   }
   async enableCallBacks() {
-    console.log("ENABLE CALLBACK")
+    Utils.log("ENABLE CALLBACK")
     this.callBackEnabled = true;
   }
 }

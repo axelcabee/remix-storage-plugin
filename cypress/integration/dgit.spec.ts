@@ -5,9 +5,7 @@ context('Actions', () => {
     beforeEach(() => {
         cy.visit('http://localhost:8080')
         cy.viewport('macbook-16')
-        cy.wait(2000)
         cy.get('#remixTourSkipbtn').click()
-        cy.wait(2000)
         installPlugin({
             name: plugin,
             displayName: 'dgit',
@@ -20,10 +18,9 @@ context('Actions', () => {
     })
 
     const installPlugin = (profile: Profile & LocationProfile & ExternalProfile) => {
-        cy.get('*[plugin="pluginManager"]').click().wait(1000)
-        cy.get(`*[data-id="pluginManagerComponentPluginSearchButton`).click().wait(1000)
+        cy.get('*[plugin="pluginManager"]').click()
+        cy.get(`*[data-id="pluginManagerComponentPluginSearchButton`).click()
         cy.get(`*[data-id="pluginManagerLocalPluginModalDialogModalDialogModalTitle-react`).should('be.visible')
-        cy.wait(2000)
         cy.get(`*[data-id="localPluginName`).type(profile.name)
         cy.get(`*[data-id="localPluginDisplayName`).type(profile.displayName)
         cy.get(`*[data-id="localPluginUrl`).type(profile.url)
@@ -37,10 +34,7 @@ context('Actions', () => {
     }
 
     const openPlugin = (plugin: string) => {
-        //cy.get('*[plugin="pluginManager"]').should('be.visible')
-
-        cy.get(`#icon-panel div[plugin="${plugin}"]`, { timeout: 10000 }).click()
-        cy.wait(3000)
+         cy.get(`#icon-panel div[plugin="${plugin}"]`).click()
     }
 
 
@@ -67,14 +61,11 @@ context('Actions', () => {
     }
 
     const stageAll = ()=> {
-        cy.wait(2000)
         getIframeBody(plugin).find('*[data-id="stageAll"]').should('be.visible').click()
     }
 
     const clickTab = (name:string) => {
-        cy.wait(2000)
-        getIframeBody(plugin).find('.btn').contains(name).click()
-        cy.wait(2000)
+        getIframeBody(plugin).find('.btn').contains(name, {timeout:10000}).should('be.visible').click({force:true})
     }
 
     const setToken = () => {
@@ -84,31 +75,28 @@ context('Actions', () => {
     const plugin: string = 'dgitcypress'
     describe('File operations', () => {
 
-        it('publishes on Remix IPFS and imports it', () => {
+        it.only('publishes on Remix IPFS and imports it', () => {
             openPlugin(plugin)
             stageAll()
             getIframeBody(plugin).find('*[data-id="commitMessage"]').should('be.visible').type('cypress')
             getIframeBody(plugin).find('*[data-id="commitButton"]').should('be.visible').click()
             getIframeBody(plugin).contains('Nothing to commit').should('be.visible')
-            cy.wait(2000)
             clickTab('IPFS Settings')
-            cy.wait(1000)
             getIframeBody(plugin).find(`#hostname`).clear().type('ipfs.remixproject.org')
+            cy.intercept('https://ipfs.remixproject.org/api/v0/config/show').as('ipfstatus')
             getIframeBody(plugin).find('#btncheckipfs').should('be.visible').click()
+            cy.wait('@ipfstatus').then((ob)=>console.log("STATUS", ob))//.should('have.property', 'Response.statusCode', 200)
+
+            getIframeBody(plugin).find('#ipfschecksuccess').should('be.visible')
             clickTab('IPFS Export')
-            cy.wait(1000)
             getIframeBody(plugin).find('#addtocustomipfs').should('be.visible').click()
             getIframeBody(plugin).find('#ipfshashresult').should('be.visible').invoke('data', 'hash').as('dataHash')
             clickTab('IPFS Import')
-            cy.wait(1000)
             return cy.get('@dataHash')
                 .then(dataId => {
                     getIframeBody(plugin).find('.localipfsimportbutton[data-hash="' + dataId + '"]').should('be.visible').click()
-                    cy.wait(1000)
                     getIframeBody(plugin).find('.btn').contains('Yes').should('be.visible').click()
-                    cy.wait(4000)
-                    cy.get('.btn').contains('Accept').should('be.visible').click()
-                    cy.wait(4000)
+                    cy.get('.btn').contains('Accept',{timeout:10000}).should('be.visible').click({force:true})
                     openPlugin('filePanel')
                     cy.get('#workspacesSelect option:selected').should('contain.text', 'workspace_')
                     cy.contains('README.txt').should('be.visible')

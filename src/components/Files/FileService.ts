@@ -57,9 +57,9 @@ export class LsFileService {
 
   async syncStart() {
     //await resetFileSystem();
-    console.log('sync start')
+    Utils.log('sync start')
     await this.syncFromBrowser();
-    await gitservice.init();
+    //await gitservice.init();
   }
 
   async syncFromBrowser(isLocalhost = false) {
@@ -85,7 +85,7 @@ export class LsFileService {
       this.canUseApp.next(true);
     } catch (e) {
       this.canUseApp.next(false);
-      console.log(e)
+      Utils.log(e)
       Utils.log("no workspace");
     }
     await this.showFiles();
@@ -159,7 +159,7 @@ export class LsFileService {
 
   getFilesByStatus(status: string) {
     let result:any[] = []
-    //console.log("FILE STATUS MAP", this.fileStatusResult)
+    //Utils.log("FILE STATUS MAP", this.fileStatusResult)
     this.fileStatusResult.map((m) => {
       //Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
@@ -173,7 +173,7 @@ export class LsFileService {
 
   getFilesWithNotModifiedStatus(){
     let result:any[] = []
-    //console.log("FILE STATUS MAP", this.fileStatusResult)
+    //Utils.log("FILE STATUS MAP", this.fileStatusResult)
     this.fileStatusResult.map((m) => {
       //Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {

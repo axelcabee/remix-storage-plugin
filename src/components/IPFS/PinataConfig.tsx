@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useBehaviorSubject } from "../usesubscribe/index";
-import { client, ipfservice, useLocalStorage } from "../../App";
+import { client, ipfservice, useLocalStorage, Utils } from "../../App";
 import { setConfig } from "isomorphic-git";
 
 interface PinataConfigProps {}
@@ -41,7 +41,7 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
       ipfservice.pinataConnectionStatus.next(true);
       setConfig();
     } catch (err) {
-      console.log(err);
+      Utils.log(err);
       setStatus(false);
       ipfservice.pinataConnectionStatus.next(false);
     }

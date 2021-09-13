@@ -49,13 +49,13 @@ export const loaderservice: LoaderService = new LoaderService();
 export const localipfsstorage: LocalIPFSStorage = new LocalIPFSStorage();
 
 export const resetFileSystem = async (wipe: boolean = false) => {
-  console.log("RESET FILE")
+  Utils.log("RESET FILE")
   try {
 
     client.clientLoaded.subscribe(async (load: boolean) => {
       
       //if (load) await ipfservice.setipfsHost();
-      console.log("CLIENT LOADED", load)
+      Utils.log("CLIENT LOADED", load)
       if(load === true){
         
       }
@@ -121,7 +121,7 @@ function App() {
   }
 
   useEffect(() => {
-    console.log(window.location.href)
+    Utils.log(window.location.href)
     setCompact(true)
     if (window.location.href.includes('diff')) {
       setDiffViewer(true)
@@ -259,7 +259,7 @@ export const useLocalStorage = (key: string, initialValue: any) => {
       return item ? JSON.parse(item) : initialValue;
     } catch (error) {
       // If error also return initialValue
-      console.log(error);
+      Utils.log(error);
       return initialValue;
     }
   });
@@ -276,7 +276,7 @@ export const useLocalStorage = (key: string, initialValue: any) => {
       window.localStorage.setItem(key, JSON.stringify(valueToStore));
     } catch (error) {
       // A more advanced implementation would handle the error case
-      console.log(error);
+      Utils.log(error);
     }
   };
   return [storedValue, setValue] as const;

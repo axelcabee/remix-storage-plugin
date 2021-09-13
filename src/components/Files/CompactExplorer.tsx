@@ -62,7 +62,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
   }
 
   async function fileClick(file:any){
-    console.log(file)
+    Utils.log(file)
     let status = fileservice.getFileStatusForFile(file.filename || "");
     if(status?.indexOf("modified")  !== -1){
       await client.call('manager', 'activatePlugin', 'gitdiff')
@@ -73,7 +73,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
   }
 
   function RenderFiles(ob:any) {
-      console.log('FILES', ob)
+      Utils.log('FILES', ob)
       return (<>
         {
             ob.Files.map((file:any, index: number)=>{
