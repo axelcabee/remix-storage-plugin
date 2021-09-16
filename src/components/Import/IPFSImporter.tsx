@@ -35,10 +35,10 @@ export const IPFSImporter: React.FC<ipfsimporterProps> = ({}) => {
         <input onChange={handleChange} className="form-control" type="text" id="ipfs" />
       </div>
       <div id="ipfsimportalert"></div>
-      <button disabled={(IPFSStatus?false:true)||(cid.value===""?true:false)} onClick={async()=> await importFromCID(cid.value, cid.value)} className="btn w-25 btn-primary" id="clone-btn">
+      <button disabled={(IPFSStatus?false:true)||(cid.value===""?true:false)} onClick={async()=> await importFromCID(cid.value, cid.value)} className="btn w-md-25 w-100 btn-primary" id="clone-btn">
         import from IPFS
       </button>
-      {IPFSStatus?<></>:<div className="alert alert-warning w-25 mt-2" role="alert">
+      {IPFSStatus?<></>:<div className="alert alert-warning w-md-25 w-100 mt-2" role="alert">
         Your IPFS settings are incorrect. Unable to connect. Check your settings.
       </div>}
       <hr />

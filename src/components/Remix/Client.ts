@@ -2,7 +2,7 @@ import { PluginClient } from "@remixproject/plugin";
 import { createClient } from "@remixproject/plugin-webview";
 import { toast } from "react-toastify";
 import { BehaviorSubject } from "rxjs";
-import { fileservice, ipfservice, Utils } from "../../App";
+import { client, fileservice, gitservice, ipfservice, Utils } from "../../App";
 
 export class WorkSpacePlugin extends PluginClient {
   clientLoaded = new BehaviorSubject(false);
@@ -11,22 +11,24 @@ export class WorkSpacePlugin extends PluginClient {
   constructor() {
     super();
     createClient(this);
-    toast.info("Connecting to REMIX DGIT2");
-    this.methods = ['pull', 'track']
+    toast.info("Connecting to REMIX");
+    this.methods = ['pull', 'track', 'diff']
     this.onload().then(async () => {
       //Utils.log("workspace client loaded", this);
       toast.success("Connected to REMIX");
+      Utils.log(this)
       try {
         await this.call("manager", "activatePlugin", "dGitProvider")
+        Utils.log("SET LOADED")
         this.clientLoaded.next(true);
         await this.setCallBacks();
       } catch (e) {
-        console.log(e)
+        Utils.log(e)
         toast.error("Could not activate DECENTRALIZED GIT. Please activate DECENTRALIZED GIT in the plugin list and restart this plugin.", { autoClose: false })
       }
 
       try {
-        this.call('filePanel', 'registerContextMenuItem', {
+        /* this.call('filePanel', 'registerContextMenuItem', {
           id: 'dgit',
           name: 'track',
           label: 'Track in dGit',
@@ -35,17 +37,24 @@ export class WorkSpacePlugin extends PluginClient {
           path: [],
           pattern: [],
           sticky: true
-        })
+        }) */
       } catch (e) {
 
       }
 
     });
 
+
+
+  }
+
+  async diff(filename: string) {
+    gitservice.fileToDiff = filename
+    await gitservice.diffFiles(filename)
   }
 
   async track(item: any) {
-    console.log('track')
+    Utils.log('track')
   }
 
   async pull(cid: string) {
@@ -62,7 +71,7 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("fileManager", "fileSaved", async (e) => {
       // Do something
       if (this.callBackEnabled) {
-        //Utils.log("file save",e);
+        Utils.log("file save",e);
         await fileservice.syncFromBrowser();
 
       }
@@ -71,6 +80,7 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("fileManager", "fileAdded", async (e) => {
       // Do something
       if (this.callBackEnabled) {
+        Utils.log("file add",e);
         await fileservice.syncFromBrowser();
 
         //Utils.log(e);
@@ -81,7 +91,9 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       //Utils.log(e);
       if (this.callBackEnabled) {
+        Utils.log("file rm",e);
         await fileservice.syncFromBrowser();
+        
       }
       // await this.rmFile(e)
     });
@@ -90,7 +102,7 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       //Utils.log("CHANGED",e, this);
       if (this.callBackEnabled) {
-
+        Utils.log("file changed",e);
         await fileservice.syncFromBrowser();
       }
       //await this.rmFile(e)
@@ -99,28 +111,34 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("fileManager", "fileRenamed", async (oldfile, newfile) => {
       // Do something
       if (this.callBackEnabled) {
-        //Utils.log(oldfile, newfile);
+        Utils.log(oldfile, newfile);
         await fileservice.syncFromBrowser();
 
       }
     });
 
     this.on("filePanel", "setWorkspace", async (x: any) => {
-      Utils.log("ws set", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        Utils.log("ws set", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
     this.on("filePanel", "deleteWorkspace", async (x: any) => {
-      Utils.log("wS DELETE", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        Utils.log("wS DELETE", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
     this.on("filePanel", "renameWorkspace", async (x: any) => {
-      Utils.log("wS rn", x);
-      await fileservice.syncFromBrowser(x.isLocalhost);
-      Utils.log(x);
+      if (this.callBackEnabled) {
+        Utils.log("wS rn", x);
+        await fileservice.syncFromBrowser(x.isLocalhost);
+        Utils.log(x);
+      }
     });
 
 
@@ -130,9 +148,11 @@ export class WorkSpacePlugin extends PluginClient {
 
 
   async disableCallBacks() {
+    Utils.log("DISABLE CALLBACK")
     this.callBackEnabled = false;
   }
   async enableCallBacks() {
+    Utils.log("ENABLE CALLBACK")
     this.callBackEnabled = true;
   }
 }
