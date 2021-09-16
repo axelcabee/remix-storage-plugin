@@ -1,35 +1,63 @@
 import React, { useEffect, useState } from "react";
-import { ReactGhLikeDiff } from "react-gh-like-diff";
 import "./diff.css"
 import { useBehaviorSubject } from "../../usesubscribe/index";
-import { gitservice, Utils } from "../../../App";
-import { async } from "rxjs";
+import { client, gitservice } from "../../../App";
+import { DiffEditor } from "@monaco-editor/react"
 
 interface DiffProps {}
 
-export const DiffView: React.FC<DiffProps> = ({}) => {
-  const [mock, setMock] = useState("");
+export const DiffView: React.FC<DiffProps> = () => {
+  const [theme, setTheme] = useState("vs-dark")
+  const [sideBySide,setSideBySide] = useState(false)
   const diffs = useBehaviorSubject(gitservice.diffResult);
 
-  gitservice.diffResult.subscribe((x)=>{}).unsubscribe();
+  gitservice.diffResult.subscribe((x) => { }).unsubscribe();
+
+
+  const onSideBySideChange = (event: any) => {
+    const target = event.target;
+    const value = target.checked;
+    setSideBySide(value)
+  }
+  
+  const getFyleType = (name: string) => {
+    if (name.includes(".sol")) return "sol"
+    if (name.includes(".js")) return "javascript"
+    return ""
+  }
+
+  useEffect(()=>{
+    client.on("theme", "themeChanged", function (theme) {
+      if (theme.quality === "dark") {
+        setTheme("vs-dark")
+      } else {
+        setTheme("light")
+      }
+    })
+},[])
 
   return (
     <div className='container-fluid'>
       <button className='btn btn-primary mb-3 mt-3' onClick={async() => await gitservice.diffFiles('')}>refresh</button>
-      <button className='btn btn-primary mb-3 mt-3 ml-3' onClick={async() =>  { gitservice.fileToDiff = '';  await gitservice.diffFiles('')}}>show all</button>
+      <button className='btn btn-primary mb-3 mt-3 ml-3' onClick={async () => { gitservice.fileToDiff = ''; await gitservice.diffFiles('') }}>show all</button>
+      <br></br>
+      <label>Side by side?</label>
+      <input name='force' className='ml-2' checked={sideBySide} onChange={e => onSideBySideChange(e)} type="checkbox" id="ipfs" />
       {diffs?.map((diff) => {
         return (
-           
-          <ReactGhLikeDiff key={diff.originalFileName}
-            options={{
-              outputFormat: 'line-by-line',
-              originalFileName: diff?.originalFileName,
-              updatedFileName: diff?.updatedFileName,
-            }}
-            past={diff?.past}
-            current={diff?.current}
-          />
-         
+          <>
+            <br></br>
+            <label>{diff?.originalFileName}</label>
+            <DiffEditor
+              height='50vh'
+              original={diff?.past}
+              modified={diff?.current}
+              theme={theme}
+              options={{ renderSideBySide: sideBySide }}
+              originalLanguage={getFyleType(diff.originalFileName)}
+              modifiedLanguage={getFyleType(diff.updatedFileName)}
+        />
+         </>
         );
       })}
       {diffs?.length===0?<><br></br>Nothing to see here.

@@ -67,6 +67,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
     if(status?.indexOf("modified")  !== -1){
       await client.call('manager', 'activatePlugin', 'gitdiff')
       await client.call('gitdiff' as any, 'diff', file.filename)
+      await client.call('tabs' as any, 'focus', 'gitdiff')
     }else{
       await client.call('fileManager', 'open', file.filename)
     }
@@ -147,7 +148,7 @@ export const CompactExplorer: React.FC<GitStatusProps> = ({}) => {
       if(ob.Type === 'Changes'){
         return <>
           <Col className='col-8 p-0'>
-            {status?.indexOf("deleted")  === -1? <></>:<><button data-id={`addToGit${ob.Type}${path.basename(ob.File.filename)}`} onClick={async () => await gitservice.gitrm(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faPlus} className="" /></button><button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} data-id={`undo${ob.Type}${path.basename(ob.File.filename)}`} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faUndo} className="" /></button></>}
+            {status?.indexOf("deleted")  === -1? <></>:<><button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} data-id={`undo${ob.Type}${path.basename(ob.File.filename)}`} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faUndo} className="" /></button><button data-id={`addToGit${ob.Type}${path.basename(ob.File.filename)}`} onClick={async () => await gitservice.gitrm(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faPlus} className="" /></button></>}
             {status?.indexOf("modified")  === -1? <></>:<button onClick={async () => await gitservice.checkoutfile(ob.File.filename)} data-id={`undo${ob.Type}${path.basename(ob.File.filename)}`} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faUndo} className="" /></button>}
            {(status?.indexOf("unstaged")  !== -1 || status?.indexOf("deleted")  !== -1)? <></>:<button data-id={`addToGit${ob.Type}${path.basename(ob.File.filename)}`} onClick={async () => await gitservice.addToGit(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faPlus} className="" /></button>}
            {(status?.indexOf("unstaged")  !== -1 && status?.indexOf("modified")  !== -1)? <button data-id={`addToGit${ob.Type}${path.basename(ob.File.filename)}`} onClick={async () => await gitservice.addToGit(ob.File.filename)} className='btn btn-sm btn-primary mr-1 float-right'><FontAwesomeIcon icon={faPlus} className="" /></button>:<></>}  

@@ -5,6 +5,7 @@ import path from "path";
 import { removeSlash } from "../Files/utils";
 import { BehaviorSubject } from "rxjs";
 import { fileStatuses } from "../Files/FileService";
+import { names } from "unique-names-generator";
 
 export interface diffObject {
   originalFileName: string;
@@ -422,10 +423,11 @@ export class gitService {
   async diffFiles(filename:string | undefined) {
     const statuses = fileservice.fileStatusResult;
     if(this.fileToDiff) filename = this.fileToDiff
-    //Utils.log(statuses);
+    Utils.log(statuses);
     const diffs: diffObject[] = [];
     for (let i: number = 0; i < statuses.length; i++) {
-      if ((statuses[i].statusNames?.indexOf("modified") || false) > -1) {
+      const name = statuses[i].statusNames || []
+      if ((name.indexOf("modified")) > -1) {
         //Utils.log(statuses[i].statusNames?.indexOf("modified"));
         if((filename && statuses[i].filename === filename) || !filename){
           const diff: diffObject = await this.diffFile(statuses[i].filename);

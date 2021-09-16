@@ -195,7 +195,7 @@ function App() {
               <Accordion defaultActiveKey="0">
                 <CustomToggle eventKey="0">Files</CustomToggle>
                 <Accordion.Collapse eventKey="0">
-                  <>
+                    <>
                     <GitControls compact={true} />
                     <CompactExplorer />
                     <hr></hr>

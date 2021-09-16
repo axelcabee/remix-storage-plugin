@@ -44,6 +44,8 @@ export class WorkSpacePlugin extends PluginClient {
 
     });
 
+
+
   }
 
   async diff(filename: string) {

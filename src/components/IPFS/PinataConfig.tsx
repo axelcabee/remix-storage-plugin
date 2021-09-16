@@ -56,7 +56,7 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
 
   return (
     <>
-      <h5>Pinata API credentialss</h5>
+      <h5>Pinata API credentials</h5>
       <label>API KEY</label>
       <input
         onChange={setKeyChange}
