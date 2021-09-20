@@ -28,6 +28,11 @@ export const GitHubImporter: React.FC<importerProps> = () => {
         1
     );
 
+    const [cloneBranch, setCloneBranch] = useLocalStorage(
+        "CLONE_BRANCH",
+        ''
+    );
+
     const [url, setUrl] = useLocalStorage(
         "GITHUB_URL",
         ''
@@ -79,7 +84,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     const clone = async () => {
         try {
             await ModalRef.current?.show();
-            gitservice.clone(cloneUrl, '', token, cloneDepth, !cloneAllBranches)
+            gitservice.clone(cloneUrl, cloneBranch, token, cloneDepth, !cloneAllBranches)
         } catch (e) {
 
         }
@@ -105,7 +110,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     }
 
     const fetch = async () => {
-        gitservice.fetch(url, branch || '', remoteBranch, token, name, email)
+        gitservice.fetch(currentRemote, '', '', token, name, email)
     }
 
     const onUrlChange = (value: string) => {
@@ -113,6 +118,9 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     }
     const onCloneUrlChange = (value: string) => {
         setCloneUrl(value)
+    }
+    const onCloneBranchChange = (value: string) => {
+        setCloneBranch(value)
     }
     const onBranchChange = (value: string) => {
         //setBranch(value)
@@ -214,7 +222,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <button className='btn btn-primary m-2' onClick={async () => {
                 pull()
             }}>pull</button>
-            <button className='btn btn-primary m-2 d-none' onClick={async () => {
+            <button className='btn btn-primary m-2' onClick={async () => {
                 fetch()
             }}>fetch</button><br></br>
             <label>FORCE PUSH</label>
@@ -242,6 +250,10 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                 <div className='col col-md-6 col-12'>
                     <label>URL</label>
                     <input name='cloneurl' onChange={e => onCloneUrlChange(e.target.value)} value={cloneUrl} className="form-control" type="text" id="ipfs" />
+                </div>
+                <div className='col col-md-6 col-12'>
+                <label>BRANCH</label>
+                    <input name='clonebranch' onChange={e => onCloneBranchChange(e.target.value)} value={cloneBranch} className="form-control" type="text" id="clonebranch" />
                 </div>
                 <div className='col col-md-6 col-12'>
                     <label>DEPTH **</label>
