@@ -213,16 +213,16 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                     <label>REMOTE BRANCH</label>
                     <input name ='remotebranch' onChange={e => onRemoteBranchChange(e.target.value)} value={remoteBranch} className="form-control" type="text" id="ipfs" />
                 </div></div>
-            <button className='btn btn-primary m-2' onClick={async () => {
+            <button className='btn btn-primary m-1' onClick={async () => {
                 await gitservice.init()
             }}>init</button>
-            <button className='btn btn-primary m-2' onClick={async () => {
+            <button className='btn btn-primary m-1' onClick={async () => {
                 push()
             }}>push</button>
-            <button className='btn btn-primary m-2' onClick={async () => {
+            <button className='btn btn-primary m-1' onClick={async () => {
                 pull()
             }}>pull</button>
-            <button className='btn btn-primary m-2' onClick={async () => {
+            <button className='btn btn-primary m-1' onClick={async () => {
                 fetch()
             }}>fetch</button><br></br>
             <label>FORCE PUSH</label>
@@ -241,7 +241,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             </div>
 
 
-            <button className='btn btn-primary m-2' onClick={async () => {
+            <button className='btn btn-primary m-1' onClick={async () => {
                 addRemote()
             }}>add remote</button><br></br>
             <hr></hr>
