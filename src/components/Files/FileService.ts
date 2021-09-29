@@ -21,9 +21,10 @@ export const fileStatuses = [
   ["modified,staged,with unstaged changes", 1, 2, 3], // modified, staged, with unstaged changes
   ["deleted,unstaged", 1, 0, 1], // deleted, unstaged
   ["deleted,staged", 1, 0, 0],
-  ["deleted", 1, 1, 0], // deleted, staged
+  //["deleted", 1, 1, 0], // deleted, staged
   ["unmodified", 1, 1, 3],
   ["deleted,not in git", 0, 0, 3],
+  ["unstaged,modified", 1, 2, 0]
 ];
 
 const statusmatrix: statusMatrix[] = fileStatuses.map((x: any) => {
@@ -38,6 +39,7 @@ export class LsFileService {
   canUseApp = new BehaviorSubject<boolean>(true);
   confirmDeletion = new BehaviorSubject<boolean | undefined>(undefined);
   fileStatusResult: fileStatusResult[] = [];
+
 
   // RESET FUNCTIONS
 
@@ -55,14 +57,17 @@ export class LsFileService {
 
   async syncStart() {
     //await resetFileSystem();
+    Utils.log('sync start')
     await this.syncFromBrowser();
-    await gitservice.init();
+    //await gitservice.init();
   }
 
   async syncFromBrowser(isLocalhost = false) {
+    loaderservice.setLoading(true)
     await client.disableCallBacks();
     if (isLocalhost) {
       this.canUseApp.next(false);
+      loaderservice.setLoading(false)
       return;
     }
     try {
@@ -80,7 +85,7 @@ export class LsFileService {
       this.canUseApp.next(true);
     } catch (e) {
       this.canUseApp.next(false);
-      console.log(e)
+      Utils.log(e)
       Utils.log("no workspace");
     }
     await this.showFiles();
@@ -137,11 +142,11 @@ export class LsFileService {
     Utils.log("file status", this.fileStatusResult);
   }
 
-  getFilesByStatus(status: string) {
+  getFilesCountByStatus(status: string) {
     let count = 0;
     ////Utils.log("STATUS?", status);
     this.fileStatusResult.map((m) => {
-      ////Utils.log("STATUS?", m);
+      //Utils.log("STATUS?", m);
       if (m.statusNames !== undefined) {
         if (m.statusNames?.indexOf(status) > -1) {
           count++;
@@ -150,6 +155,34 @@ export class LsFileService {
       }
     });
     return count;
+  }
+
+  getFilesByStatus(status: string) {
+    let result:any[] = []
+    //Utils.log("FILE STATUS MAP", this.fileStatusResult)
+    this.fileStatusResult.map((m) => {
+      //Utils.log("STATUS?", m);
+      if (m.statusNames !== undefined) {
+        if (m.statusNames?.indexOf(status) > -1) {
+          result.push(m)
+        }
+      }
+    });
+    return result;
+  }
+
+  getFilesWithNotModifiedStatus(){
+    let result:any[] = []
+    //Utils.log("FILE STATUS MAP", this.fileStatusResult)
+    this.fileStatusResult.map((m) => {
+      //Utils.log("STATUS?", m);
+      if (m.statusNames !== undefined) {
+        if (m.statusNames?.indexOf("unmodified") === -1) {
+          result.push(m)
+        }
+      }
+    });
+    return result;
   }
 
   getFileStatusForFile(filename: string) {
@@ -161,22 +194,23 @@ export class LsFileService {
   }
 
   async showFiles() {
+    loaderservice.setLoading(true)
     //$('#files').show()
     //$('#diff-container').hide()
-    let files = await gitservice.getStatusMatrixFiles(); //await this.getDirectory("/");
-    Utils.log("start get files");
-    Utils.log("matrix files", files);
-    let filesinbrowser = await this.getDirectoryFromIde("/");
+    //let files = await gitservice.getStatusMatrixFiles(); //await this.getDirectory("/");
+    //Utils.log("start get files");
+    //Utils.log("matrix files", files);
+    //let filesinbrowser = await this.getDirectoryFromIde("/");
     //Utils.log("get matrix result", files, filesinbrowser);
 
     try {
       await this.getFileStatusMatrix();
-      Utils.log("files", files);
-      let jsonfiles = await jsonObjectFromFileList(
-        arrayUnique(filesinbrowser.concat(files))
-      );
-      Utils.log("json files", jsonfiles);
-      this.filetreecontent.next(jsonfiles);
+      //Utils.log("files", files);
+      //let jsonfiles = await jsonObjectFromFileList(
+      //  arrayUnique(filesinbrowser.concat(files))
+      //);
+      //Utils.log("json files", jsonfiles);
+      //this.filetreecontent.next(jsonfiles);
     } catch (e) {
       //Utils.log(e);
     }
@@ -186,7 +220,17 @@ export class LsFileService {
     try {
       await gitservice.getBranches();
     } catch (e) {}
+    try {
+      await gitservice.getRemotes();
+    } catch (e) {}
+    try {
+      await gitservice.getStorageUsed();
+    } catch (e) {}
+    try {
+      await gitservice.diffFiles('');
+    } catch (e) {}
     await gitservice.checkForFilesCommmited();
+    loaderservice.setLoading(false)
     return true;
   }
 

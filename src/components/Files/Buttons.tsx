@@ -12,7 +12,7 @@ export const FileButtons: React.FC<FileButtonsProps> = ({
   setTab,
 }: FileButtonsProps) => {
   const diffFile = (file: fileExplorerNode) => {
-    gitservice.diffFiles();
+    gitservice.diffFiles('');
     ///setTab("diff")
   };
 

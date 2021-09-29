@@ -31,10 +31,11 @@ export const GitBranch: React.FC<gitBranchProps> = ({}) => {
       //Utils.log(branch);
     })
     .unsubscribe();
-  const checkout = async (oid: string) => {
+  const checkout = async (oid: string, remote: string | 'origin') => {
     try {
       await ModalRef.current?.show();
-      gitservice.checkout({ref:oid});
+      let cmd = {ref:oid, remote:remote}
+      gitservice.checkout(cmd);
       //Utils.log("yes");
     } catch (e) {
       //Utils.log("no");
@@ -55,17 +56,17 @@ export const GitBranch: React.FC<gitBranchProps> = ({}) => {
           }
           ref={ModalRef}
         ></ConfirmDelete>
-        <Alert className="w-50" variant="success">
+        <Alert className="w-md-50 w-100 text-break" variant="success">
           {branch}
         </Alert>
-        {branches?.map((branch) => {
+        {branches?.map((branch, index) => {
           return (
-            <div key={branch} className="row p-1">
-              <div className="col-2">{branch}</div>
+            <div key={index} className="row p-1">
+              <div className="col-md-2 col-6">{branch.name} on {branch.remote || 'local'}</div>
               <div className="col">
                 <span className="float-right">
                   <div
-                    onClick={async () => await checkout(branch)}
+                    onClick={async () => await checkout(branch.name, branch.remote)}
                     className="btn btn-primary btn-sm checkout-btn"
                   >
                     checkout
@@ -81,14 +82,14 @@ export const GitBranch: React.FC<gitBranchProps> = ({}) => {
           <label>Branchname</label>
           <input
             onChange={handleChange}
-            className="form-control w-25"
+            className="form-control w-md-25 w-100"
             type="text"
             id="newbranchname"
           />
         </div>
         <button
           onClick={async () => gitservice.createBranch(newBranch.value)}
-          className="btn w-25 btn-primary"
+          className="btn w-md-25 w-100 btn-primary"
           id="createbranch-btn"
         >
           git branch

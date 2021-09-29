@@ -1,10 +1,11 @@
 import git, { ReadCommitResult } from "isomorphic-git";
-import { client, fileservice, Utils } from "../../App";
+import { client, fileservice, loaderservice, Utils } from "../../App";
 import { toast } from "react-toastify";
 import path from "path";
 import { removeSlash } from "../Files/utils";
 import { BehaviorSubject } from "rxjs";
 import { fileStatuses } from "../Files/FileService";
+import { names } from "unique-names-generator";
 
 export interface diffObject {
   originalFileName: string;
@@ -15,16 +16,25 @@ export interface diffObject {
 export class gitService {
   commits = new BehaviorSubject<ReadCommitResult[] | undefined>(undefined);
   branch = new BehaviorSubject<string>("");
-  branches = new BehaviorSubject<string[] | undefined>(undefined);
+  branches = new BehaviorSubject<any[] | undefined>(undefined);
+  remotes = new BehaviorSubject<any[] | undefined>(undefined);
   diffResult = new BehaviorSubject<diffObject[] | undefined>(undefined);
   reponameSubject = new BehaviorSubject<string>("");
   canCommit = new BehaviorSubject<boolean>(true);
   canExport = new BehaviorSubject<boolean>(false);
+  storageUsed = new BehaviorSubject<string>("");
   reponame = "";
+  fileToDiff:string = ''
 
   async init() {
-    await client.call("dGitProvider", "init");
-    await fileservice.showFiles();
+    try {
+      await client.call("dGitProvider", "init");
+      toast.success('Git repository initialized')
+      await fileservice.showFiles();
+    } catch (e) {
+      toast.error(`There were errors on initializing git: ${e.message}`)
+    }
+
   }
 
   async addAllToGit() {
@@ -36,11 +46,11 @@ export class gitService {
             status.map(([filepath, , worktreeStatus]) =>
               worktreeStatus
                 ? client.call("dGitProvider", "add", {
-                    filepath: removeSlash(filepath),
-                  })
+                  filepath: removeSlash(filepath),
+                })
                 : client.call("dGitProvider", "rm", {
-                    filepath: removeSlash(filepath),
-                  })
+                  filepath: removeSlash(filepath),
+                })
             )
           )
         );
@@ -69,7 +79,7 @@ export class gitService {
             await client.call("dGitProvider", "add", {
               filepath: removeSlash(filepath),
             });
-          } catch (e) {}
+          } catch (e) { }
         }
         await fileservice.showFiles();
         toast.success(`Added ${filename}`);
@@ -83,7 +93,7 @@ export class gitService {
     ////Utils.log('RM GIT', $(args[0].currentTarget).data('file'))
     const filename = args; // $(args[0].currentTarget).data('file')
 
-    await client.call("dGitProvider", "add", {
+    await client.call("dGitProvider", "rm", {
       filepath: removeSlash(filename),
     });
     await fileservice.showFiles();
@@ -91,6 +101,7 @@ export class gitService {
   }
 
   async checkoutfile(filename: any) {
+    //await client.call('fileManager' as any, 'closeAllFiles')
     ///const filename = ""; //$(args[0].currentTarget).data('file')
     //Utils.log("checkout", [`${filename}`], removeSlash(filename));
     let oid = await this.getLastCommmit();
@@ -109,7 +120,7 @@ export class gitService {
         await client.call(
           "fileManager",
           "setFile",
-          Utils.addSlash(filename),
+          removeSlash(filename),
           original
         );
         await client.enableCallBacks();
@@ -124,9 +135,10 @@ export class gitService {
       }
   }
 
-  async checkout(cmd :any) {
+  async checkout(cmd: any) {
     toast.dismiss();
     await client.disableCallBacks();
+    await client.call('fileManager', 'closeAllFiles')
     try {
       await client.call("dGitProvider", "checkout", cmd);
       this.gitlog();
@@ -187,7 +199,7 @@ export class gitService {
         this.branch.next(`HEAD detached at ${currentcommitoid}`);
         this.canCommit.next(false);
       } else {
-        this.branch.next(`Branch is: ${branch} at commit ${currentcommitoid}`);
+        this.branch.next(branch);
         this.canCommit.next(true);
       }
     } catch (e) {
@@ -217,28 +229,36 @@ export class gitService {
   }
 
   async commit(message: string = "") {
-    //Utils.log("commit");
-    // let filescommited = await this.listFilesInstaging();
-    // //Utils.log(filescommited);
-    // if (filescommited.length === 0) {
-    //   toast.error("no files to commit");
-    //   return;
-    // }
-    const sha = await client.call("dGitProvider", "commit", {
-      author: {
-        name: "Remix Workspace",
-        email: "",
-      },
-      message: message,
-    });
-    toast.success(`Commited: ${sha}`);
 
-    await fileservice.showFiles();
+    try {
+      const sha = await client.call("dGitProvider", "commit", {
+        author: {
+          name: localStorage.getItem('GITHUB_NAME') || 'Remix Workspace',
+          email: localStorage.getItem('GITHUB_EMAIL'),
+        },
+        message: message,
+      });
+      toast.success(`Commited: ${sha}`);
+  
+      await fileservice.showFiles();
+    } catch (err) {
+      toast.error(`${err}`)
+    }
+
   }
 
   async getBranches() {
-    let branches: string[] = await client.call("dGitProvider", "branches");
+    let branches: any[] = await client.call("dGitProvider", "branches");
     this.branches.next(branches);
+  }
+  async getRemotes() {
+    let remotes: any = await client.call("dGitProvider", "remotes" as any);
+    this.remotes.next(remotes || []);
+  }
+
+  async getStorageUsed() {
+    let storage: string = await client.call("dGitProvider", "localStorageUsed" as any);
+    this.storageUsed.next(storage);
   }
 
   async getCommitFromRef(ref: string) {
@@ -263,7 +283,7 @@ export class gitService {
   }
 
   async statusMatrix(dir: string = "/", ref: string = "HEAD") {
-    Utils.log("calll status");
+    Utils.log("call status");
     const matrix = await client.call("dGitProvider", "status", { ref: "HEAD" });
     Utils.log("MATRIX", matrix);
     let result = (matrix || []).map((x) => {
@@ -273,6 +293,85 @@ export class gitService {
       };
     });
     return result;
+  }
+
+  async clone(url: string, branch: string, token: string, depth: number, singleBranch: boolean) {
+    loaderservice.setLoading(true)
+    try {
+      await client.disableCallBacks()
+      await client.call("dGitProvider", "clone" as any, { url, branch, token, depth, singleBranch });
+      await client.enableCallBacks()
+      await fileservice.syncFromBrowser(false)
+      toast.success("Cloned")
+    } catch (e) {
+      toast.error(e.message)
+    }
+    loaderservice.setLoading(false)
+  }
+
+
+
+  async addRemote(remote: string, url: string) {
+    loaderservice.setLoading(true)
+    try {
+      await client.call("dGitProvider", "addremote" as any, { remote, url });
+      toast.success("Remote added")
+    } catch (e) {
+      toast.error("Please init your repo first...")
+    }
+    loaderservice.setLoading(false)
+  }
+
+  async delRemote(remote: string) {
+    loaderservice.setLoading(true)
+    try {
+      await client.call("dGitProvider", "delremote" as any, { remote });
+      toast.success("Remote removed")
+    } catch (e) {
+      toast.error(e.message)
+    }
+    loaderservice.setLoading(false)
+  }
+
+  async push(remote: string, ref: string, remoteRef: string, token: string, force: boolean, name: string, email: string) {
+    loaderservice.setLoading(true)
+    try {
+      const result = await client.call("dGitProvider", "push" as any, { remote, ref, remoteRef, token, force, name, email });
+      
+      toast.success("Pushed")
+    } catch (e) {
+      toast.error(e.message)
+    }
+    loaderservice.setLoading(false)
+  }
+
+  async pull(remote: string, ref: string, remoteRef: string, token: string,name: string, email: string) {
+    loaderservice.setLoading(true)
+    try {
+      await client.disableCallBacks()
+      await client.call("dGitProvider", "pull" as any, { remote, ref, remoteRef, token, name, email });
+      await client.enableCallBacks()
+      await fileservice.syncFromBrowser(false)
+      toast.success("Pulled")
+    } catch (e) {
+      await client.enableCallBacks()
+      toast.error(e.message)
+    }
+    loaderservice.setLoading(false)
+  }
+
+  async fetch(remote: string, ref: string, remoteRef: string, token: string, name: string, email: string) {
+    loaderservice.setLoading(true)
+    try {
+      await client.disableCallBacks()
+      await client.call("dGitProvider", "fetch" as any, { remote, ref, remoteRef, token, name, email });
+      await client.enableCallBacks()
+      await fileservice.syncFromBrowser(false)
+      toast.success("Fetched")
+    } catch (e) {
+      toast.error(e.message)
+    }
+    loaderservice.setLoading(false)
   }
 
   async getStatusMatrixFiles() {
@@ -321,21 +420,25 @@ export class gitService {
     }
   }
 
-  async diffFiles() {
+  async diffFiles(filename:string | undefined) {
     const statuses = fileservice.fileStatusResult;
-    //Utils.log(statuses);
+    if(this.fileToDiff) filename = this.fileToDiff
+    Utils.log(statuses);
     const diffs: diffObject[] = [];
     for (let i: number = 0; i < statuses.length; i++) {
-      if ((statuses[i].statusNames?.indexOf("modified") || false) > -1) {
+      const name = statuses[i].statusNames || []
+      if ((name.indexOf("modified")) > -1) {
         //Utils.log(statuses[i].statusNames?.indexOf("modified"));
-        const diff: diffObject = await this.diffFile(statuses[i].filename);
-        diffs.push(diff);
+        if((filename && statuses[i].filename === filename) || !filename){
+          const diff: diffObject = await this.diffFile(statuses[i].filename);
+          diffs.push(diff);
+        }
       }
     }
     this.diffResult.next(diffs);
   }
 
-  async zip(){
+  async zip() {
     await client.call(
       "dGitProvider",
       "zip"
@@ -351,7 +454,7 @@ export class gitService {
       const commitOid = await client.call(
         "dGitProvider",
         "resolveref",
-        {ref:"HEAD"}
+        { ref: "HEAD" }
       );
 
       const { blob } = await client.call("dGitProvider", "readblob", {

@@ -42,6 +42,9 @@ export class IPFSService {
   async setipfsHost() {
     Utils.log(this.ipfsconfig)
     try {
+      setTimeout(() => {
+        client.cancel('dGitProvider' as any,'setIpfsConfig')
+      },2000)
       const c = await client.call("dGitProvider", "setIpfsConfig", this.ipfsconfig ) 
       Utils.log(c)
       this.connectionStatus.next(c)
@@ -81,7 +84,7 @@ export class IPFSService {
     if(!connect){toast.error("Unable to connect to IPFS check your settings.",{autoClose:false}); return false;}
     loaderservice.setLoading(true)
     try {
-      const result = await client.call('dGitProvider', 'push')
+      const result = await client.call('dGitProvider', 'export' as any)
       Utils.log(result)
       this.cid = result;
       this.cidBehavior.next(this.cid);
@@ -128,14 +131,16 @@ export class IPFSService {
       return false;
     }
     try {
-      await client.call('dGitProvider', 'pull', {cid:cid, local:local})
+      Utils.log("IMPORT START")
+      await client.call('dGitProvider', 'import' as any, {cid:cid, local:local})
+      Utils.log("IMPORT DONE")
       loaderservice.setLoading(false)
       //await fileservice.syncToBrowser();
       await fileservice.syncStart()
     } catch (e) {
       loaderservice.setLoading(false)
       await client.enableCallBacks()
-      console.log(e.message)
+      Utils.log(e.message)
       toast.error(e.message,{autoClose:false});
       toast.error('Sometimes the IPFS data is not yet available. Please try again later.',{autoClose:false});
     }

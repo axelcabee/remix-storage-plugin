@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useBehaviorSubject } from "../usesubscribe/index";
-import { client, ipfservice, useLocalStorage } from "../../App";
+import { client, ipfservice, useLocalStorage, Utils } from "../../App";
 import { setConfig } from "isomorphic-git";
 
 interface PinataConfigProps {}
@@ -32,14 +32,16 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
   const checkconfig = async () => {
     toast.dismiss();
     try {
+      setTimeout(() => {
+        client.cancel('dGitProvider' as any, 'pinList')
+      },3000)
       let r = await client.call("dGitProvider" as any, "pinList", key, secret);
-      console.log(r);
       setStatus(true);
       ipfservice.pinataConnectionStatus.next(false);
       ipfservice.pinataConnectionStatus.next(true);
       setConfig();
     } catch (err) {
-      console.log(err);
+      Utils.log(err);
       setStatus(false);
       ipfservice.pinataConnectionStatus.next(false);
     }
@@ -54,7 +56,7 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
 
   return (
     <>
-      <h5>Pinata API credentialss</h5>
+      <h5>Pinata API credentials</h5>
       <label>API KEY</label>
       <input
         onChange={setKeyChange}
@@ -71,15 +73,15 @@ export const PinataConfig: React.FC<PinataConfigProps> = ({}) => {
         id="url"
         value={secret}
       />
-      <button className="btn btn-primary mt-5" onClick={checkconfig}>
+      <button id='btncheckpinata' className="btn btn-primary mt-5" onClick={checkconfig}>
         Check connection
       </button>
       {status ? (
-        <div className="alert alert-success w-25 mt-2" role="alert">
+        <div id='pinatachecksuccess' className="alert alert-success w-md-25 w-100 mt-2" role="alert">
           Your pinata settings are working correctly.
         </div>
       ) : (
-        <div className="alert alert-warning w-25 mt-2" role="alert">
+        <div id='pinatacheckerror' className="alert alert-warning w-md-25 w-100 mt-2" role="alert">
           Your pinata settings are incorrect. Unable to connect. Check your
           settings.
         </div>

@@ -6,7 +6,8 @@ import {
   faFolderPlus,
   faFolderMinus,
   faFolderOpen,
-  faFolder
+  faFolder,
+  faSync
 } from "@fortawesome/free-solid-svg-icons";
 import {
   faFileAlt,
@@ -36,7 +37,7 @@ export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
 
   const getFileStatus = function (file: fileExplorerNode) {
     let result = fileservice.getFileStatusForFile(file.fullname || "");
-    ////Utils.log("file status", file, result);
+    //Utils.log("file status", file, result);
     return <StatusButtons statuses={result} />;
   };
 
@@ -124,9 +125,12 @@ export const FileExplorer: React.FC<FileExplorerProps> = (props) => {
     <>
       {(files || { children: [] }).children?.map((x: any) => {
         return (
+          <>
+          <button onClick={async () => await fileservice.syncFromBrowser()} className='btn btn-sm btn-primary mb-4'><FontAwesomeIcon icon={faSync} className="" /></button>
           <ul className="mw-50 basefiletree" key={x.id} id="filetree">
             {renderChildren(x)}
           </ul>
+          </>
         );
       })}
     </>
