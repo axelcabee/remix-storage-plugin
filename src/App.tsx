@@ -96,6 +96,7 @@ function App() {
   const [compact, setCompact] = useState<boolean>(false)
   const [diffViewer, setDiffViewer] = useState<boolean>(false)
   const maxStorage: number = 10000;
+  const [theme, setTheme] = useState("vs-dark")
 
   gitservice.reponameSubject.subscribe((x) => { }).unsubscribe();
   gitservice.canCommit.subscribe((x) => { }).unsubscribe();
@@ -127,6 +128,16 @@ function App() {
     }
     resetFileSystem(false).then((x) => setCanLoad(x));
   }, []);
+
+  useEffect(() => {
+    client.on("theme", "themeChanged", function (theme) {
+      if (theme.quality === "dark") {
+        setTheme("#222336")
+      } else {
+        setTheme("#FFFFFF")
+      }
+    })
+  }, [])
 
   function CustomToggle(ob: any) {
 
@@ -174,7 +185,7 @@ function App() {
 
           (<Container fluid>
             {loading ? (
-              <Loading loading background="#2ecc71" loaderColor="#3498db" />
+              <Loading loading background={theme} loaderColor="#3498db" />
             ) : (
               <></>
             )}
