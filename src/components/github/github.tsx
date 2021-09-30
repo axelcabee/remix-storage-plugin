@@ -174,6 +174,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             {name ? <></> :
                 <Alert variant='warning'>Missing GitHub name & email.</Alert>
             }
+            <hr></hr>
             <h4>Available remotes</h4>
             {
                 remotes?.map((remote, index:number) => {

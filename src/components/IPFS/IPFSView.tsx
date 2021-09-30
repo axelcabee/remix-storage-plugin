@@ -85,7 +85,7 @@ export const IPFSView: React.FC<IPFSViewProps> = () => {
 
   return (
     <>
-
+      <hr></hr>
       {canExport ? (
         <></>
       ) : (

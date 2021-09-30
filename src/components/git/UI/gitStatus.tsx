@@ -21,6 +21,7 @@ export const GitStatus: React.FC<GitStatusProps> = ({ }) => {
       show = (deleted > 0 || staged > 0 || untracked > 0 || modified > 0)
       let total = deleted + staged + untracked + modified
       
+
       client.onload(() => {
         client.emit('statusChanged', {
           key: total===0? 'none':total,

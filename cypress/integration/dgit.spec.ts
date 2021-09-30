@@ -3,7 +3,9 @@ import { Profile, LocationProfile, ExternalProfile } from '@remixproject/plugin-
 
 context('Actions', () => {
     beforeEach(() => {
+        
         cy.visit('http://localhost:8080')
+        indexedDB.deleteDatabase('RemixFileSystem')
         cy.viewport('macbook-16')
         cy.get('#remixTourSkipbtn').click()
         installPlugin({
@@ -94,9 +96,10 @@ context('Actions', () => {
             clickTab('IPFS Import')
             return cy.get('@dataHash')
                 .then(dataId => {
+                    console.log(dataId, cy)
                     getIframeBody(plugin).find('.localipfsimportbutton[data-hash="' + dataId + '"]').should('be.visible').click()
                     getIframeBody(plugin).find('.btn').contains('Yes').should('be.visible').click()
-                    cy.get('.btn').contains('Accept',{timeout:10000}).should('be.visible').click({force:true})
+                    cy.get('span').contains('Accept',{timeout:10000}).click({force:true})
                     openPlugin('filePanel')
                     cy.get('#workspacesSelect option:selected').should('contain.text', 'workspace_')
                     cy.contains('README.txt').should('be.visible')

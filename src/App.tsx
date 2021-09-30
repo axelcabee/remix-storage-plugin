@@ -53,15 +53,15 @@ export const resetFileSystem = async (wipe: boolean = false) => {
   try {
 
     client.clientLoaded.subscribe(async (load: boolean) => {
-      
+
       //if (load) await ipfservice.setipfsHost();
       Utils.log("CLIENT LOADED", load)
-      if(load === true){
-        
+      if (load === true) {
+
       }
-      if (load === true ) await localipfsstorage.init();
-      if (load === true ) await fileservice.syncStart();
-      
+      if (load === true) await localipfsstorage.init();
+      if (load === true) await fileservice.syncStart();
+
       if (load) await ipfservice.setipfsHost();
     });
     return true;
@@ -95,7 +95,6 @@ function App() {
   const [confirmShow, setConfirmShow] = React.useState(false);
   const [compact, setCompact] = useState<boolean>(false)
   const [diffViewer, setDiffViewer] = useState<boolean>(false)
-
   const maxStorage: number = 10000;
 
   gitservice.reponameSubject.subscribe((x) => { }).unsubscribe();
@@ -141,18 +140,19 @@ function App() {
 
     return (
       <>
-        <div onClick={decoratedOnClick} className='w-100 list-group-item p-0 pointer'>
+        <div onClick={decoratedOnClick} className='w-100 list-group-item p-0 pointer mb-1'>
           <Accordion.Toggle eventKey={ob.eventKey}
             as={Button}
             variant="link"
           >
+
             {ob.children}
+
           </Accordion.Toggle>
           {
             isCurrentEventKey ? <FontAwesomeIcon className='ml-2 mr-2 mt-2 float-right' icon={faCaretUp}></FontAwesomeIcon> : <FontAwesomeIcon className='ml-2 mr-2 mt-2 float-right' icon={faCaretDown}></FontAwesomeIcon>
           }
         </div>
-        <hr></hr>
       </>
     );
   }
@@ -178,7 +178,7 @@ function App() {
             ) : (
               <></>
             )}
-            <FontAwesomeIcon icon={faExclamationTriangle}></FontAwesomeIcon><a className='small pl-2' href='https://github.com/bunsenstraat/remix-storage-plugin/issues' target='_blank'>Submit issues</a>
+
             <div className="nav navbar bg-light p-3"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName} | storage: {storageUsed}KB / 10000KB</div></div>
             <ProgressBar variant={storageVariant()} label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000} />
             {compact ? <><hr></hr></> : <GitStatus></GitStatus>}
@@ -192,10 +192,10 @@ function App() {
             <ToastContainer position={compact ? "bottom-right" : "top-right"} />
             {compact ?
 
-              <Accordion defaultActiveKey="0">
-                <CustomToggle eventKey="0">Files</CustomToggle>
+              <Accordion>
+                <CustomToggle eventKey="0">Source control</CustomToggle>
                 <Accordion.Collapse eventKey="0">
-                    <>
+                  <>
                     <GitControls compact={true} />
                     <CompactExplorer />
                     <hr></hr>
@@ -241,6 +241,7 @@ function App() {
               </Accordion> :
 
               <></>}
+            <FontAwesomeIcon icon={faExclamationTriangle}></FontAwesomeIcon><a className='small pl-2' href='https://github.com/bunsenstraat/remix-storage-plugin/issues' target='_blank'>Submit issues</a>
           </Container>)
       )}
     </div>

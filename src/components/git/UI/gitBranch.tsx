@@ -43,6 +43,7 @@ export const GitBranch: React.FC<gitBranchProps> = ({}) => {
   };
   return (
     <>
+      <hr></hr>
       <div className={show ? "" : "d-none"}>
         <h4>Branches</h4>
         <ConfirmDelete

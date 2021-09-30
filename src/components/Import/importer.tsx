@@ -13,6 +13,7 @@ interface importerProps {}
 export const Importer: React.FC<importerProps> = ({}) => {
   return (
     <>
+        <hr></hr>
         <IPFSImporter/>
         <PinataImport></PinataImport>
         <LocalIPFSView/>
