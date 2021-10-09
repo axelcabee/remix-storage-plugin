@@ -50,8 +50,11 @@
   "scripts": {
     "start": "yarn start",
     "build": "yarn build",
-    "test:dev": "testcafe",
-    "test": "testcafe -r xunit:/tmp/test-results/testcafe/results.xml"
+    "test:dev": "export TEST_URL=http://localhost:8080 && testcafe",
+    "test:production": "export TEST_URL=https://remix.ethereum.org && testcafe",
+    "test:alpha": "export TEST_URL=https://remix-alpha.ethereum.org && testcafe",
+    "test:production-ci": "export TEST_URL=https://remix.ethereum.org && testcafe -r xunit:/tmp/test-results/testcafe/results.xml",
+    "test:alpha-ci": "export TEST_URL=https://remix-alpha.ethereum.org && testcafe -r xunit:/tmp/test-results/testcafe/results.xml"
   },
   "eslintConfig": {
     "extends": [

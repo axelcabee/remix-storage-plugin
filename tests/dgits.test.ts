@@ -1,7 +1,7 @@
 import { Selector } from 'testcafe';
 
 fixture`DGIT production tests`
-    .page('https://remix.ethereum.org')
+    .page(process.env.TEST_URL)
     .beforeEach( async t => {
         await t.click(Selector('Button').withText('Sure'))
         .click('.introjs-skipbutton')
