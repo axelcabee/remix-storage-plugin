@@ -3,7 +3,7 @@ let os = require("os");
 module.exports = {
     skipJsErrors: true,
     pageLoadTimeout: 40000,
-    browsers: "chrome",
+    browsers: "chrome:headless",
     screenshots: {
         "path": "./artifacts/",
         "takeOnFails": true,

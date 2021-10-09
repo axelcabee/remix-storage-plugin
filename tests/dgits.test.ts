@@ -42,7 +42,7 @@ test('stage files and export', async t => {
 
     hash = await Selector('#ipfshashresult').getAttribute('data-hash');
     
-    console.log(hash)
+    console.log('export to', hash)
 })
 
 test('import with hash', async t => {
