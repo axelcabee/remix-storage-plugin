@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout
       - browser-tools/install-browser-tools
-      - node/install-packages
+      - yarn
       - run:
           command: npm run test
       - store_test_results:
