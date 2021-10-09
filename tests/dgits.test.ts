@@ -3,7 +3,7 @@ import { Selector } from 'testcafe';
 fixture`DGIT production tests`
     .page(process.env.TEST_URL)
     .beforeEach( async t => {
-        await t.setPageLoadTimeout(120000).click(Selector('Button').withText('Sure'))
+        await t.wait(60000).click(Selector('Button').withText('Sure'))
         .click('.introjs-skipbutton')
     });
 
