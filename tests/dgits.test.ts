@@ -11,7 +11,7 @@ fixture`DGIT production tests`
             name: 'dgittest',
             displayName: 'dgit',
             location: 'sidePanel',
-            url: 'http://localhost:3000',
+            url: 'http://localhost',
             canActivate: [
                 'dGitProvider'
             ]
