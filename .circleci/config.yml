@@ -16,11 +16,11 @@ jobs:
           name: Install testcafe
           command: yarn
       - run:
-          name: Build dgit
-          command: export CI=false && yarn build
-      - run:
           name: start dgit
-          command: export CI=true && yarn start
+          command: export CI=true && yarn start &
+      - run:
+          name: wait on dgit
+          command: sleep 10
       - run:
           name: npm run test alpha
           command: npm run test:alpha-ci
