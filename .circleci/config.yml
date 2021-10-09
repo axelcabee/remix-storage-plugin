@@ -9,9 +9,8 @@ jobs:
     steps:
       - checkout
       - browser-tools/install-browser-tools
-      - yarn
       - run:
-          command: npm run test
+          command: yarn && npm run test
       - store_test_results:
           path: /tmp/test-results
 workflows:
