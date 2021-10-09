@@ -5,12 +5,12 @@ module.exports = {
     pageLoadTimeout: 40000,
     browsers: "chrome:headless",
     screenshots: {
-        "path": "./artifacts/",
+        "path": "/tmp/artifacts",
         "takeOnFails": true,
         "pathPattern": "${DATE}_${TIME}/test-${TEST_INDEX}/${USERAGENT}/${FILE_INDEX}.png"
     },
-    videoPath: "./artifacts/videos",
-    videoOptions: {
+    videoPath: "/tmp/artifacts",
+    videoOptions: {  
         "singleFile": false,
         "failedOnly": true,
         "pathPattern": "${DATE}_${TIME}/test-${TEST_INDEX}/${USERAGENT}/${FILE_INDEX}.mp4"
