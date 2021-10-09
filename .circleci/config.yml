@@ -17,10 +17,10 @@ jobs:
           command: yarn
       - run:
           name: Build dgit
-          command: yarn build
+          command: export CI=false && yarn build
       - run:
           name: start dgit
-          command: yarn start
+          command: export CI=true && yarn start
       - run:
           name: npm run test alpha
           command: npm run test:alpha-ci
