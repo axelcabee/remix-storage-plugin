@@ -9,6 +9,7 @@ jobs:
     steps:
       - checkout
       - browser-tools/install-browser-tools
+      - curl -o- -L https://yarnpkg.com/install.sh | bash
       - yarn
       - run:
           command: npm run test
