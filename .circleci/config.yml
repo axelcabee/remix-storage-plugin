@@ -9,14 +9,14 @@ jobs:
     steps:
       - run:
           name: ip
-          command: hostname -I
+          command: echo $HOSTNAME
       - checkout
       - browser-tools/install-browser-tools
       - run:
           name: Install FFMPEG
           command: sudo apt-get install -y ffmpeg
       - run:
-          name: Install testcafe
+          name: Install
           command: yarn
       - run:
           name: start dgit
