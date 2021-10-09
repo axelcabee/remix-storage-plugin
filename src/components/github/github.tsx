@@ -208,11 +208,11 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <div className='row'>
                 <div className='col col-md-6 col-12'>
                     <label>LOCAL BRANCH</label>
-                    <input name='localbranch' readOnly value={branch} className="form-control" type="text" id="ipfs" />
+                    <input name='localbranch' readOnly value={branch} className="form-control" type="text" id="localbranch" />
                 </div>
                 <div className='col col-md-6 col-12'>
                     <label>REMOTE BRANCH</label>
-                    <input name ='remotebranch' onChange={e => onRemoteBranchChange(e.target.value)} value={remoteBranch} className="form-control" type="text" id="ipfs" />
+                    <input name ='remotebranch' onChange={e => onRemoteBranchChange(e.target.value)} value={remoteBranch} className="form-control" type="text" id="remotebranch" />
                 </div></div>
             <button className='btn btn-primary m-1' onClick={async () => {
                 await gitservice.init()
@@ -227,17 +227,17 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                 fetch()
             }}>fetch</button><br></br>
             <label>FORCE PUSH</label>
-            <input name='force' className='ml-2' checked={force} onChange={e => onForceChange(e)} value={token} type="checkbox" id="ipfs" />
+            <input name='force' className='ml-2' checked={force} onChange={e => onForceChange(e)} value={token} type="checkbox" id="forecepush" />
             <hr></hr>
             <h4>GIT REMOTE</h4>
             <div className='row'>
                 <div className='col col-md-6 col-12'>
                     <label>NAME</label>
-                    <input name='remotename' onChange={e => onRemoteNameChange(e.target.value)} value={remoteName} className="form-control" type="text" id="ipfs" />
+                    <input name='remotename' onChange={e => onRemoteNameChange(e.target.value)} value={remoteName} className="form-control" type="text" id="remotename" />
                 </div>
                 <div className='col col-md-6 col-12'>
                     <label>URL</label>
-                    <input name='remoteurl' onChange={e => onUrlChange(e.target.value)} value={url} className="form-control" type="text" id="ipfs" />
+                    <input name='remoteurl' onChange={e => onUrlChange(e.target.value)} value={url} className="form-control" type="text" id="remoteurl" />
                 </div>
             </div>
 
@@ -250,7 +250,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <div className='row'>
                 <div className='col col-md-6 col-12'>
                     <label>URL</label>
-                    <input name='cloneurl' onChange={e => onCloneUrlChange(e.target.value)} value={cloneUrl} className="form-control" type="text" id="ipfs" />
+                    <input name='cloneurl' onChange={e => onCloneUrlChange(e.target.value)} value={cloneUrl} className="form-control" type="text" id="cloneurl" />
                 </div>
                 <div className='col col-md-6 col-12'>
                 <label>BRANCH</label>
@@ -258,14 +258,14 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                 </div>
                 <div className='col col-md-6 col-12'>
                     <label>DEPTH **</label>
-                    <input name='clonedepth' onChange={e => onDepthChange(parseInt(e.target.value))} value={cloneDepth} className="form-control" type="number" id="ipfs" />
+                    <input name='clonedepth' onChange={e => onDepthChange(parseInt(e.target.value))} value={cloneDepth} className="form-control" type="number" id="clonedepth" />
                 </div>
 
             </div>
             <div className='row'>
                 <div className='col col-md-6 col-12'>
                     <label>CLONE ALL BRANCHES?</label><br></br>
-                    <input name='clonallbranches' onChange={e => onAllBranchChange(e)} checked={cloneAllBranches} className="" type="checkbox" id="ipfs" />
+                    <input name='clonallbranches' onChange={e => onAllBranchChange(e)} checked={cloneAllBranches} className="" type="checkbox" id="clonallbranches" />
                 </div>
             </div>
             <button data-id='clonebtn' className='btn btn-primary m-2' onClick={async () => {
@@ -274,7 +274,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <hr></hr>
             <h4>CONFIG</h4>
             <label>PERSONAL GITHUB TOKEN</label>
-            <input name='token' readOnly onFocus={e => e.target.readOnly = false} onBlur={e => e.target.readOnly = true} onChange={e => onTokenChange(e.target.value)} value={token} className="form-control" autoComplete="off" type="password" id="ipfs" />
+            <input name='token' readOnly onFocus={e => e.target.readOnly = false} onBlur={e => e.target.readOnly = true} onChange={e => onTokenChange(e.target.value)} value={token} className="form-control" autoComplete="off" type="password" id="token" />
             <CopyToClipboard
                 text={token}
                 onCopy={() => {
@@ -286,11 +286,11 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             <div className='row'>
                 <div className='col col-md-6 col-12'>
                     <label>NAME</label>
-                    <input name='name' onChange={e => onNameChange(e.target.value)} value={name} className="form-control" type="text" id="ipfs" />
+                    <input name='name' onChange={e => onNameChange(e.target.value)} value={name} className="form-control" type="text" id="githubname" />
                 </div>
                 <div className='col col-md-6 col-12'>
                     <label>EMAIL</label>
-                    <input name='email' onChange={e => onEmailChange(e.target.value)} value={email} className="form-control" type="text" id="ipfs" />
+                    <input name='email' onChange={e => onEmailChange(e.target.value)} value={email} className="form-control" type="text" id="githubemail" />
                 </div>
             </div>
 

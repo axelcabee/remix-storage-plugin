@@ -42,7 +42,7 @@ export const DiffView: React.FC<DiffProps> = () => {
       <button className='btn btn-primary mb-3 mt-3 ml-3' onClick={async () => { gitservice.fileToDiff = ''; await gitservice.diffFiles('') }}>show all</button>
       <br></br>
       <label>Side by side?</label>
-      <input name='force' className='ml-2' checked={sideBySide} onChange={e => onSideBySideChange(e)} type="checkbox" id="ipfs" />
+      <input name='sidebyside' className='ml-2' checked={sideBySide} onChange={e => onSideBySideChange(e)} type="checkbox" id="sidebyside" />
       {diffs?.map((diff) => {
         return (
           <>

@@ -32,7 +32,7 @@ export const IPFSImporter: React.FC<ipfsimporterProps> = ({}) => {
       <div className="form-group">
         <h4>Import from IPFS hash</h4>
         <label>IPFS HASH</label>
-        <input onChange={handleChange} className="form-control" type="text" id="ipfs" />
+        <input onChange={handleChange} className="form-control" type="text" id="ipfshash" />
       </div>
       <div id="ipfsimportalert"></div>
       <button disabled={(IPFSStatus?false:true)||(cid.value===""?true:false)} onClick={async()=> await importFromCID(cid.value, cid.value)} className="btn w-md-25 w-100 btn-primary" id="clone-btn">
