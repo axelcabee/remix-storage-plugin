@@ -56,11 +56,10 @@
     "web3modal": "^1.9.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
-    "cy:run": "npx cypress run --browser chrome --record --key 583e77c5-530f-4908-9dc2-09279ef08a57",
-    "test": "yarn start & node ./node_modules/wait-on/bin/wait-on http://localhost:3000 cy:run"
+    "start": "yarn start",
+    "build": "yarn build",
+    "test:dev": "testcafe",
+    "test": "testcafe -r xunit:/tmp/test-results/testcafe/results.xml"
   },
   "eslintConfig": {
     "extends": [
@@ -85,6 +84,7 @@
     "@types/marked": "^1.2.1",
     "@types/react-copy-to-clipboard": "^5.0.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
-    "testcafe": "^1.16.1"
+    "testcafe": "^1.16.1",
+    "testcafe-reporter-xunit": "^2.1.0"
   }
 }
