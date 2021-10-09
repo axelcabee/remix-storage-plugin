@@ -12,6 +12,7 @@ let randomInput: string = Math.random().toString()
 
 test('stage files and export', async t => {
     await t
+        .setPageLoadTimeout(120000)
         .click('#verticalIconsKindpluginManager')
         .click('[data-id="pluginManagerComponentActivateButtondgit"]')
         .click('[data-id="verticalIconsKinddgit"]')
@@ -49,6 +50,7 @@ test('import with hash', async t => {
     console.log('import ', hash)
 
     await t
+        .setPageLoadTimeout(120000)
         .click('#verticalIconsKindpluginManager')
         .click('[data-id="pluginManagerComponentActivateButtondgit"]')
         .click('[data-id="verticalIconsKinddgit"]')
@@ -69,6 +71,7 @@ test('import with hash', async t => {
 
 test('github import', async t => {
     await t
+        .setPageLoadTimeout(120000)
         .click('#verticalIconsKindpluginManager')
         .click('[data-id="pluginManagerComponentActivateButtondgit"]')
         .click('[data-id="verticalIconsKinddgit"]')
