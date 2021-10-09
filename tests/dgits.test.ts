@@ -1,21 +1,43 @@
 import { Selector } from 'testcafe';
+import { Profile, LocationProfile, ExternalProfile } from '@remixproject/plugin-utils'
 
 fixture`DGIT production tests`
     .page(process.env.TEST_URL)
     .beforeEach( async t => {
-        await t.wait(60000).click(Selector('Button').withText('Sure'))
+        await t.wait(120000).click(Selector('Button').withText('Sure'))
         .click('.introjs-skipbutton')
+
+        await installPlugin(t, {
+            name: 'dgittest',
+            displayName: 'dgit',
+            location: 'sidePanel',
+            url: 'http://localhost:3000',
+            canActivate: [
+                'dGitProvider'
+            ]
+        })
     });
 
 let hash = '';
 let randomInput: string = Math.random().toString()
 
+const installPlugin = async(t: TestController, profile: Profile & LocationProfile & ExternalProfile) =>{
+    await t.click('*[plugin="pluginManager"]')
+    .click(`*[data-id="pluginManagerComponentPluginSearchButton`)
+    //cy.get(`*[data-id="pluginManagerLocalPluginModalDialogModalDialogModalTitle-react`).should('be.visible')
+    .typeText(`*[data-id="localPluginName`, profile.name)
+    .typeText(`*[data-id="localPluginDisplayName`, profile.displayName)
+    .typeText(`*[data-id="localPluginUrl`, profile.url)
+    .typeText(`*[data-id="localPluginCanActivate`, profile.canActivate && profile.canActivate.join(','))
+    .click(`*[data-id="pluginManagerLocalPluginModalDialog-modal-footer-ok-react"`).click('*[plugin="pluginManager"]')
+}
+
 test('stage files and export', async t => {
     await t 
         .click('#verticalIconsKindpluginManager')
-        .click('[data-id="pluginManagerComponentActivateButtondgit"]')
-        .click('[data-id="verticalIconsKinddgit"]')
-        .switchToIframe("#plugin-dgit")
+        //.click('[data-id="pluginManagerComponentActivateButtondgittest"]')
+        .click('[data-id="verticalIconsKinddgittest"]')
+        .switchToIframe("#plugin-dgittest")
         .click(Selector('.navbutton').withText('Source control'))
         .expect(Selector('[data-id="fileChangesREADME.txt"').exists).ok()
         .click('[data-id="stageAll"]')
@@ -27,7 +49,7 @@ test('stage files and export', async t => {
         .click(Selector('.navbutton').withText('Log')).expect(Selector('div').withText('testing').exists).ok()
         .switchToMainWindow()
         .click('[data-id="editorInput"').typeText('.ace_text-input',randomInput).wait(5000)
-        .switchToIframe("#plugin-dgit")
+        .switchToIframe("#plugin-dgittest")
         .click(Selector('.navbutton').withText('Source control'))
         .expect(Selector('[data-id="fileChangesREADME.txt"').exists).ok()
         .click('[data-id="stageAll"]')
@@ -41,6 +63,7 @@ test('stage files and export', async t => {
         .expect(Selector('#ipfshashresult').exists).ok()
 
     hash = await Selector('#ipfshashresult').getAttribute('data-hash');
+
     
     console.log('export to', hash)
 })
@@ -50,9 +73,9 @@ test('import with hash', async t => {
 
     await t
         .click('#verticalIconsKindpluginManager')
-        .click('[data-id="pluginManagerComponentActivateButtondgit"]')
-        .click('[data-id="verticalIconsKinddgit"]')
-        .switchToIframe("#plugin-dgit")
+        //.click('[data-id="pluginManagerComponentActivateButtondgittest"]')
+        .click('[data-id="verticalIconsKinddgittest"]')
+        .switchToIframe("#plugin-dgittest")
         .click(Selector('.navbutton').withText('IPFS Import'))
         .typeText('#ipfshash', hash)
         .expect(Selector('#clone-btn').hasAttribute('disabled')).notOk()
@@ -70,9 +93,9 @@ test('import with hash', async t => {
 test('github import', async t => {
     await t
         .click('#verticalIconsKindpluginManager')
-        .click('[data-id="pluginManagerComponentActivateButtondgit"]')
-        .click('[data-id="verticalIconsKinddgit"]')
-        .switchToIframe("#plugin-dgit")
+        //.click('[data-id="pluginManagerComponentActivateButtondgittest"]')
+        .click('[data-id="verticalIconsKinddgittest"]')
+        .switchToIframe("#plugin-dgittest")
         .click(Selector('.navbutton').withText('GitHub'))
         .typeText(Selector('[name="cloneurl"]'), 'https://github.com/bunsenstraat/empty')
         .click('[data-id="clonebtn"]').click(Selector('.btn').withText('Yes'))

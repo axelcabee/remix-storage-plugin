@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import "./App.css";
 import { Container, ProgressBar, Accordion, AccordionContext, Button, useAccordionToggle } from "react-bootstrap";
 
-import WalletConnectProvider from "@walletconnect/web3-provider";
+
 
 import { GitControls } from "./components/git/UI/gitControls";
 
@@ -72,15 +72,6 @@ export const resetFileSystem = async (wipe: boolean = false) => {
   }
 };
 
-export const providerOptions = {
-  walletconnect: {
-    package: WalletConnectProvider,
-    options: {
-      infuraId: "83d4d660ce3546299cbe048ed95b6fad",
-      bridge: 'https://wallet-connect-bridge.dyn.plugin.remixproject.org:8080/'
-    },
-  },
-};
 
 function App() {
   const [activeKey, setActiveKey] = useState<string>("files");

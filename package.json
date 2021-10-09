@@ -48,8 +48,8 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "yarn start",
-    "build": "yarn build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "test:dev": "export TEST_URL=http://localhost:8080 && testcafe",
     "test:production": "export TEST_URL=https://remix.ethereum.org && testcafe",
     "test:alpha": "export TEST_URL=https://remix-alpha.ethereum.org && testcafe",

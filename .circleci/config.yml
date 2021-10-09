@@ -16,6 +16,12 @@ jobs:
           name: Install testcafe
           command: yarn
       - run:
+          name: Build dgit
+          command: yarn build
+      - run:
+          name: start dgit
+          command: yarn start
+      - run:
           name: npm run test alpha
           command: npm run test:alpha-ci
       - run:
