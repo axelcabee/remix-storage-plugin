@@ -3,7 +3,7 @@ import { Selector } from 'testcafe';
 fixture`DGIT production tests`
     .page(process.env.TEST_URL)
     .beforeEach( async t => {
-        await t.click(Selector('Button').withText('Sure'))
+        await t.setPageLoadTimeout(120000).click(Selector('Button').withText('Sure'))
         .click('.introjs-skipbutton')
     });
 
@@ -11,8 +11,7 @@ let hash = '';
 let randomInput: string = Math.random().toString()
 
 test('stage files and export', async t => {
-    await t
-        .setPageLoadTimeout(120000)
+    await t 
         .click('#verticalIconsKindpluginManager')
         .click('[data-id="pluginManagerComponentActivateButtondgit"]')
         .click('[data-id="verticalIconsKinddgit"]')
@@ -50,7 +49,6 @@ test('import with hash', async t => {
     console.log('import ', hash)
 
     await t
-        .setPageLoadTimeout(120000)
         .click('#verticalIconsKindpluginManager')
         .click('[data-id="pluginManagerComponentActivateButtondgit"]')
         .click('[data-id="verticalIconsKinddgit"]')
@@ -71,7 +69,6 @@ test('import with hash', async t => {
 
 test('github import', async t => {
     await t
-        .setPageLoadTimeout(120000)
         .click('#verticalIconsKindpluginManager')
         .click('[data-id="pluginManagerComponentActivateButtondgit"]')
         .click('[data-id="verticalIconsKinddgit"]')
