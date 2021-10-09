@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  node: circleci/node@4.1.0
+  node: circleci/node@latest
   browser-tools: circleci/browser-tools@1.1.0
 jobs:
   test:
@@ -9,7 +9,6 @@ jobs:
     steps:
       - checkout
       - browser-tools/install-browser-tools
-      - curl -o- -L https://yarnpkg.com/install.sh | bash
       - yarn
       - run:
           command: npm run test
