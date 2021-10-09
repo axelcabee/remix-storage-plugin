@@ -7,6 +7,9 @@ jobs:
     docker:
       - image: cimg/node:lts-browsers
     steps:
+      - run:
+          name: ip
+          command: hostname -I
       - checkout
       - browser-tools/install-browser-tools
       - run:
