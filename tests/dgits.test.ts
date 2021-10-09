@@ -26,7 +26,7 @@ test('stage files and export', async t => {
         .click('[data-id="commitButton"]')
         .click(Selector('.navbutton').withText('Log')).expect(Selector('div').withText('testing').exists).ok()
         .switchToMainWindow()
-        .click('[data-id="editorInput"').typeText('.ace_text-input',randomInput)//.wait(5000)
+        .click('[data-id="editorInput"').typeText('.ace_text-input',randomInput).wait(5000)
         .switchToIframe("#plugin-dgit")
         .click(Selector('.navbutton').withText('Source control'))
         .expect(Selector('[data-id="fileChangesREADME.txt"').exists).ok()
@@ -41,11 +41,13 @@ test('stage files and export', async t => {
         .expect(Selector('#ipfshashresult').exists).ok()
 
     hash = await Selector('#ipfshashresult').getAttribute('data-hash');
+    
     console.log(hash)
 })
 
 test('import with hash', async t => {
     console.log('import ', hash)
+
     await t
         .click('#verticalIconsKindpluginManager')
         .click('[data-id="pluginManagerComponentActivateButtondgit"]')
