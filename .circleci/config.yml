@@ -23,6 +23,8 @@ jobs:
           command: npm run test:production-ci
       - store_test_results:
           path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/artifacts
 workflows:
   e2e-test:
     jobs:
