@@ -10,3 +10,7 @@
     cursor: pointer;
 }
 
+.navbutton, .nav {
+    font-size: 0.8rem;
+    text-decoration: none;
+}

@@ -11,11 +11,11 @@ export class WorkSpacePlugin extends PluginClient {
   constructor() {
     super();
     createClient(this);
-    toast.info("Connecting to REMIX");
+    //toast.info("Connecting to REMIX");
     this.methods = ['pull', 'track', 'diff']
     this.onload().then(async () => {
       //Utils.log("workspace client loaded", this);
-      toast.success("Connected to REMIX");
+      //toast.success("Connected to REMIX");
       Utils.log(this)
       try {
         await this.call("manager", "activatePlugin", "dGitProvider")

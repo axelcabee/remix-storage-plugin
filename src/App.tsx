@@ -96,7 +96,7 @@ function App() {
   const [compact, setCompact] = useState<boolean>(false)
   const [diffViewer, setDiffViewer] = useState<boolean>(false)
   const maxStorage: number = 10000;
-  const [theme, setTheme] = useState("vs-dark")
+  const [theme, setTheme] = useState("#222336")
 
   gitservice.reponameSubject.subscribe((x) => { }).unsubscribe();
   gitservice.canCommit.subscribe((x) => { }).unsubscribe();
@@ -155,6 +155,7 @@ function App() {
           <Accordion.Toggle eventKey={ob.eventKey}
             as={Button}
             variant="link"
+            className='navbutton'
           >
 
             {ob.children}
@@ -190,9 +191,9 @@ function App() {
               <></>
             )}
 
-            <div className="nav navbar bg-light p-3"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName} | storage: {storageUsed}KB / 10000KB</div></div>
-            <ProgressBar variant={storageVariant()} label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000} />
-            {compact ? <><hr></hr></> : <GitStatus></GitStatus>}
+            <div className="nav navbar bg-light p-1"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName}<br></br>storage: {storageUsed}KB / 10000KB</div></div>
+            <ProgressBar variant={storageVariant()} className="mb-1" label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000} />
+            {compact ? <></> : <GitStatus></GitStatus>}
             {canCommit ? (
               <></>
             ) : (
