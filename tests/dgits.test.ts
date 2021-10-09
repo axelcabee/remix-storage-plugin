@@ -55,6 +55,7 @@ test('import with hash', async t => {
         .switchToIframe("#plugin-dgit")
         .click(Selector('.navbutton').withText('IPFS Import'))
         .typeText('#ipfshash', hash)
+        .expect(Selector('#clone-btn').hasAttribute('disabled')).notOk()
         .click('#clone-btn')
         .click(Selector('.btn').withText('Yes'))
         .switchToMainWindow()
