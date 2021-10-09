@@ -16,7 +16,7 @@ jobs:
           name: Install testcafe
           command: yarn
       - run:
-          name: run tests
+          name: npm run test
           command: testcafe
       - store_test_results:
           path: /tmp/test-results
