@@ -14,7 +14,7 @@ jobs:
           command: sudo apt-get install -y ffmpeg
       - run:
           name: Install testcafe
-          command: npm i -g testcafe
+          command: yarn
       - run:
           name: run tests
           command: testcafe
