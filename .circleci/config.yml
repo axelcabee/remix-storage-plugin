@@ -9,7 +9,7 @@ jobs:
     steps:
       - run:
           name: ip
-          command: echo $HOSTNAME
+          command: echo $HOSTNAME && ping $HOSTNAME
       - checkout
       - browser-tools/install-browser-tools
       - run:
