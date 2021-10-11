@@ -9,6 +9,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: IPFS INSTALL
+          command: sh ./ci/ipfsinstall.sh
+      - run:
           name: Install
           command: yarn
       - run:
