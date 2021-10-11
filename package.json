@@ -40,7 +40,6 @@
     "react-fullscreen-loading": "0.0.4",
     "react-scripts": "4.0.1",
     "react-toastify": "^6.2.0",
-    "react-tooltip": "^4.2.21",
     "rxjs": "^6.6.3",
     "typescript": "^4.0.3",
     "unique-names-generator": "^4.3.1",
@@ -48,7 +47,7 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "export HOST=localhost && react-scripts start",
     "build": "react-scripts build",
     "test:dev": "export TEST_URL=http://localhost:8080 && testcafe",
     "test:production": "export TEST_URL=https://remix.ethereum.org && testcafe",

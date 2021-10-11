@@ -5,7 +5,7 @@ orbs:
 jobs:
   test:
     docker:
-      - image: cimg/node:lts-browsers
+      - image: circleci/node:14.17.6-browsers
     steps:
       - run:
           name: ip
