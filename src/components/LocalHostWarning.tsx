@@ -1,8 +1,7 @@
 import React from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { Utils } from "../App";
 interface ConnectionWarningProps {
   canLoad: boolean | undefined;
 }

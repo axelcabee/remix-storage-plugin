@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useBehaviorSubject } from "../../usesubscribe/index";
 import { gitservice } from "../../../App";
-import { GitBranch } from "./gitBranch";
-import { GitLog } from "./gitLog";
 
 interface gitViewProps {
   compact: boolean

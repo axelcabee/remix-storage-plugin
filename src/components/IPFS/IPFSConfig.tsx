@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useBehaviorSubject } from "../usesubscribe/index";
-import { client, ipfservice, useLocalStorage } from "../../App";
+import { ipfservice, useLocalStorage } from "../../App";
 
 interface IPFSConfigProps {}
 

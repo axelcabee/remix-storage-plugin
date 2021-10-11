@@ -2,7 +2,7 @@ import { BehaviorSubject } from "rxjs";
 import { client, gitservice, ipfservice, Utils } from "../../App";
 import { boxObject } from "../3box/3boxService";
 import { default as dateFormat } from 'dateformat'
-import { toast } from "react-toastify";
+
 export class LocalIPFSStorage {
   boxObjects = new BehaviorSubject<boxObject[] | []>([]);
   objects: any[] = [];

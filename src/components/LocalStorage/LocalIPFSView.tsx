@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { createRef, useEffect } from "react";
 import { Card } from "react-bootstrap";
 import { useBehaviorSubject } from "../usesubscribe/index";
-import { ipfservice, localipfsstorage, Utils } from "../../App";
+import { ipfservice, localipfsstorage } from "../../App";
 import ConfirmDelete from "../ConfirmDelete";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { toast } from "react-toastify";

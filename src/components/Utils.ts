@@ -1,7 +1,6 @@
-import { env } from "process";
+
 
 export class devutils {
-    constructor() {}
 
     async log(...message:any){
         if (process.env.NODE_ENV === 'production') return;

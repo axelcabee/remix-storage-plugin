@@ -2,7 +2,7 @@ import { PluginClient } from "@remixproject/plugin";
 import { createClient } from "@remixproject/plugin-webview";
 import { toast } from "react-toastify";
 import { BehaviorSubject } from "rxjs";
-import { client, fileservice, gitservice, ipfservice, Utils } from "../../App";
+import { fileservice, gitservice, ipfservice, Utils } from "../../App";
 
 export class WorkSpacePlugin extends PluginClient {
   clientLoaded = new BehaviorSubject(false);

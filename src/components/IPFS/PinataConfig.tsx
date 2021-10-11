@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useBehaviorSubject } from "../usesubscribe/index";
 import { client, ipfservice, useLocalStorage, Utils } from "../../App";
-import { setConfig } from "isomorphic-git";
 
 interface PinataConfigProps {}
 

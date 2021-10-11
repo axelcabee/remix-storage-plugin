@@ -1,11 +1,9 @@
 import { toast } from "react-toastify";
 import { BehaviorSubject } from "rxjs";
 import {
-  gitservice,
   ipfservice,
   loaderservice,
   localipfsstorage,
-  Utils,
 } from "../../App";
 
 export interface boxObject {

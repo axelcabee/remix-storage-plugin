@@ -1,11 +1,10 @@
-import git, { ReadCommitResult } from "isomorphic-git";
+import { ReadCommitResult } from "isomorphic-git";
 import { client, fileservice, loaderservice, Utils } from "../../App";
 import { toast } from "react-toastify";
-import path from "path";
+
 import { removeSlash } from "../Files/utils";
 import { BehaviorSubject } from "rxjs";
-import { fileStatuses } from "../Files/FileService";
-import { names } from "unique-names-generator";
+
 
 export interface diffObject {
   originalFileName: string;

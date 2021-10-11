@@ -1,11 +1,11 @@
-import { faTrash, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { ChangeEvent, createRef } from "react";
-import { useState } from "react";
+import React, { createRef } from "react";
+
 import { Alert, Card } from "react-bootstrap";
 import CopyToClipboard from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
-import { async } from "rxjs";
+
 import { gitservice, useLocalStorage } from "../../App";
 import ConfirmDelete from "../ConfirmDelete";
 import { useBehaviorSubject } from "../usesubscribe";
@@ -122,9 +122,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     const onCloneBranchChange = (value: string) => {
         setCloneBranch(value)
     }
-    const onBranchChange = (value: string) => {
-        //setBranch(value)
-    }
+
     const onRemoteBranchChange = (value: string) => {
         setRemoteBranch(value)
     }

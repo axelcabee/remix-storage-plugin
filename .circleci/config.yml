@@ -19,7 +19,7 @@ jobs:
           command: sudo apt-get install -y ffmpeg
       - run:
           name: start dgit
-          command: yarn start
+          command: yarn build && yarn start
           background: true
       - run:
           name: wait on dgit

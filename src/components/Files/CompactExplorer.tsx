@@ -5,7 +5,6 @@ import path from 'path'
 import { Col, Row } from "react-bootstrap";
 import { faUndo, faPlus, faMinus, faSync } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { async } from "rxjs";
 
 interface GitStatusProps {}
 

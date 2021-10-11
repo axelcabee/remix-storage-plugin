@@ -1,11 +1,10 @@
-import React, { Suspense, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useBehaviorSubject } from "../usesubscribe/index";
 import {
   boxservice,
   gitservice,
   ipfservice,
   localipfsstorage,
-  Utils,
 } from "../../App";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { toast } from "react-toastify";
