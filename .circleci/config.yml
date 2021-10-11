@@ -12,9 +12,6 @@ jobs:
           name: Install
           command: yarn
       - run:
-          name: Install FFMPEG
-          command: sudo apt-get install -y ffmpeg
-      - run:
           name: build
           command: export CI=false && yarn build 
       - run:
