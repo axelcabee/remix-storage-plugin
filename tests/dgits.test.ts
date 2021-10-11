@@ -6,11 +6,12 @@ const logger = RequestLogger();
 fixture`DGIT production tests`
     .page(process.env.TEST_URL)
     .beforeEach( async t => {
-        await t.wait(process.env.TEST_URL.includes('localhost')? 2000:120000)
-        
-        const sureButton = Selector('Button').withText('Sure')
-        if(await sureButton.exists){
-            await t.click(sureButton)
+
+        // exists doesn't wait with timeouts, this is a hack but it works, it will wait for buttons to appear  
+        // https://testcafe.io/documentation/402829/guides/basic-guides/select-page-elements#selector-timeout      
+        await Selector('Button',{timeout:120000}).innerText
+        if(await Selector('Button').withText('Sure').exists){
+            await t.click(Selector('Button').withText('Sure'))
         }
         await t.click('.introjs-skipbutton')
 
