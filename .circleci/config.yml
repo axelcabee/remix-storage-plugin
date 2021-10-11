@@ -7,9 +7,6 @@ jobs:
     docker:
       - image: circleci/node:14.17.6-browsers
     steps:
-      - run:
-          name: ip
-          command: echo $HOSTNAME
       - checkout
       - run:
           name: Install
