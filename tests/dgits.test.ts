@@ -1,11 +1,18 @@
-import { Selector } from 'testcafe';
+import { Selector, RequestLogger } from 'testcafe';
 import { Profile, LocationProfile, ExternalProfile } from '@remixproject/plugin-utils'
+
+const logger = RequestLogger();
 
 fixture`DGIT production tests`
     .page(process.env.TEST_URL)
     .beforeEach( async t => {
-        await t.wait(120000).click(Selector('Button').withText('Sure'))
-        .click('.introjs-skipbutton')
+        await t.wait(process.env.TEST_URL.includes('localhost')? 2000:120000)
+        
+        const sureButton = Selector('Button').withText('Sure')
+        if(await sureButton.exists){
+            await t.click(sureButton)
+        }
+        await t.click('.introjs-skipbutton')
 
         await installPlugin(t, {
             name: 'dgittest',
@@ -20,6 +27,10 @@ fixture`DGIT production tests`
 
 let hash = '';
 let randomInput: string = Math.random().toString()
+
+const openPlugin = async(t: TestController, plugin: string) => {
+    await t.click(`#icon-panel div[plugin="${plugin}"]`)
+}
 
 const installPlugin = async(t: TestController, profile: Profile & LocationProfile & ExternalProfile) =>{
     await t.click('*[plugin="pluginManager"]')
@@ -63,10 +74,22 @@ test('stage files and export', async t => {
         .expect(Selector('#ipfshashresult').exists).ok()
 
     hash = await Selector('#ipfshashresult').getAttribute('data-hash');
-
+    await t.expect(hash && hash !== '' && hash !== undefined).ok()
     
     console.log('export to', hash)
 })
+
+test('detect file added', async t => {
+    await openPlugin(t, 'filePanel')
+    await t.click('*[data-id="fileExplorerNewFilecreateNewFile"]')
+    .typeText('*[data-id$="/blank"] .remixui_items',`addedfile.sol`).pressKey('enter')
+    .click('#verticalIconsKindpluginManager')
+    .click('[data-id="verticalIconsKinddgittest"]')
+    .switchToIframe("#plugin-dgittest")
+    .click(Selector('.navbutton').withText('Source control')).wait(1)
+    .expect(Selector('[data-id="fileChangesaddedfile.sol"').exists).ok()
+})
+
 
 test('import with hash', async t => {
     console.log('import ', hash)
@@ -89,6 +112,13 @@ test('import with hash', async t => {
         .expect(Selector('.ace_content').withText(randomInput).exists).ok()
 })
 
+/* test.only('selected workspace', async t=>{
+    await t.click('[data-id="verticalIconsKindfilePanel"')
+    let workspace = await Selector('#workspacesSelect').value
+    console.log(workspace)
+    await t.expect(workspace.includes('default_')).ok()
+})
+ */
 
 test('github import', async t => {
     await t
@@ -106,4 +136,7 @@ test('github import', async t => {
         .click('[data-id="treeViewLitreeViewItem.git"]')
         .click('[data-id="treeViewLitreeViewItem.git/config"]')
         .expect(Selector('.ace_content').withText('url = https://github.com/bunsenstraat/empty').exists).ok()
+    await t.click('[data-id="verticalIconsKindfilePanel"')
+    const workspace = await Selector('#workspacesSelect').value
+    await t.expect(workspace.includes('workspace_')).ok()
 })

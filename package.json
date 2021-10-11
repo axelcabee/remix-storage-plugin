@@ -78,6 +78,7 @@
     "@types/marked": "^1.2.1",
     "@types/react-copy-to-clipboard": "^5.0.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
+    "ipfs-http-client": "^47.0.1",
     "testcafe": "^1.16.1",
     "testcafe-reporter-xunit": "^2.1.0"
   }
