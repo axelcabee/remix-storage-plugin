@@ -11,12 +11,25 @@ jobs:
           name: ip
           command: echo $HOSTNAME
       - checkout
+      - browser-tools/install-browser-tools
+      - run:
+          name: Install FFMPEG
+          command: sudo apt-get install -y ffmpeg
       - run:
           name: Install
           command: yarn
       - run:
           name: start dgit
-          command: yarn start
+          command: export CI=true && yarn start &
+      - run:
+          name: wait on dgit
+          command: sleep 10
+      - run:
+          name: npm run test alpha
+          command: npm run test:alpha-ci
+      - run:
+          name: npm run test live
+          command: npm run test:production-ci
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
