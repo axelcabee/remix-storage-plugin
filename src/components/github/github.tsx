@@ -84,7 +84,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     const clone = async () => {
         try {
             await ModalRef.current?.show();
-            gitservice.clone(cloneUrl, cloneBranch, token, cloneDepth, !cloneAllBranches)
+            setTimeout(() => gitservice.clone(cloneUrl, cloneBranch, token, cloneDepth, !cloneAllBranches), 1500)
         } catch (e) {
 
         }

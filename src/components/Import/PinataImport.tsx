@@ -121,8 +121,7 @@ export const PinataImport: React.FC<PinataImportProps> = ({ }) => {
   const importFromCID = async (cid: string | undefined, name: string = "") => {
     try {
       await ModalRef.current?.show();
-
-      await ipfservice.importFromCID(cid, name, false);
+      setTimeout(async () => await ipfservice.importFromCID(cid, name, false),1500)
       //Utils.log("yes");
     } catch (e) {
       //Utils.log("no");

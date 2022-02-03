@@ -125,7 +125,7 @@ export class WorkSpacePlugin extends PluginClient {
       }
     });
 
-    this.on("filePanel", "deleteWorkspace", async (x: any) => {
+    this.on("filePanel", "deleteWorkspace" as any, async (x: any) => {
       if (this.callBackEnabled) {
         Utils.log("wS DELETE", x);
         await fileservice.syncFromBrowser(x.isLocalhost);
@@ -133,7 +133,7 @@ export class WorkSpacePlugin extends PluginClient {
       }
     });
 
-    this.on("filePanel", "renameWorkspace", async (x: any) => {
+    this.on("filePanel", "renameWorkspace" as any, async (x: any) => {
       if (this.callBackEnabled) {
         Utils.log("wS rn", x);
         await fileservice.syncFromBrowser(x.isLocalhost);
