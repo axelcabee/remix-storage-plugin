@@ -12,7 +12,7 @@ export class WorkSpacePlugin extends PluginClient {
     super();
     createClient(this);
     //toast.info("Connecting to REMIX");
-    this.methods = ['pull', 'track', 'diff']
+    this.methods = ['pull', 'track', 'diff', 'clone']
     this.onload().then(async () => {
       //Utils.log("workspace client loaded", this);
       //toast.success("Connected to REMIX");
@@ -43,9 +43,11 @@ export class WorkSpacePlugin extends PluginClient {
       }
 
     });
+  }
 
-
-
+  async clone(name: string, repo: string, branch: string) {
+    const url = `https://github.com/${name}/${repo}`
+    await gitservice.clone(url, branch, '', 1, false)
   }
 
   async diff(filename: string) {

@@ -298,7 +298,7 @@ export class gitService {
     loaderservice.setLoading(true)
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "clone" as any, { url, branch, token, depth, singleBranch });
+      await client.call("dGitProvider", "clone", { url, branch, token, depth, singleBranch });
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Cloned")
@@ -324,7 +324,7 @@ export class gitService {
   async delRemote(remote: string) {
     loaderservice.setLoading(true)
     try {
-      await client.call("dGitProvider", "delremote" as any, { remote });
+      await client.call("dGitProvider", "delremote", { remote });
       toast.success("Remote removed")
     } catch (e) {
       toast.error(e.message)
