@@ -21,7 +21,7 @@ export class gitService {
   reponameSubject = new BehaviorSubject<string>("");
   canCommit = new BehaviorSubject<boolean>(true);
   canExport = new BehaviorSubject<boolean>(false);
-  storageUsed = new BehaviorSubject<string>("");
+  storageUsed = new BehaviorSubject<any>("");
   reponame = "";
   fileToDiff:string = ''
 
@@ -256,8 +256,19 @@ export class gitService {
   }
 
   async getStorageUsed() {
-    let storage: string = await client.call("dGitProvider", "localStorageUsed" as any);
-    this.storageUsed.next(storage);
+    try{
+      let storage: any = await client.call("storage" as any, "getStorage" as any);
+      this.storageUsed.next(storage);
+    }catch(e){
+      let storage: string = await client.call("dGitProvider", "localStorageUsed" as any);
+      this.storageUsed.next({
+        usage: parseFloat(storage) * 1000,
+        quota: 10000000,
+      });
+    }
+
+    // 
+   
   }
 
   async getCommitFromRef(ref: string) {

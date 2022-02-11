@@ -36,6 +36,7 @@ import { GitHubImporter } from "./components/github/github";
 import { CompactExplorer } from "./components/Files/CompactExplorer";
 import { GitBranch } from "./components/git/UI/gitBranch";
 import { GitLog } from "./components/git/UI/gitLog";
+import { StorageProgress } from "./components/Storage";
 
 
 export const Utils: devutils = new devutils();
@@ -93,23 +94,6 @@ function App() {
   gitservice.canCommit.subscribe((x) => { }).unsubscribe();
   loaderservice.loading.subscribe((x) => { }).unsubscribe();
   fileservice.canUseApp.subscribe((x) => { }).unsubscribe();
-
-  const setTab = async (key: string) => {
-    setActiveKey(key);
-    if (key == "diff") {
-      //loaderservice.setLoading(true);
-      await gitservice.diffFiles('');
-      //loaderservice.setLoading(false);
-    }
-  };
-
-  const storageVariant = () => {
-    const percentageUsed = parseFloat(storageUsed || '0') / maxStorage * 100
-    let variant = 'success'
-    if (percentageUsed > 50) variant = 'warning'
-    if (percentageUsed > 80) variant = 'danger'
-    return variant
-  }
 
   useEffect(() => {
     Utils.log(window.location.href)
@@ -177,13 +161,15 @@ function App() {
 
           (<Container fluid>
             {loading ? (
-              <Loading loading background={theme} loaderColor="#3498db" />
+              <>
+                <Loading loading background={theme} loaderColor="#3498db" />
+                <div className="ontop"><StorageProgress update={loading} storageUsed={storageUsed} repoName={repoName} /></div>
+              </>
             ) : (
               <></>
             )}
-
-            <div className="nav navbar bg-light p-1"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName}<br></br>storage: {storageUsed}KB / 10000KB</div></div>
-            <ProgressBar variant={storageVariant()} className="mb-1" label="storage used" now={parseFloat(storageUsed || '0')} min={0} max={10000} />
+            
+            <StorageProgress  update={false} storageUsed={storageUsed} repoName={repoName} />
             {compact ? <></> : <GitStatus></GitStatus>}
             {canCommit ? (
               <></>
