@@ -80,7 +80,7 @@ export const GitBranch: React.FC<gitBranchProps> = ({}) => {
         <hr />
         <h4>Create branch</h4>
         <div className="form-group">
-          <label>Branchname</label>
+          <label>Branch name</label>
           <input
             onChange={handleChange}
             className="form-control w-md-25 w-100"

@@ -37,6 +37,7 @@ import { CompactExplorer } from "./components/Files/CompactExplorer";
 import { GitBranch } from "./components/git/UI/gitBranch";
 import { GitLog } from "./components/git/UI/gitLog";
 import { StorageProgress } from "./components/Storage";
+import { GitHubSettings } from "./components/github/settings";
 
 
 export const Utils: devutils = new devutils();
@@ -89,6 +90,7 @@ function App() {
   const [diffViewer, setDiffViewer] = useState<boolean>(false)
   const maxStorage: number = 10000;
   const [theme, setTheme] = useState("#222336")
+  const [highlightColor, setHighlightColor] = useState("text-white")
 
   gitservice.reponameSubject.subscribe((x) => { }).unsubscribe();
   gitservice.canCommit.subscribe((x) => { }).unsubscribe();
@@ -108,9 +110,23 @@ function App() {
     client.on("theme", "themeChanged", function (theme) {
       if (theme.quality === "dark") {
         setTheme("#222336")
+        setHighlightColor('text-white')
       } else {
         setTheme("#FFFFFF")
+        setHighlightColor('text-black')
       }
+    })
+
+    client.onload().then(async () => {
+      client.call('theme', 'currentTheme').then((theme) => {
+        if (theme.quality === "dark") {
+          setTheme("#222336")
+          setHighlightColor('text-white')
+        } else {
+          setTheme("#FFFFFF")
+          setHighlightColor('text-black')
+        }
+      })
     })
   }, [])
 
@@ -130,7 +146,7 @@ function App() {
           <Accordion.Toggle eventKey={ob.eventKey}
             as={Button}
             variant="link"
-            className='navbutton'
+            className={`navbutton ${isCurrentEventKey ? highlightColor : ""}`}
           >
 
             {ob.children}
@@ -169,7 +185,7 @@ function App() {
               <></>
             )}
             
-            <StorageProgress  update={false} storageUsed={storageUsed} repoName={repoName} />
+            <StorageProgress color={highlightColor}  update={false} storageUsed={storageUsed} repoName={repoName} />
             {compact ? <></> : <GitStatus></GitStatus>}
             {canCommit ? (
               <></>
@@ -182,7 +198,7 @@ function App() {
             {compact ?
 
               <Accordion>
-                <CustomToggle eventKey="0">Source control</CustomToggle>
+                <CustomToggle eventKey="0">SOURCE CONTROL</CustomToggle>
                 <Accordion.Collapse eventKey="0">
                   <>
                     <GitControls compact={true} />
@@ -192,22 +208,26 @@ function App() {
                     <hr></hr>
                   </>
                 </Accordion.Collapse>
-                <CustomToggle eventKey="1">GitHub</CustomToggle>
+                <CustomToggle eventKey="1">CLONE, PUSH, PULL & REMOTES</CustomToggle>
                 <Accordion.Collapse eventKey="1">
                   <GitHubImporter />
                 </Accordion.Collapse>
-                <CustomToggle eventKey="3">Log</CustomToggle>
+                <CustomToggle eventKey="7">GITHUB SETTINGS</CustomToggle>
+                <Accordion.Collapse eventKey="7">
+                  <GitHubSettings />
+                </Accordion.Collapse>
+                <CustomToggle eventKey="3">COMMITS</CustomToggle>
                 <Accordion.Collapse eventKey="3">
                   <>
                     <GitLog /><hr></hr>
                   </>
                 </Accordion.Collapse>
-                <CustomToggle eventKey="2">Branch</CustomToggle>
+                <CustomToggle eventKey="2">BRANCHES</CustomToggle>
                 <Accordion.Collapse eventKey="2">
                   <>
                     <GitBranch /><hr></hr></>
                 </Accordion.Collapse>
-                <CustomToggle eventKey="4">IPFS Export</CustomToggle>
+                <CustomToggle eventKey="4">IPFS EXPORT</CustomToggle>
                 <Accordion.Collapse eventKey="4">
                   <>
                     <IPFSView />
@@ -215,11 +235,11 @@ function App() {
                     <FileTools />
                   </>
                 </Accordion.Collapse>
-                <CustomToggle eventKey="5">IPFS Import</CustomToggle>
+                <CustomToggle eventKey="5">IPFS IMPORT</CustomToggle>
                 <Accordion.Collapse eventKey="5">
                   <Importer />
                 </Accordion.Collapse>
-                <CustomToggle eventKey="6">IPFS Settings</CustomToggle>
+                <CustomToggle eventKey="6">IPFS SETTINGS</CustomToggle>
                 <Accordion.Collapse eventKey="6">
                   <>
                     <PinataConfig></PinataConfig>

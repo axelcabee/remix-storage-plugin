@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 
 import { removeSlash } from "../Files/utils";
 import { BehaviorSubject } from "rxjs";
+import { StringDecoder } from "string_decoder";
 
 
 export interface diffObject {
@@ -24,7 +25,9 @@ export class gitService {
   storageUsed = new BehaviorSubject<any>("");
   reponame = "";
   fileToDiff:string = ''
-
+  token = ""
+  githubemail = ""
+  githubname = ""
   async init() {
     try {
       await client.call("dGitProvider", "init");
@@ -305,15 +308,15 @@ export class gitService {
     return result;
   }
 
-  async clone(url: string, branch: string, token: string, depth: number, singleBranch: boolean) {
+  async clone(url: string, branch: string, depth: number, singleBranch: boolean) {
     loaderservice.setLoading(true)
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "clone", { url, branch, token, depth, singleBranch });
+      await client.call("dGitProvider", "clone", { url, branch, token: this.token, depth, singleBranch });
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Cloned")
-    } catch (e) {
+    } catch (e:any) {
       toast.error(e.message)
     }
     loaderservice.setLoading(false)
@@ -343,42 +346,59 @@ export class gitService {
     loaderservice.setLoading(false)
   }
 
-  async push(remote: string, ref: string, remoteRef: string, token: string, force: boolean, name: string, email: string) {
+  async push(remote: string, ref: string, remoteRef: string, force: boolean) {
     loaderservice.setLoading(true)
+    if(!await this.tokenWarning())  {
+      loaderservice.setLoading(false)
+    return
+  }
     try {
-      const result = await client.call("dGitProvider", "push" as any, { remote, ref, remoteRef, token, force, name, email });
+      const result = await client.call("dGitProvider", "push" as any, { remote, ref, remoteRef, token: this.token, force, name: this.githubname, email: this.githubemail })
       
       toast.success("Pushed")
-    } catch (e) {
+    } catch (e:any) {
       toast.error(e.message)
     }
     loaderservice.setLoading(false)
   }
 
-  async pull(remote: string, ref: string, remoteRef: string, token: string,name: string, email: string) {
+  async tokenWarning() {
+    if (!this.token) {
+      toast.error("Please set a token first in the GitHub settings")
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  async pull(remote: string, ref: string, remoteRef: StringDecoder) {
     loaderservice.setLoading(true)
+    if(!await this.tokenWarning()) { 
+      loaderservice.setLoading(false)
+      return
+    }
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "pull" as any, { remote, ref, remoteRef, token, name, email });
+      await client.call("dGitProvider", "pull" as any, { remote, ref, remoteRef, token: this.token, name: this.githubname, email:this.githubemail }) 
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Pulled")
-    } catch (e) {
+    } catch (e:any) {
       await client.enableCallBacks()
       toast.error(e.message)
     }
     loaderservice.setLoading(false)
   }
 
-  async fetch(remote: string, ref: string, remoteRef: string, token: string, name: string, email: string) {
+  async fetch(remote: string, ref: string, remoteRef: string) {
     loaderservice.setLoading(true)
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "fetch" as any, { remote, ref, remoteRef, token, name, email });
+      await client.call("dGitProvider", "fetch" as any, { remote, ref, remoteRef, name: this.githubname, email:this.githubemail });
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Fetched")
-    } catch (e) {
+    } catch (e:any) {
       toast.error(e.message)
     }
     loaderservice.setLoading(false)

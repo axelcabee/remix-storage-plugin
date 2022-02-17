@@ -48,10 +48,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
         "GITHUB_REMOTE_BRANCH",
         'main'
     );
-    const [token, setToken] = useLocalStorage(
-        "GITHUB_TOKEN",
-        ''
-    );
+
     const [force, setForce] = useLocalStorage(
         "GITHUB_FORCE",
         false
@@ -67,15 +64,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
         ''
     );
 
-    const [name, setName] = useLocalStorage(
-        "GITHUB_NAME",
-        ''
-    );
 
-    const [email, setEmail] = useLocalStorage(
-        "GITHUB_EMAIL",
-        ''
-    );
     const remotes = useBehaviorSubject(gitservice.remotes);
 
 
@@ -84,7 +73,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     const clone = async () => {
         try {
             await ModalRef.current?.show();
-            setTimeout(() => gitservice.clone(cloneUrl, cloneBranch, token, cloneDepth, !cloneAllBranches), 1500)
+            setTimeout(() => gitservice.clone(cloneUrl, cloneBranch, cloneDepth, !cloneAllBranches), 1500)
         } catch (e) {
 
         }
@@ -102,15 +91,15 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     }
 
     const push = async () => {
-        gitservice.push(currentRemote, branch || '', remoteBranch, token, force, name, email)
+        gitservice.push(currentRemote, branch || '', remoteBranch, force)
     }
 
     const pull = async () => {
-        gitservice.pull(currentRemote, branch || '', remoteBranch, token, name, email)
+        gitservice.pull(currentRemote, branch || '', remoteBranch)
     }
 
     const fetch = async () => {
-        gitservice.fetch(currentRemote, '', '', token, name, email)
+        gitservice.fetch(currentRemote, '', '')
     }
 
     const onUrlChange = (value: string) => {
@@ -126,9 +115,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     const onRemoteBranchChange = (value: string) => {
         setRemoteBranch(value)
     }
-    const onTokenChange = (value: string) => {
-        setToken(value)
-    }
+
     const onAllBranchChange = (event: any) => {
         const target = event.target;
         const value = target.checked;
@@ -139,14 +126,9 @@ export const GitHubImporter: React.FC<importerProps> = () => {
         const value = target.checked;
         setForce(value)
     }
-    const onNameChange = (value: string) => {
-        setName(value)
-    }
+
     const onRemoteNameChange = (value: string) => {
         setRemoteName(value)
-    }
-    const onEmailChange = (value: string) => {
-        setEmail(value)
     }
 
     const onDepthChange = (value: number) => {
@@ -157,6 +139,38 @@ export const GitHubImporter: React.FC<importerProps> = () => {
         setCurrentRemote(name)
     }
 
+
+    const cloneSection = () => {
+        return <>
+                    <h4>CLONE</h4>
+            <div className='row'>
+                <div className='col col-md-6 col-12'>
+                    <label>URL</label>
+                    <input name='cloneurl' onChange={e => onCloneUrlChange(e.target.value)} value={cloneUrl} className="form-control" type="text" id="cloneurl" />
+                </div>
+                <div className='col col-md-6 col-12'>
+                <label>BRANCH</label>
+                    <input name='clonebranch' onChange={e => onCloneBranchChange(e.target.value)} value={cloneBranch} className="form-control" type="text" id="clonebranch" />
+                </div>
+                <div className='col col-md-6 col-12'>
+                    <label>DEPTH ( less saves space )</label>
+                    <input name='clonedepth' onChange={e => onDepthChange(parseInt(e.target.value))} value={cloneDepth} className="form-control" type="number" id="clonedepth" />
+                </div>
+
+            </div>
+            <div className='row'>
+                <div className='col col-md-6 col-12'>
+                    <label>CLONE ALL BRANCHES?</label><br></br>
+                    <input name='clonallbranches' onChange={e => onAllBranchChange(e)} checked={cloneAllBranches} className="" type="checkbox" id="clonallbranches" />
+                </div>
+            </div>
+            <button data-id='clonebtn' className='btn btn-primary m-2' onClick={async () => {
+                clone()
+            }}>clone</button>
+            <hr></hr>
+        </>
+    }
+
     return (
         <>
             <ConfirmDelete
@@ -164,14 +178,50 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                 text={"This will create a new workspace! Your repo might be to big and crash the browser! Continue?"}
                 ref={ModalRef}
             ></ConfirmDelete>
+            <hr></hr>
+            {cloneSection()}
 
-            {token ? <></> :
-                <Alert variant='warning'>Missing GitHub personal token. Only cloning available.<br></br>
-                    <a href='https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token' target='_blank'>More info on personal access tokens...</a>
-                </Alert>}
-            {name ? <></> :
-                <Alert variant='warning'>Missing GitHub name & email.</Alert>
-            }
+            <h4>commands</h4>
+            <div className='row'>
+                <div className='col col-md-6 col-12'>
+                    <label>LOCAL BRANCH</label>
+                    <input name='localbranch' readOnly value={branch} className="form-control" type="text" id="localbranch" />
+                </div>
+                <div className='col col-md-6 col-12'>
+                    <label>REMOTE BRANCH</label>
+                    <input name ='remotebranch' onChange={e => onRemoteBranchChange(e.target.value)} value={remoteBranch} className="form-control" type="text" id="remotebranch" />
+                </div></div>
+            <button className='btn btn-primary m-1' onClick={async () => {
+                await gitservice.init()
+            }}>init</button>
+            <button className='btn btn-primary m-1' onClick={async () => {
+                push()
+            }}>push</button>
+            <button className='btn btn-primary m-1' onClick={async () => {
+                pull()
+            }}>pull</button>
+            <button className='btn btn-primary m-1' onClick={async () => {
+                fetch()
+            }}>fetch</button><br></br>
+            <label>FORCE PUSH</label>
+            <input name='force' className='ml-2' checked={force} onChange={e => onForceChange(e)} type="checkbox" id="forecepush" />
+            <hr></hr>
+            <h4>GIT REMOTE</h4>
+            <div className='row'>
+                <div className='col col-md-6 col-12'>
+                    <label>NAME</label>
+                    <input name='remotename' onChange={e => onRemoteNameChange(e.target.value)} value={remoteName} className="form-control" type="text" id="remotename" />
+                </div>
+                <div className='col col-md-6 col-12'>
+                    <label>URL</label>
+                    <input name='remoteurl' onChange={e => onUrlChange(e.target.value)} value={url} className="form-control" type="text" id="remoteurl" />
+                </div>
+            </div>
+
+
+            <button className='btn btn-primary m-1' onClick={async () => {
+                addRemote()
+            }}>add remote</button><br></br>
             <hr></hr>
             <h4>Available remotes</h4>
             {
@@ -202,111 +252,6 @@ export const GitHubImporter: React.FC<importerProps> = () => {
             }
             {(remotes && remotes?.length > 0) ? <></> : <div>No remotes are set</div>}
             <hr></hr>
-            <h4>commands</h4>
-            <div className='row'>
-                <div className='col col-md-6 col-12'>
-                    <label>LOCAL BRANCH</label>
-                    <input name='localbranch' readOnly value={branch} className="form-control" type="text" id="localbranch" />
-                </div>
-                <div className='col col-md-6 col-12'>
-                    <label>REMOTE BRANCH</label>
-                    <input name ='remotebranch' onChange={e => onRemoteBranchChange(e.target.value)} value={remoteBranch} className="form-control" type="text" id="remotebranch" />
-                </div></div>
-            <button className='btn btn-primary m-1' onClick={async () => {
-                await gitservice.init()
-            }}>init</button>
-            <button className='btn btn-primary m-1' onClick={async () => {
-                push()
-            }}>push</button>
-            <button className='btn btn-primary m-1' onClick={async () => {
-                pull()
-            }}>pull</button>
-            <button className='btn btn-primary m-1' onClick={async () => {
-                fetch()
-            }}>fetch</button><br></br>
-            <label>FORCE PUSH</label>
-            <input name='force' className='ml-2' checked={force} onChange={e => onForceChange(e)} value={token} type="checkbox" id="forecepush" />
-            <hr></hr>
-            <h4>GIT REMOTE</h4>
-            <div className='row'>
-                <div className='col col-md-6 col-12'>
-                    <label>NAME</label>
-                    <input name='remotename' onChange={e => onRemoteNameChange(e.target.value)} value={remoteName} className="form-control" type="text" id="remotename" />
-                </div>
-                <div className='col col-md-6 col-12'>
-                    <label>URL</label>
-                    <input name='remoteurl' onChange={e => onUrlChange(e.target.value)} value={url} className="form-control" type="text" id="remoteurl" />
-                </div>
-            </div>
-
-
-            <button className='btn btn-primary m-1' onClick={async () => {
-                addRemote()
-            }}>add remote</button><br></br>
-            <hr></hr>
-            <h4>CLONE</h4>
-            <div className='row'>
-                <div className='col col-md-6 col-12'>
-                    <label>URL</label>
-                    <input name='cloneurl' onChange={e => onCloneUrlChange(e.target.value)} value={cloneUrl} className="form-control" type="text" id="cloneurl" />
-                </div>
-                <div className='col col-md-6 col-12'>
-                <label>BRANCH</label>
-                    <input name='clonebranch' onChange={e => onCloneBranchChange(e.target.value)} value={cloneBranch} className="form-control" type="text" id="clonebranch" />
-                </div>
-                <div className='col col-md-6 col-12'>
-                    <label>DEPTH **</label>
-                    <input name='clonedepth' onChange={e => onDepthChange(parseInt(e.target.value))} value={cloneDepth} className="form-control" type="number" id="clonedepth" />
-                </div>
-
-            </div>
-            <div className='row'>
-                <div className='col col-md-6 col-12'>
-                    <label>CLONE ALL BRANCHES?</label><br></br>
-                    <input name='clonallbranches' onChange={e => onAllBranchChange(e)} checked={cloneAllBranches} className="" type="checkbox" id="clonallbranches" />
-                </div>
-            </div>
-            <button data-id='clonebtn' className='btn btn-primary m-2' onClick={async () => {
-                clone()
-            }}>clone</button>
-            <hr></hr>
-            <h4>CONFIG</h4>
-            <label>PERSONAL GITHUB TOKEN</label>
-            <input name='token' readOnly onFocus={e => e.target.readOnly = false} onBlur={e => e.target.readOnly = true} onChange={e => onTokenChange(e.target.value)} value={token} className="form-control" autoComplete="off" type="password" id="token" />
-            <CopyToClipboard
-                text={token}
-                onCopy={() => {
-                    toast.success("Copied to clipboard.");
-                }}
-            >
-                <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy token to clipboard</button>
-            </CopyToClipboard>
-            <div className='row'>
-                <div className='col col-md-6 col-12'>
-                    <label>NAME</label>
-                    <input name='name' onChange={e => onNameChange(e.target.value)} value={name} className="form-control" type="text" id="githubname" />
-                </div>
-                <div className='col col-md-6 col-12'>
-                    <label>EMAIL</label>
-                    <input name='email' onChange={e => onEmailChange(e.target.value)} value={email} className="form-control" type="text" id="githubemail" />
-                </div>
-            </div>
-
-
-
-
-
-
-            <hr></hr>
-
-            <div>
-                ** save space in your browser and clone less commits
-            </div>
-            <div>
-                To use this you need to get a personal access token on GitHub and add REPO permissions.<br></br>
-                <a href='https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token' target='_blank'>More info on personal access tokens...</a>
-            </div>
-
         </>
     );
 };

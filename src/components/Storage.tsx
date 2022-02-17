@@ -54,10 +54,14 @@ export const StorageProgress = (props: any) => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
 
+    const storageUseText = () => {
+        return <><span className={`text-${storageVariant()}`}>{storage} {Math.round(percentage*100)}% of storage used</span></>
+    }
+
     return (
         <>
-        {storageUsed? update? <>{storage} of storage used</>:
-        <><div className="nav navbar bg-light p-1"><div><div className="float-left pr-1 m-0">dGit</div> | repo: {repoName}<br></br>{storage} of storage used</div></div><ProgressBar variant={storageVariant()} className="mb-1" label="storage used" now={parseFloat(storageUsed.usage || '0')} min={0} max={storageUsed.quota} /></>: null}
+        {storageUsed? update? <>{storageUseText()}</>:
+        <><div className="nav navbar bg-light p-1 mb-1"><div><div className={`float-left pr-1 m-0`}>dGit</div> | repo: {repoName}<br></br></div>{storageUseText()}</div></>: null}
         </>
     )
 }
