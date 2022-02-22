@@ -70,7 +70,6 @@ export class WorkSpacePlugin extends PluginClient {
   }
 
   async synTimerStart(){
-    console.log(this.syncTimer)
     clearTimeout(this.syncTimer)
     this.syncTimer = setTimeout(async () => {
       await fileservice.syncFromBrowser();
