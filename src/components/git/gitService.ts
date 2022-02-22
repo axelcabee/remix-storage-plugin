@@ -352,6 +352,10 @@ export class gitService {
       loaderservice.setLoading(false)
     return
   }
+  if(!await this.settingsWarning()) { 
+    loaderservice.setLoading(false)
+    return
+  }
     try {
       const result = await client.call("dGitProvider", "push" as any, { remote, ref, remoteRef, token: this.token, force, name: this.githubname, email: this.githubemail })
       
@@ -371,9 +375,22 @@ export class gitService {
     }
   }
 
+  async settingsWarning() {
+    if (!this.githubemail || !this.githubname) {
+      toast.error("Please set name and email in the GitHub settings")
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   async pull(remote: string, ref: string, remoteRef: StringDecoder) {
     loaderservice.setLoading(true)
     if(!await this.tokenWarning()) { 
+      loaderservice.setLoading(false)
+      return
+    }
+    if(!await this.settingsWarning()) { 
       loaderservice.setLoading(false)
       return
     }
@@ -392,6 +409,10 @@ export class gitService {
 
   async fetch(remote: string, ref: string, remoteRef: string) {
     loaderservice.setLoading(true)
+    if(!await this.settingsWarning()) { 
+      loaderservice.setLoading(false)
+      return
+    }
     try {
       await client.disableCallBacks()
       await client.call("dGitProvider", "fetch" as any, { remote, ref, remoteRef, name: this.githubname, email:this.githubemail });

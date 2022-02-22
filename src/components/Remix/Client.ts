@@ -7,6 +7,7 @@ import { fileservice, gitservice, ipfservice, Utils } from "../../App";
 export class WorkSpacePlugin extends PluginClient {
   clientLoaded = new BehaviorSubject(false);
   callBackEnabled: boolean = true;
+  syncTimer: any = null;
 
   constructor() {
     super();
@@ -68,14 +69,21 @@ export class WorkSpacePlugin extends PluginClient {
     }
   }
 
+  async synTimerStart(){
+    console.log(this.syncTimer)
+    clearTimeout(this.syncTimer)
+    this.syncTimer = setTimeout(async () => {
+      await fileservice.syncFromBrowser();
+    },3000)
+  }
+
   async setCallBacks() {
 
     this.on("fileManager", "fileSaved", async (e) => {
       // Do something
       if (this.callBackEnabled) {
         Utils.log("file save",e);
-        await fileservice.syncFromBrowser();
-
+        await this.synTimerStart();
       }
     });
 
@@ -83,9 +91,7 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       if (this.callBackEnabled) {
         Utils.log("file add",e);
-        await fileservice.syncFromBrowser();
-
-        //Utils.log(e);
+        await this.synTimerStart();
       }
     });
 
@@ -94,7 +100,7 @@ export class WorkSpacePlugin extends PluginClient {
       //Utils.log(e);
       if (this.callBackEnabled) {
         Utils.log("file rm",e);
-        await fileservice.syncFromBrowser();
+        await this.synTimerStart();
         
       }
       // await this.rmFile(e)
@@ -105,7 +111,7 @@ export class WorkSpacePlugin extends PluginClient {
       //Utils.log("CHANGED",e, this);
       if (this.callBackEnabled) {
         Utils.log("file changed",e);
-        await fileservice.syncFromBrowser();
+        await this.synTimerStart();
       }
       //await this.rmFile(e)
     });
@@ -114,7 +120,7 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       if (this.callBackEnabled) {
         Utils.log(oldfile, newfile);
-        await fileservice.syncFromBrowser();
+        await this.synTimerStart();
 
       }
     });
@@ -122,24 +128,21 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("filePanel", "setWorkspace", async (x: any) => {
       if (this.callBackEnabled) {
         Utils.log("ws set", x);
-        await fileservice.syncFromBrowser(x.isLocalhost);
-        Utils.log(x);
+        await this.synTimerStart();
       }
     });
 
     this.on("filePanel", "deleteWorkspace" as any, async (x: any) => {
       if (this.callBackEnabled) {
         Utils.log("wS DELETE", x);
-        await fileservice.syncFromBrowser(x.isLocalhost);
-        Utils.log(x);
+        await this.synTimerStart();
       }
     });
 
     this.on("filePanel", "renameWorkspace" as any, async (x: any) => {
       if (this.callBackEnabled) {
         Utils.log("wS rn", x);
-        await fileservice.syncFromBrowser(x.isLocalhost);
-        Utils.log(x);
+        await this.synTimerStart();
       }
     });
 
