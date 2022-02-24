@@ -39,7 +39,6 @@ export const GitHubSettings: React.FC<importerProps> = () => {
 
     useEffect(() => 
     {
-        console.log("GITHUB_TOKEN", token);
         gitservice.token = token;
     },[token])
 
