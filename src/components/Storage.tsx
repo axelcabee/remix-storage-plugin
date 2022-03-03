@@ -36,7 +36,7 @@ export const StorageProgress = (props: any) => {
     }, [])
 
     useEffect(() => {
-        const percentageUsed = parseFloat(storageUsed.usage || '0') / storageUsed.quota
+        const percentageUsed = parseFloat(storageUsed.usage || '0') / (storageUsed.quota*2)
         setPercentage(percentageUsed)
         setStorage(formatBytes(storageUsed.usage, 2))
     }, [storageUsed])
