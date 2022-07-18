@@ -415,6 +415,7 @@ export class gitService {
       return
     }
     try {
+      await client.call('fileManager', 'closeAllFiles')
       await client.disableCallBacks()
       await client.call("dGitProvider", "pull" as any, { remote, ref, remoteRef, token: token, name: credentials.username, email: credentials.email });
       await client.enableCallBacks()

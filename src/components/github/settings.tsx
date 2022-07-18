@@ -27,13 +27,13 @@ export const GitHubSettings: React.FC<SettingsProps> = (props) => {
         let userNameConfig = await props.client.call('config' as any, 'getAppParameter', 'settings/github-user-name')
         if (userNameConfig) {
             setUserName(userNameConfig)
-        }else {
+        } else {
             setUserName('')
         }
         let userEmailConfig = await props.client.call('config' as any, 'getAppParameter', 'settings/github-email')
         if (userEmailConfig) {
             setUserEmail(userEmailConfig)
-        }else {
+        } else {
             setUserEmail('')
         }
     }
@@ -66,6 +66,8 @@ export const GitHubSettings: React.FC<SettingsProps> = (props) => {
         ) : (props.showOk ? <Alert variant="success">GitHub token is setup!</Alert> : '')}
             {(!userName || !userEmail) ? (
                 <Alert variant='info'>GitHub name & email are also required to push & pull.
+                    <br></br>
+                    Please update these settings in the REMIX settings.<br></br>
                     <button className="btn btn-sm btm-primary" onClick={async () => { await getToken() }}>check settings</button>
                     {!props.showOk && <button className="btn btn-sm btm-primary" onClick={hideWarning}>hide this warning</button>}
                 </Alert>

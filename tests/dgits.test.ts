@@ -10,8 +10,8 @@ fixture`DGIT production tests`
         // exists doesn't wait with timeouts, this is a hack but it works, it will wait for buttons to appear  
         // https://testcafe.io/documentation/402829/guides/basic-guides/select-page-elements#selector-timeout      
         await Selector('Button',{timeout:120000}).innerText
-        if(await Selector('Button').withText('Sure').exists){
-            await t.click(Selector('Button').withText('Sure'))
+        if(await Selector('Button').withText('Accept').exists){
+            await t.click(Selector('Button').withText('Accept'))
         }
         await t.click('.introjs-skipbutton')
 
@@ -50,7 +50,7 @@ test('stage files and export', async t => {
         //.click('[data-id="pluginManagerComponentActivateButtondgittest"]')
         .click('[data-id="verticalIconsKinddgittest"]')
         .switchToIframe("#plugin-dgittest")
-        .click(Selector('.navbutton').withText('Source control'))
+        .click(Selector('.navbutton').withText('SOURCE CONTROL'))
         .expect(Selector('[data-id="fileChangesREADME.txt"').exists).ok()
         .click('[data-id="stageAll"]')
         .expect(Selector('[data-id="fileChangesREADME.txt"').exists).notOk()
@@ -58,26 +58,26 @@ test('stage files and export', async t => {
         .click(Selector('[data-id="fileStagedREADME.txt"'))
         .typeText('[data-id="commitMessage"]', 'testing')
         .click('[data-id="commitButton"]')
-        .click(Selector('.navbutton').withText('Log')).expect(Selector('div').withText('testing').exists).ok()
+        .click(Selector('.navbutton').withText('COMMITS')).expect(Selector('div').withText('testing').exists).ok()
         .switchToMainWindow()
         .click('[data-id="editorInput"').typeText('.ace_text-input',randomInput).wait(5000)
         .switchToIframe("#plugin-dgittest")
-        .click(Selector('.navbutton').withText('Source control'))
+        .click(Selector('.navbutton').withText('SOURCE CONTROL'))
         .expect(Selector('[data-id="fileChangesREADME.txt"').exists).ok()
         .click('[data-id="stageAll"]')
         .expect(Selector('[data-id="fileStagedREADME.txt"').exists).ok()
         .typeText('[data-id="commitMessage"]', 'testing2')
         .click('[data-id="commitButton"]')
-        .click(Selector('.navbutton').withText('Log')).expect(Selector('div').withText('testing2').exists).ok()
-        .click(Selector('.navbutton').withText('IPFS Settings')).click('#btncheckipfs')
-        .expect(Selector('#ipfschecksuccess').exists).ok()
-        .click(Selector('.navbutton').withText('IPFS Export')).click('#addtocustomipfs')
-        .expect(Selector('#ipfshashresult').exists).ok()
+        .click(Selector('.navbutton').withText('COMMITS')).expect(Selector('div').withText('testing2').exists).ok()
+        //.click(Selector('.navbutton').withText('IPFS Settings')).click('#btncheckipfs')
+        //.expect(Selector('#ipfschecksuccess').exists).ok()
+        //.click(Selector('.navbutton').withText('IPFS Export')).click('#addtocustomipfs')
+        //.expect(Selector('#ipfshashresult').exists).ok()
 
-    hash = await Selector('#ipfshashresult').getAttribute('data-hash');
-    await t.expect(hash && hash !== '' && hash !== undefined).ok()
+    //hash = await Selector('#ipfshashresult').getAttribute('data-hash');
+    //await t.expect(hash && hash !== '' && hash !== undefined).ok()
     
-    console.log('export to', hash)
+    //console.log('export to', hash)
 })
 
 test('detect file added', async t => {
@@ -87,11 +87,11 @@ test('detect file added', async t => {
     .click('#verticalIconsKindpluginManager')
     .click('[data-id="verticalIconsKinddgittest"]')
     .switchToIframe("#plugin-dgittest")
-    .click(Selector('.navbutton').withText('Source control')).wait(1)
+    .click(Selector('.navbutton').withText('SOURCE CONTROL')).wait(1)
     .expect(Selector('[data-id="fileChangesaddedfile.sol"').exists).ok()
 })
 
-
+/*
 test('import with hash', async t => {
     console.log('import ', hash)
 
@@ -112,6 +112,7 @@ test('import with hash', async t => {
         .click('[data-id="treeViewLitreeViewItemREADME.txt"')
         .expect(Selector('.ace_content').withText(randomInput).exists).ok()
 })
+*/
 
 /* test.only('selected workspace', async t=>{
     await t.click('[data-id="verticalIconsKindfilePanel"')
@@ -127,7 +128,7 @@ test('github import', async t => {
         //.click('[data-id="pluginManagerComponentActivateButtondgittest"]')
         .click('[data-id="verticalIconsKinddgittest"]')
         .switchToIframe("#plugin-dgittest")
-        .click(Selector('.navbutton').withText('GitHub'))
+        .click(Selector('.navbutton').withText('CLONE'))
         .typeText(Selector('[name="cloneurl"]'), 'https://github.com/bunsenstraat/empty')
         .click('[data-id="clonebtn"]').click(Selector('.btn').withText('Yes'))
         .switchToMainWindow()
@@ -139,5 +140,5 @@ test('github import', async t => {
         .expect(Selector('.ace_content').withText('url = https://github.com/bunsenstraat/empty').exists).ok()
     await t.click('[data-id="verticalIconsKindfilePanel"')
     const workspace = await Selector('#workspacesSelect').value
-    await t.expect(workspace.includes('workspace_')).ok()
+    await t.expect(workspace?.includes('workspace_')).ok()
 })
