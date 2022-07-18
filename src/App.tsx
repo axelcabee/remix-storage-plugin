@@ -58,9 +58,6 @@ export const resetFileSystem = async (wipe: boolean = false) => {
 
       //if (load) await ipfservice.setipfsHost();
       Utils.log("CLIENT LOADED", load)
-      if (load === true) {
-
-      }
       if (load === true) await localipfsstorage.init();
       if (load === true) await fileservice.syncStart();
 
@@ -210,11 +207,11 @@ function App() {
                 </Accordion.Collapse>
                 <CustomToggle eventKey="1">CLONE, PUSH, PULL & REMOTES</CustomToggle>
                 <Accordion.Collapse eventKey="1">
-                  <GitHubImporter />
+                  <GitHubImporter client={client} />
                 </Accordion.Collapse>
                 <CustomToggle eventKey="7">GITHUB SETTINGS</CustomToggle>
                 <Accordion.Collapse eventKey="7">
-                  <GitHubSettings />
+                  <GitHubSettings showOk={true} client={client} />
                 </Accordion.Collapse>
                 <CustomToggle eventKey="3">COMMITS</CustomToggle>
                 <Accordion.Collapse eventKey="3">

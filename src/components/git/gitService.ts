@@ -24,10 +24,8 @@ export class gitService {
   canExport = new BehaviorSubject<boolean>(false);
   storageUsed = new BehaviorSubject<any>("");
   reponame = "";
-  fileToDiff:string = ''
-  token = ""
-  githubemail = ""
-  githubname = ""
+  fileToDiff: string = ''
+
   async init() {
     try {
       await client.call("dGitProvider", "init");
@@ -241,7 +239,7 @@ export class gitService {
         message: message,
       });
       toast.success(`Commited: ${sha}`);
-  
+
       await fileservice.showFiles();
     } catch (err) {
       toast.error(`${err}`)
@@ -259,10 +257,10 @@ export class gitService {
   }
 
   async getStorageUsed() {
-    try{
+    try {
       let storage: any = await client.call("storage" as any, "getStorage" as any);
       this.storageUsed.next(storage);
-    }catch(e){
+    } catch (e) {
       let storage: string = await client.call("dGitProvider", "localStorageUsed" as any);
       this.storageUsed.next({
         usage: parseFloat(storage) * 1000,
@@ -271,7 +269,7 @@ export class gitService {
     }
 
     // 
-   
+
   }
 
   async getCommitFromRef(ref: string) {
@@ -312,11 +310,24 @@ export class gitService {
     loaderservice.setLoading(true)
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "clone", { url, branch, token: this.token, depth, singleBranch });
-      await client.enableCallBacks()
-      await fileservice.syncFromBrowser(false)
-      toast.success("Cloned")
-    } catch (e:any) {
+      // get last part of url
+      const urlParts = url.split("/");
+      const lastPart = urlParts[urlParts.length - 1];
+      const repoName = lastPart.split(".")[0];
+      // add timestamp to repo name
+      const timestamp = new Date().getTime();
+      const repoNameWithTimestamp = `${repoName}-${timestamp}`;
+      const token = await this.tokenWarning();
+      if (!token) {
+        loaderservice.setLoading(false)
+        return
+      } else {
+        await client.call('dGitProvider' as any, 'clone', { url, branch, token: token, depth, singleBranch }, repoNameWithTimestamp);
+        await client.enableCallBacks()
+        await fileservice.syncFromBrowser(false)
+        toast.success("Cloned")
+      }
+    } catch (e: any) {
       toast.error(e.message)
     }
     loaderservice.setLoading(false)
@@ -348,59 +359,68 @@ export class gitService {
 
   async push(remote: string, ref: string, remoteRef: string, force: boolean) {
     loaderservice.setLoading(true)
-    if(!await this.tokenWarning())  {
+    const token = await this.tokenWarning();
+    if (!token) {
       loaderservice.setLoading(false)
-    return
-  }
-  if(!await this.settingsWarning()) { 
-    loaderservice.setLoading(false)
-    return
-  }
+      return
+    }
+    const credentials = await this.settingsWarning()
+    if (!credentials) {
+      loaderservice.setLoading(false)
+      return
+    }
     try {
-      const result = await client.call("dGitProvider", "push" as any, { remote, ref, remoteRef, token: this.token, force, name: this.githubname, email: this.githubemail })
-      
+      await client.call("dGitProvider", "push" as any, { remote, ref, remoteRef, token: token, force, name: credentials.username, email: credentials.email });
       toast.success("Pushed")
-    } catch (e:any) {
+    } catch (e: any) {
       toast.error(e.message)
     }
     loaderservice.setLoading(false)
   }
 
   async tokenWarning() {
-    if (!this.token) {
-      toast.error("Please set a token first in the GitHub settings")
+    const token = await client.call('config' as any, 'getAppParameter', 'settings/gist-access-token')
+    if (!token) {
+      toast.error("Please set a token first in the GitHub settings of REMIX")
       return false;
     } else {
-      return true;
+      return token;
     }
   }
 
   async settingsWarning() {
-    if (!this.githubemail || !this.githubname) {
+    const username = await client.call('config' as any, 'getAppParameter', 'settings/github-user-name')
+    const email = await client.call('config' as any, 'getAppParameter', 'settings/github-email')
+    if (!username || !email) {
       toast.error("Please set name and email in the GitHub settings")
       return false;
     } else {
-      return true;
+      return {
+        username,
+        email
+      };
     }
   }
 
   async pull(remote: string, ref: string, remoteRef: StringDecoder) {
     loaderservice.setLoading(true)
-    if(!await this.tokenWarning()) { 
+    const token = await this.tokenWarning();
+    if (!token) {
       loaderservice.setLoading(false)
       return
     }
-    if(!await this.settingsWarning()) { 
+    const credentials = await this.settingsWarning()
+    if (!credentials) {
       loaderservice.setLoading(false)
       return
     }
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "pull" as any, { remote, ref, remoteRef, token: this.token, name: this.githubname, email:this.githubemail }) 
+      await client.call("dGitProvider", "pull" as any, { remote, ref, remoteRef, token: token, name: credentials.username, email: credentials.email });
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Pulled")
-    } catch (e:any) {
+    } catch (e: any) {
       await client.enableCallBacks()
       toast.error(e.message)
     }
@@ -409,17 +429,18 @@ export class gitService {
 
   async fetch(remote: string, ref: string, remoteRef: string) {
     loaderservice.setLoading(true)
-    if(!await this.settingsWarning()) { 
+    const credentials = await this.settingsWarning()
+    if (!credentials) {
       loaderservice.setLoading(false)
       return
     }
     try {
       await client.disableCallBacks()
-      await client.call("dGitProvider", "fetch" as any, { remote, ref, remoteRef, name: this.githubname, email:this.githubemail });
+      await client.call("dGitProvider", "fetch" as any, { remote, ref, remoteRef, name: credentials.username, email: credentials.email });
       await client.enableCallBacks()
       await fileservice.syncFromBrowser(false)
       toast.success("Fetched")
-    } catch (e:any) {
+    } catch (e: any) {
       toast.error(e.message)
     }
     loaderservice.setLoading(false)
@@ -471,16 +492,16 @@ export class gitService {
     }
   }
 
-  async diffFiles(filename:string | undefined) {
+  async diffFiles(filename: string | undefined) {
     const statuses = fileservice.fileStatusResult;
-    if(this.fileToDiff) filename = this.fileToDiff
+    if (this.fileToDiff) filename = this.fileToDiff
     Utils.log(statuses);
     const diffs: diffObject[] = [];
     for (let i: number = 0; i < statuses.length; i++) {
       const name = statuses[i].statusNames || []
       if ((name.indexOf("modified")) > -1) {
         //Utils.log(statuses[i].statusNames?.indexOf("modified"));
-        if((filename && statuses[i].filename === filename) || !filename){
+        if ((filename && statuses[i].filename === filename) || !filename) {
           const diff: diffObject = await this.diffFile(statuses[i].filename);
           diffs.push(diff);
         }
