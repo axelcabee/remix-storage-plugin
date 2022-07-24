@@ -24,12 +24,6 @@ jobs:
       - run:
           name: wait on dgit
           command: sleep 10
-      - run:
-          name: npm run test alpha
-          command: npm run test:alpha-ci
-      - run:
-          name: npm run test live
-          command: npm run test:production-ci
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
