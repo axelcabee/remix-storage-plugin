@@ -86,6 +86,19 @@ export class WorkSpacePlugin extends PluginClient {
       }
     });
 
+    this.on('dGitProvider', 'checkout' as any, async () => {
+      // Do something
+      if (this.callBackEnabled) {
+        await this.synTimerStart();
+      }
+    })
+    this.on('dGitProvider', 'branch' as any, async () => {
+      // Do something
+      if (this.callBackEnabled) {
+        await this.synTimerStart();
+      }
+    })
+
     this.on("fileManager", "fileAdded", async (e) => {
       // Do something
       if (this.callBackEnabled) {
