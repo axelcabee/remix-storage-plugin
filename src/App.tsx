@@ -71,9 +71,24 @@ export const resetFileSystem = async (wipe: boolean = false) => {
   }
 };
 
+export const panels: {[key: string]: string} = {
+  "0": "sourcecontrol",
+  "1": "clone",
+  "7": "settings",
+  "3": "commits",
+  "2": "branches",
+  "4": "ipfsexport",
+  "5": "ipfsimport",
+  "6": "ipssettings",
+}
+
+// type of panelNames
+export type PanelNames = keyof typeof panels;
 
 function App() {
-  const [activeKey, setActiveKey] = useState<string>("files");
+  const [activePanel, setActivePanel] = useState<string>("0");
+  
+  const panelChange =  useBehaviorSubject(client.panelChanged)
   const loading: boolean | undefined = useBehaviorSubject(
     loaderservice.loading
   );
@@ -104,6 +119,13 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (panelChange) {
+      console.log('panel change', panelChange)
+      setActivePanel(panelChange)
+    }
+  }, [panelChange]);
+
+  useEffect(() => {
     client.on("theme", "themeChanged", function (theme) {
       if (theme.quality === "dark") {
         setTheme("#222336")
@@ -125,12 +147,14 @@ function App() {
         }
       })
     })
+
   }, [])
 
   function CustomToggle(ob: any) {
 
     const currentEventKey = useContext(AccordionContext);
     const isCurrentEventKey = currentEventKey === ob.eventKey
+    console.log(ob)
     const decoratedOnClick = useAccordionToggle(
       ob.eventKey,
       () => ob.callback && ob.callback(ob.eventKey),
@@ -194,7 +218,7 @@ function App() {
             <ToastContainer position={compact ? "bottom-right" : "top-right"} />
             {compact ?
 
-              <Accordion>
+              <Accordion activeKey={activePanel} defaultActiveKey={activePanel}>
                 <CustomToggle eventKey="0">SOURCE CONTROL</CustomToggle>
                 <Accordion.Collapse eventKey="0">
                   <>

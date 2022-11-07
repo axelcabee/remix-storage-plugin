@@ -2,10 +2,11 @@ import { PluginClient } from "@remixproject/plugin";
 import { createClient } from "@remixproject/plugin-webview";
 import { toast } from "react-toastify";
 import { BehaviorSubject } from "rxjs";
-import { fileservice, gitservice, ipfservice, Utils } from "../../App";
+import { fileservice, gitservice, ipfservice, PanelNames, panels, Utils } from "../../App";
 
 export class WorkSpacePlugin extends PluginClient {
   clientLoaded = new BehaviorSubject(false);
+  panelChanged = new BehaviorSubject("0")
   callBackEnabled: boolean = true;
   syncTimer: any = null;
 
@@ -13,7 +14,7 @@ export class WorkSpacePlugin extends PluginClient {
     super();
     createClient(this);
     //toast.info("Connecting to REMIX");
-    this.methods = ['pull', 'track', 'diff', 'clone']
+    this.methods = ['pull', 'track', 'diff', 'clone', 'open']
     this.onload().then(async () => {
       //Utils.log("workspace client loaded", this);
       //toast.success("Connected to REMIX");
@@ -69,11 +70,19 @@ export class WorkSpacePlugin extends PluginClient {
     }
   }
 
-  async synTimerStart(){
+  async open(panelName: PanelNames) {
+    console.log('open', panelName)
+    const panel = Object.keys(panels).find(key => panels[key] === panelName);
+    console.log(panel)
+    if (panel)
+      this.panelChanged.next(panel)
+  }
+
+  async synTimerStart() {
     clearTimeout(this.syncTimer)
     this.syncTimer = setTimeout(async () => {
       await fileservice.syncFromBrowser();
-    },3000)
+    }, 3000)
   }
 
   async setCallBacks() {
@@ -81,7 +90,7 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("fileManager", "fileSaved", async (e) => {
       // Do something
       if (this.callBackEnabled) {
-        Utils.log("file save",e);
+        Utils.log("file save", e);
         await this.synTimerStart();
       }
     });
@@ -102,7 +111,7 @@ export class WorkSpacePlugin extends PluginClient {
     this.on("fileManager", "fileAdded", async (e) => {
       // Do something
       if (this.callBackEnabled) {
-        Utils.log("file add",e);
+        Utils.log("file add", e);
         await this.synTimerStart();
       }
     });
@@ -111,9 +120,9 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       //Utils.log(e);
       if (this.callBackEnabled) {
-        Utils.log("file rm",e);
+        Utils.log("file rm", e);
         await this.synTimerStart();
-        
+
       }
       // await this.rmFile(e)
     });
@@ -122,7 +131,7 @@ export class WorkSpacePlugin extends PluginClient {
       // Do something
       //Utils.log("CHANGED",e, this);
       if (this.callBackEnabled) {
-        Utils.log("file changed",e);
+        Utils.log("file changed", e);
         await this.synTimerStart();
       }
       //await this.rmFile(e)

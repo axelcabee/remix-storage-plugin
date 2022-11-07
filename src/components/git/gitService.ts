@@ -183,8 +183,8 @@ export class gitService {
   async createBranch(name: string = "") {
     const branch = name; //|| $("#newbranchname").val();
     if (branch)
-      await await client.call("dGitProvider", "branch", { ref: branch });
-
+      await client.call("dGitProvider", "branch", { ref: branch });
+      await client.call("dGitProvider", "checkout", { ref: branch });
     fileservice.showFiles();
   }
 
