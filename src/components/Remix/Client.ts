@@ -71,9 +71,7 @@ export class WorkSpacePlugin extends PluginClient {
   }
 
   async open(panelName: PanelNames) {
-    console.log('open', panelName)
     const panel = Object.keys(panels).find(key => panels[key] === panelName);
-    console.log(panel)
     if (panel)
       this.panelChanged.next(panel)
   }

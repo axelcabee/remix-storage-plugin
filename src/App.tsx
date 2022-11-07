@@ -72,6 +72,7 @@ export const resetFileSystem = async (wipe: boolean = false) => {
 };
 
 export const panels: {[key: string]: string} = {
+  "-1": "none",
   "0": "sourcecontrol",
   "1": "clone",
   "7": "settings",
@@ -120,7 +121,7 @@ function App() {
 
   useEffect(() => {
     if (panelChange) {
-      console.log('panel change', panelChange)
+
       setActivePanel(panelChange)
     }
   }, [panelChange]);
@@ -154,10 +155,17 @@ function App() {
 
     const currentEventKey = useContext(AccordionContext);
     const isCurrentEventKey = currentEventKey === ob.eventKey
-    console.log(ob)
     const decoratedOnClick = useAccordionToggle(
       ob.eventKey,
-      () => ob.callback && ob.callback(ob.eventKey),
+      () => {        
+        if(activePanel === ob.eventKey) {
+          client.open('none')
+        }else{
+          client.open(panels[ob.eventKey])
+        }
+
+        ob.callback && ob.callback(ob.eventKey)
+      },
     );
 
 
