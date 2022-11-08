@@ -1,5 +1,6 @@
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PluginClient } from "@remixproject/plugin";
 import React, { createRef } from "react";
 
 import { Alert, Card } from "react-bootstrap";
@@ -9,10 +10,13 @@ import { toast } from "react-toastify";
 import { gitservice, useLocalStorage } from "../../App";
 import ConfirmDelete from "../ConfirmDelete";
 import { useBehaviorSubject } from "../usesubscribe";
+import { GitHubSettings } from "./settings";
 
-interface importerProps { }
+interface importerProps {
+    client: PluginClient
+ }
 
-export const GitHubImporter: React.FC<importerProps> = () => {
+export const GitHubImporter: React.FC<importerProps> = (props) => {
 
     const [currentRemote, setCurrentRemote] = useLocalStorage(
         "CURRENT_REMOTE",
@@ -138,7 +142,9 @@ export const GitHubImporter: React.FC<importerProps> = () => {
     const remoteChange = (name: string) => {
         setCurrentRemote(name)
     }
-
+    const showSettingsWarning = () => {
+        return <GitHubSettings showOk={false} client={props.client} />
+    }
 
     const cloneSection = () => {
         return <>
@@ -179,6 +185,7 @@ export const GitHubImporter: React.FC<importerProps> = () => {
                 ref={ModalRef}
             ></ConfirmDelete>
             <hr></hr>
+            {showSettingsWarning()}
             {cloneSection()}
 
             <h4>commands</h4>

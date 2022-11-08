@@ -68,6 +68,7 @@ export class LsFileService {
     if (isLocalhost) {
       this.canUseApp.next(false);
       loaderservice.setLoading(false)
+      await client.enableCallBacks();
       return;
     }
     try {
@@ -77,6 +78,7 @@ export class LsFileService {
       );
       if (workspace.isLocalhost) {
         this.canUseApp.next(false);
+        await client.enableCallBacks();
         return
       }
       Utils.log("SET NAME", workspace);

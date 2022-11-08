@@ -58,9 +58,6 @@ export const resetFileSystem = async (wipe: boolean = false) => {
 
       //if (load) await ipfservice.setipfsHost();
       Utils.log("CLIENT LOADED", load)
-      if (load === true) {
-
-      }
       if (load === true) await localipfsstorage.init();
       if (load === true) await fileservice.syncStart();
 
@@ -74,9 +71,25 @@ export const resetFileSystem = async (wipe: boolean = false) => {
   }
 };
 
+export const panels: {[key: string]: string} = {
+  "-1": "none",
+  "0": "sourcecontrol",
+  "1": "clone",
+  "7": "settings",
+  "3": "commits",
+  "2": "branches",
+  "4": "ipfsexport",
+  "5": "ipfsimport",
+  "6": "ipssettings",
+}
+
+// type of panelNames
+export type PanelNames = keyof typeof panels;
 
 function App() {
-  const [activeKey, setActiveKey] = useState<string>("files");
+  const [activePanel, setActivePanel] = useState<string>("0");
+  
+  const panelChange =  useBehaviorSubject(client.panelChanged)
   const loading: boolean | undefined = useBehaviorSubject(
     loaderservice.loading
   );
@@ -107,6 +120,13 @@ function App() {
   }, []);
 
   useEffect(() => {
+    if (panelChange) {
+
+      setActivePanel(panelChange)
+    }
+  }, [panelChange]);
+
+  useEffect(() => {
     client.on("theme", "themeChanged", function (theme) {
       if (theme.quality === "dark") {
         setTheme("#222336")
@@ -128,6 +148,7 @@ function App() {
         }
       })
     })
+
   }, [])
 
   function CustomToggle(ob: any) {
@@ -136,7 +157,15 @@ function App() {
     const isCurrentEventKey = currentEventKey === ob.eventKey
     const decoratedOnClick = useAccordionToggle(
       ob.eventKey,
-      () => ob.callback && ob.callback(ob.eventKey),
+      () => {        
+        if(activePanel === ob.eventKey) {
+          client.open('none')
+        }else{
+          client.open(panels[ob.eventKey])
+        }
+
+        ob.callback && ob.callback(ob.eventKey)
+      },
     );
 
 
@@ -197,7 +226,7 @@ function App() {
             <ToastContainer position={compact ? "bottom-right" : "top-right"} />
             {compact ?
 
-              <Accordion>
+              <Accordion activeKey={activePanel} defaultActiveKey={activePanel}>
                 <CustomToggle eventKey="0">SOURCE CONTROL</CustomToggle>
                 <Accordion.Collapse eventKey="0">
                   <>
@@ -210,11 +239,11 @@ function App() {
                 </Accordion.Collapse>
                 <CustomToggle eventKey="1">CLONE, PUSH, PULL & REMOTES</CustomToggle>
                 <Accordion.Collapse eventKey="1">
-                  <GitHubImporter />
+                  <GitHubImporter client={client} />
                 </Accordion.Collapse>
                 <CustomToggle eventKey="7">GITHUB SETTINGS</CustomToggle>
                 <Accordion.Collapse eventKey="7">
-                  <GitHubSettings />
+                  <GitHubSettings showOk={true} client={client} />
                 </Accordion.Collapse>
                 <CustomToggle eventKey="3">COMMITS</CustomToggle>
                 <Accordion.Collapse eventKey="3">

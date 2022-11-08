@@ -1,83 +1,86 @@
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { createRef, useEffect } from "react";
+import { PluginClient } from "@remixproject/plugin"
+import { useEffect, useState } from "react"
+import { Alert } from "react-bootstrap"
 
-import { Alert, Card } from "react-bootstrap";
-import CopyToClipboard from "react-copy-to-clipboard";
-import { toast } from "react-toastify";
+interface SettingsProps {
+    client: PluginClient
+    showOk: boolean
+}
 
-import { gitservice, useLocalStorage } from "../../App";
-import ConfirmDelete from "../ConfirmDelete";
-import { useBehaviorSubject } from "../usesubscribe";
+export const GitHubSettings: React.FC<SettingsProps> = (props) => {
+    const [token, setToken] = useState<boolean>(false)
+    const [userName, setUserName] = useState<string>('')
+    const [userEmail, setUserEmail] = useState<string>('')
+    const [hide, setHide] = useState<boolean>(false)
 
-interface importerProps { }
-
-export const GitHubSettings: React.FC<importerProps> = () => {
-    const [token, setToken] = useLocalStorage(
-        "GITHUB_TOKEN",
-        ''
-    );
-    const [name, setName] = useLocalStorage(
-        "GITHUB_NAME",
-        ''
-    );
-
-    const [email, setEmail] = useLocalStorage(
-        "GITHUB_EMAIL",
-        ''
-    );
-    const onTokenChange = (value: string) => {
-        setToken(value)
-    }
-    const onNameChange = (value: string) => {
-        setName(value)
-        gitservice.githubname = value;
-    }
-    const onEmailChange = (value: string) => {
-        setEmail(value)
+    const hideWarning = () => {
+        setHide(true)
     }
 
-    useEffect(() => 
-    {
-        gitservice.token = token;
-    },[token])
+    const goToSettings = async() => {
+        await props.client.call("sidePanel" as any,"focus","settings")   
+    }
 
-    useEffect(() => 
-    {
-        gitservice.githubemail = email;
-    },[email])
+    const getToken = async () => {
+        let tokenConfig = await props.client.call('config' as any, 'getAppParameter', 'settings/gist-access-token')
+        if (tokenConfig) {
+            setToken(true)
+        } else {
+            setToken(false)
+        }
+        let userNameConfig = await props.client.call('config' as any, 'getAppParameter', 'settings/github-user-name')
+        if (userNameConfig) {
+            setUserName(userNameConfig)
+        } else {
+            setUserName('')
+        }
+        let userEmailConfig = await props.client.call('config' as any, 'getAppParameter', 'settings/github-email')
+        if (userEmailConfig) {
+            setUserEmail(userEmailConfig)
+        } else {
+            setUserEmail('')
+        }
+    }
+    useEffect(() => {
 
-    useEffect(() => 
-    {
-        gitservice.githubname = name;
-    },[name])
 
+
+        const fetchData = async () => {
+            if (props.client && props.client.isLoaded) {
+                await getToken()
+            } else {
+                props.client.onload().then(async () => {
+                    await getToken()
+                })
+            }
+        }
+        fetchData()
+            .catch(console.error);
+    }, [])
+
+
+    const settings = () => {
+        return <>        {!token ? (
+            <Alert variant='info'>Provide a "personal github access token" to access private repositories and have push/pull rights.<br></br>
+                Please update these settings in the REMIX settings.<br></br>
+                <button className="btn btn-sm btm-primary" onClick={async () => { await getToken() }}>re-check settings</button>
+                <button className="btn btn-sm btm-primary" onClick={async () => { await goToSettings() }}>change the settings</button>
+                {!props.showOk && <button className="btn btn-sm btm-primary" onClick={hideWarning}>hide this warning</button>}
+            </Alert>
+
+        ) : (props.showOk ? <Alert variant="success">GitHub token is setup!</Alert> : '')}
+            {(!userName || !userEmail) ? (
+                <Alert variant='info'>GitHub name & email are also required to push & pull.
+                    <br></br>
+                    Please update these settings in the REMIX settings.<br></br>
+                    <button className="btn btn-sm btm-primary" onClick={async () => { await getToken() }}>re-check settings</button>
+                    <button className="btn btn-sm btm-primary" onClick={async () => { await goToSettings() }}>change the settings</button>
+                    {!props.showOk && <button className="btn btn-sm btm-primary" onClick={hideWarning}>hide this warning</button>}
+                </Alert>
+            ) : (props.showOk ? <Alert variant="success">GitHub user and email are setup!</Alert> : '')}</>
+    }
     return (
         <>
-        
-        {token ? <></> :
-                <Alert variant='warning'>Missing GitHub personal token. Provide a token to access private repositories and have push/pull rights.<br></br>
-                    <a href='https://docs.github.com/en/github/authenticating-to-github/keeping-your-account-and-data-secure/creating-a-personal-access-token' target='_blank'>More info on personal access tokens...</a>
-                </Alert>}
-            {name ? <></> :
-                <Alert variant='warning'>GitHub name & email is required to push & pull.</Alert>
-            }
-        <h4>CONFIG</h4><label>PERSONAL GITHUB TOKEN</label><input name='token' readOnly onFocus={e => e.target.readOnly = false} onBlur={e => e.target.readOnly = true} onChange={e => onTokenChange(e.target.value)} value={token} className="form-control" autoComplete="off" type="password" id="token" /><CopyToClipboard
-            text={token}
-            onCopy={() => {
-                toast.success("Copied to clipboard.");
-            } }
-        >
-            <button className="mt-2 btn btn-primary mb-2 btn-sm">Copy token to clipboard</button>
-        </CopyToClipboard><div className='row'>
-                <div className='col col-md-6 col-12'>
-                    <label>NAME</label>
-                    <input name='name' onChange={e => onNameChange(e.target.value)} value={name} className="form-control" type="text" id="githubname" />
-                </div>
-                <div className='col col-md-6 col-12'>
-                    <label>EMAIL</label>
-                    <input name='email' onChange={e => onEmailChange(e.target.value)} value={email} className="form-control" type="text" id="githubemail" />
-                </div>
-            </div><hr></hr></>
-    )
-    }
+            {!props.showOk && hide === true ? '' : settings()}
+        </>)
+}

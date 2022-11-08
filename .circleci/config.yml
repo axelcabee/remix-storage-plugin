@@ -5,29 +5,25 @@ orbs:
 jobs:
   test:
     docker:
-      - image: circleci/node:14.17.6-browsers
+      - image: cimg/node:lts-browsers
     steps:
+      - run:
+          name: ip
+          command: echo $HOSTNAME
       - checkout
+      - browser-tools/install-browser-tools
+      - run:
+          name: Install FFMPEG
+          command: sudo apt-get install -y ffmpeg
       - run:
           name: Install
           command: yarn
       - run:
-          name: build
-          command: export CI=false && yarn build 
-      - run:
           name: start dgit
-          command: export CI=true && yarn start
-          background: true
+          command: export CI=true && yarn start &
       - run:
           name: wait on dgit
           command: sleep 10
-      - run:
-          name: npm run test alpha
-          command: npm run test:alpha-ci
-      - run:
-          name: npm run test live
-          command: npm run test:production-ci
-      - run: ./ci/publishIpfs
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
