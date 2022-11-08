@@ -231,10 +231,16 @@ export class gitService {
   async commit(message: string = "") {
 
     try {
+      const credentials = await this.settingsWarning()
+      if(!credentials) {
+        loaderservice.setLoading(false)
+        return
+      }
+      
       const sha = await client.call("dGitProvider", "commit", {
         author: {
-          name: localStorage.getItem('GITHUB_NAME') || 'Remix Workspace',
-          email: localStorage.getItem('GITHUB_EMAIL'),
+          name: credentials.username,
+          email: credentials.email,
         },
         message: message,
       });

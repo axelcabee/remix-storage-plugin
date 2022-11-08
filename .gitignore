@@ -31,3 +31,6 @@ cypress/videos/dgit.spec.ts.mp4
 .eslintcache
 .artifacts
 artifacts/
+.firebase
+.firebase/*
+hosting*.cache

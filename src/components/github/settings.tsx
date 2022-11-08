@@ -17,6 +17,10 @@ export const GitHubSettings: React.FC<SettingsProps> = (props) => {
         setHide(true)
     }
 
+    const goToSettings = async() => {
+        await props.client.call("sidePanel" as any,"focus","settings")   
+    }
+
     const getToken = async () => {
         let tokenConfig = await props.client.call('config' as any, 'getAppParameter', 'settings/gist-access-token')
         if (tokenConfig) {
@@ -59,7 +63,8 @@ export const GitHubSettings: React.FC<SettingsProps> = (props) => {
         return <>        {!token ? (
             <Alert variant='info'>Provide a "personal github access token" to access private repositories and have push/pull rights.<br></br>
                 Please update these settings in the REMIX settings.<br></br>
-                <button className="btn btn-sm btm-primary" onClick={async () => { await getToken() }}>check settings</button>
+                <button className="btn btn-sm btm-primary" onClick={async () => { await getToken() }}>re-check settings</button>
+                <button className="btn btn-sm btm-primary" onClick={async () => { await goToSettings() }}>change the settings</button>
                 {!props.showOk && <button className="btn btn-sm btm-primary" onClick={hideWarning}>hide this warning</button>}
             </Alert>
 
@@ -68,7 +73,8 @@ export const GitHubSettings: React.FC<SettingsProps> = (props) => {
                 <Alert variant='info'>GitHub name & email are also required to push & pull.
                     <br></br>
                     Please update these settings in the REMIX settings.<br></br>
-                    <button className="btn btn-sm btm-primary" onClick={async () => { await getToken() }}>check settings</button>
+                    <button className="btn btn-sm btm-primary" onClick={async () => { await getToken() }}>re-check settings</button>
+                    <button className="btn btn-sm btm-primary" onClick={async () => { await goToSettings() }}>change the settings</button>
                     {!props.showOk && <button className="btn btn-sm btm-primary" onClick={hideWarning}>hide this warning</button>}
                 </Alert>
             ) : (props.showOk ? <Alert variant="success">GitHub user and email are setup!</Alert> : '')}</>
